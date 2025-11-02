@@ -1,0 +1,140 @@
+ARM GAS  C:\Users\Life\AppData\Local\Temp\cc4U0q1T.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"init.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.file 1 "Core/Src/init.c"
+  20              		.section	.text.GPIO_Ini,"ax",%progbits
+  21              		.align	1
+  22              		.global	GPIO_Ini
+  23              		.syntax unified
+  24              		.thumb
+  25              		.thumb_func
+  27              	GPIO_Ini:
+  28              	.LFB130:
+   1:Core/Src/init.c **** #include "init.h"
+   2:Core/Src/init.c **** 
+   3:Core/Src/init.c **** void GPIO_Ini(void){
+  29              		.loc 1 3 20 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		@ link register save eliminated.
+   4:Core/Src/init.c **** 
+   5:Core/Src/init.c ****     RCC_GPIO_en |= RCC_GPIOB_en+RCC_GPIOD_en+RCC_GPIOC_en;
+  34              		.loc 1 5 5 view .LVU1
+  35 0000 164A     		ldr	r2, .L2
+  36 0002 D2F83038 		ldr	r3, [r2, #2096]
+  37              		.loc 1 5 17 is_stmt 0 view .LVU2
+  38 0006 43F00E03 		orr	r3, r3, #14
+  39 000a C2F83038 		str	r3, [r2, #2096]
+   6:Core/Src/init.c ****     
+   7:Core/Src/init.c ****     *(uint32_t*)(0x40020800UL+0x00UL) |= 0x1000000UL; // C moder1 12 cvetadiod output
+  40              		.loc 1 7 5 is_stmt 1 view .LVU3
+  41 000e 144B     		ldr	r3, .L2+4
+  42 0010 D3F80028 		ldr	r2, [r3, #2048]
+  43              		.loc 1 7 39 is_stmt 0 view .LVU4
+  44 0014 42F08072 		orr	r2, r2, #16777216
+  45 0018 C3F80028 		str	r2, [r3, #2048]
+   8:Core/Src/init.c ****     *(uint32_t*)(0x40020C00UL+0x00UL) |= 0x10UL; // D moder2 01 cvetadiod output
+  46              		.loc 1 8 5 is_stmt 1 view .LVU5
+  47 001c D3F8002C 		ldr	r2, [r3, #3072]
+  48              		.loc 1 8 39 is_stmt 0 view .LVU6
+  49 0020 42F01002 		orr	r2, r2, #16
+  50 0024 C3F8002C 		str	r2, [r3, #3072]
+ARM GAS  C:\Users\Life\AppData\Local\Temp\cc4U0q1T.s 			page 2
+
+
+   9:Core/Src/init.c ****     *(uint32_t*)(0x40020400UL+0x00UL) |= 0x4000UL; // B moder7 01 cvetadiod output
+  51              		.loc 1 9 5 is_stmt 1 view .LVU7
+  52 0028 D3F80024 		ldr	r2, [r3, #1024]
+  53              		.loc 1 9 39 is_stmt 0 view .LVU8
+  54 002c 42F48042 		orr	r2, r2, #16384
+  55 0030 C3F80024 		str	r2, [r3, #1024]
+  10:Core/Src/init.c **** 
+  11:Core/Src/init.c ****     //*(uint32_t*)(0x40020800UL+0x00UL) |= 0x1500000UL; // C moder12,11,10 01 cvetadiod output
+  12:Core/Src/init.c ****     //*(uint32_t*)(0x40020800UL+0x08UL) |= 0x1500000UL;
+  13:Core/Src/init.c ****     //*(uint32_t*)(0x40020800UL+0x0CUL) |= 0x00UL;
+  14:Core/Src/init.c **** 
+  15:Core/Src/init.c ****     //OSPEED
+  16:Core/Src/init.c ****     
+  17:Core/Src/init.c ****     *(uint32_t*)(0x40020400UL+0x08UL) |= 0x4000UL;
+  56              		.loc 1 17 5 is_stmt 1 view .LVU9
+  57 0034 D3F80824 		ldr	r2, [r3, #1032]
+  58              		.loc 1 17 39 is_stmt 0 view .LVU10
+  59 0038 42F48042 		orr	r2, r2, #16384
+  60 003c C3F80824 		str	r2, [r3, #1032]
+  18:Core/Src/init.c ****     *(uint32_t*)(0x40020800UL+0x08UL) |= 0x1000000UL;
+  61              		.loc 1 18 5 is_stmt 1 view .LVU11
+  62 0040 D3F80828 		ldr	r2, [r3, #2056]
+  63              		.loc 1 18 39 is_stmt 0 view .LVU12
+  64 0044 42F08072 		orr	r2, r2, #16777216
+  65 0048 C3F80828 		str	r2, [r3, #2056]
+  19:Core/Src/init.c ****     *(uint32_t*)(0x40020C00UL+0x08UL) |= 0x10UL;
+  66              		.loc 1 19 5 is_stmt 1 view .LVU13
+  67 004c D3F8082C 		ldr	r2, [r3, #3080]
+  68              		.loc 1 19 39 is_stmt 0 view .LVU14
+  69 0050 42F01002 		orr	r2, r2, #16
+  70 0054 C3F8082C 		str	r2, [r3, #3080]
+  20:Core/Src/init.c **** 
+  21:Core/Src/init.c ****     //pull_up/down rezistors 
+  22:Core/Src/init.c ****     
+  23:Core/Src/init.c ****     *(uint32_t*)(0x40020400UL+0x0CUL) |= 0x00UL;
+  71              		.loc 1 23 5 is_stmt 1 view .LVU15
+  24:Core/Src/init.c ****     *(uint32_t*)(0x40020800UL+0x0CUL) |= 0x00UL;
+  72              		.loc 1 24 5 view .LVU16
+  25:Core/Src/init.c ****     *(uint32_t*)(0x40020C00UL+0x0CUL) |= 0x00UL;
+  73              		.loc 1 25 5 view .LVU17
+  26:Core/Src/init.c **** 
+  27:Core/Src/init.c ****     // SET_BIT(RCC->AHB1ENR, RCC_AHB1ENR_GPIOAEN | RCC_AHB1ENR_GPIOCEN);
+  28:Core/Src/init.c **** 
+  29:Core/Src/init.c ****     // SET_BIT(GPIOA->MODER, GPIO_MODER_MODE5_0);
+  30:Core/Src/init.c ****     // SET_BIT(GPIOA->BSRR, GPIO_BSRR_BR5);
+  31:Core/Src/init.c ****     
+  32:Core/Src/init.c ****     // //настройка PC9 в режиме алтернативной функции
+  33:Core/Src/init.c ****     // SET_BIT(GPIOC->MODER, GPIO_MODER_MODER9_1);
+  34:Core/Src/init.c ****     // SET_BIT(GPIOC->OSPEEDR, GPIO_OSPEEDR_OSPEED9_Msk);
+  35:Core/Src/init.c ****     // MODIFY_REG(GPIOC->AFR[1], GPIO_AFRH_AFSEL9_Msk, 0x0);
+  36:Core/Src/init.c **** }
+  74              		.loc 1 36 1 is_stmt 0 view .LVU18
+  75 0058 7047     		bx	lr
+  76              	.L3:
+  77 005a 00BF     		.align	2
+  78              	.L2:
+  79 005c 00300240 		.word	1073885184
+ARM GAS  C:\Users\Life\AppData\Local\Temp\cc4U0q1T.s 			page 3
+
+
+  80 0060 00000240 		.word	1073872896
+  81              		.cfi_endproc
+  82              	.LFE130:
+  84              		.text
+  85              	.Letext0:
+  86              		.file 2 "C:/Bools/xpack-arm-none-eabi-gcc-13.2.1-1.1/arm-none-eabi/include/machine/_default_types.
+  87              		.file 3 "C:/Bools/xpack-arm-none-eabi-gcc-13.2.1-1.1/arm-none-eabi/include/sys/_stdint.h"
+ARM GAS  C:\Users\Life\AppData\Local\Temp\cc4U0q1T.s 			page 4
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 init.c
+C:\Users\Life\AppData\Local\Temp\cc4U0q1T.s:21     .text.GPIO_Ini:00000000 $t
+C:\Users\Life\AppData\Local\Temp\cc4U0q1T.s:27     .text.GPIO_Ini:00000000 GPIO_Ini
+C:\Users\Life\AppData\Local\Temp\cc4U0q1T.s:79     .text.GPIO_Ini:0000005c $d
+
+NO UNDEFINED SYMBOLS

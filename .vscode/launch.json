@@ -14,7 +14,7 @@
             "servertype": "openocd",
             "device": "STM32F411RE",
             "configFiles": [
-                "nterface/stlink.cfg",
+                "interface/stlink.cfg",
                 "target/stm32f4x.cfg"
             ],
             "svdFile": "./STM32F411.svd"

@@ -1,4 +1,4 @@
-ARM GAS  C:\Users\Life\AppData\Local\Temp\ccu6SH5G.s 			page 1
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccgTQxAt.s 			page 1
 
 
    1              		.cpu cortex-m4
@@ -27,40 +27,710 @@ ARM GAS  C:\Users\Life\AppData\Local\Temp\ccu6SH5G.s 			page 1
   24              		.thumb
   25              		.thumb_func
   27              	main:
-  28              	.LFB0:
-   1:Core/Src/main.c **** int main(void){
-  29              		.loc 1 1 15 view -0
+  28              	.LFB130:
+   1:Core/Src/main.c **** #include "init.h"
+   2:Core/Src/main.c **** #include <stdint.h>
+   3:Core/Src/main.c **** 
+   4:Core/Src/main.c **** // uint32_t fortime2 = 0;
+   5:Core/Src/main.c **** uint8_t counter = 1;
+   6:Core/Src/main.c **** uint8_t button = 0;
+   7:Core/Src/main.c **** uint8_t prev_state1 = 0;
+   8:Core/Src/main.c **** uint8_t prev_state2 = 0;
+   9:Core/Src/main.c **** 
+  10:Core/Src/main.c **** 
+  11:Core/Src/main.c **** int main(void)
+  12:Core/Src/main.c **** {
+  29              		.loc 1 12 1 view -0
   30              		.cfi_startproc
   31              		@ Volatile: function does not return.
-  32              		@ args = 0, pretend = 0, frame = 0
+  32              		@ args = 0, pretend = 0, frame = 8
   33              		@ frame_needed = 0, uses_anonymous_args = 0
-  34              		@ link register save eliminated.
-  35              	.L2:
-   2:Core/Src/main.c **** 
-   3:Core/Src/main.c **** while(1){
-  36              		.loc 1 3 1 view .LVU1
-   4:Core/Src/main.c ****     
-   5:Core/Src/main.c **** }
-  37              		.loc 1 5 1 view .LVU2
-   3:Core/Src/main.c **** int main(void){
-
-while(1){
-    
-}
-
-}
-  38              		.loc 1 3 6 view .LVU3
-  39 0000 FEE7     		b	.L2
-  40              		.cfi_endproc
-  41              	.LFE0:
-  43              		.text
-  44              	.Letext0:
-ARM GAS  C:\Users\Life\AppData\Local\Temp\ccu6SH5G.s 			page 2
+  34 0000 00B5     		push	{lr}
+  35              	.LCFI0:
+  36              		.cfi_def_cfa_offset 4
+  37              		.cfi_offset 14, -4
+  38 0002 83B0     		sub	sp, sp, #12
+  39              	.LCFI1:
+  40              		.cfi_def_cfa_offset 16
+  13:Core/Src/main.c **** 
+  14:Core/Src/main.c ****     // uint8_t counter = 0;
+  15:Core/Src/main.c ****     // uint8_t button = 0;
+  16:Core/Src/main.c ****     // uint32_t timeArr[4] = {0, 0, 0, 0};
+  17:Core/Src/main.c **** 
+  18:Core/Src/main.c ****     // RCC_Init();
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccgTQxAt.s 			page 2
+
+
+  19:Core/Src/main.c ****     GPIO_Ini();
+  41              		.loc 1 19 5 view .LVU1
+  42 0004 FFF7FEFF 		bl	GPIO_Ini
+  43              	.LVL0:
+  44 0008 F2E0     		b	.L2
+  45              	.L30:
+  20:Core/Src/main.c **** 
+  21:Core/Src/main.c ****     while (1)
+  22:Core/Src/main.c ****     {
+  23:Core/Src/main.c ****         //         SET_BIT(GPIOA->BSRR, GPIO_BSRR_BS5);
+  24:Core/Src/main.c ****         //     }
+  25:Core/Src/main.c ****         // }
+  26:Core/Src/main.c **** 
+  27:Core/Src/main.c **** 
+  28:Core/Src/main.c **** 
+  29:Core/Src/main.c ****      //доролнительная задача   
+  30:Core/Src/main.c ****         //     if(READ_GPIO_B9==0)
+  31:Core/Src/main.c ****         //     {
+  32:Core/Src/main.c ****         //         for(volatile int i=0; i<1300; i++);
+  33:Core/Src/main.c ****         //         if(READ_GPIO_B9==0 && prev_state2==0)
+  34:Core/Src/main.c ****         //         {
+  35:Core/Src/main.c ****         //             counter=(counter+1)%4;
+  36:Core/Src/main.c ****         //             button=0;
+  37:Core/Src/main.c ****         //             prev_state2 = 1;
+  38:Core/Src/main.c ****         //         }
+  39:Core/Src/main.c ****         //     }
+  40:Core/Src/main.c ****         //     else
+  41:Core/Src/main.c ****         //     {
+  42:Core/Src/main.c ****         //         prev_state2 = 0;
+  43:Core/Src/main.c ****         //     }
+  44:Core/Src/main.c **** 
+  45:Core/Src/main.c ****         //     if(READ_BIT(GPIOB->IDR, GPIO_IDR_IDR_8)==0){
+  46:Core/Src/main.c ****         //     for(volatile int i=0; i<1300; i++);
+  47:Core/Src/main.c ****         //     if(READ_BIT(GPIOB->IDR, GPIO_IDR_IDR_8)==0){
+  48:Core/Src/main.c ****         //         while(READ_BIT(GPIOB->IDR, GPIO_IDR_IDR_8)==0)
+  49:Core/Src/main.c ****         //             {
+  50:Core/Src/main.c ****         //                fortime2++;
+  51:Core/Src/main.c ****         //             }
+  52:Core/Src/main.c ****         //     if(fortime2<300000){
+  53:Core/Src/main.c ****         //     button=(button+1)%4;
+  54:Core/Src/main.c ****         //       switch(button) {
+  55:Core/Src/main.c ****         //         case 0: timeArr[counter]= 0; break;
+  56:Core/Src/main.c ****         //         case 1: timeArr[counter]= 30000; break;
+  57:Core/Src/main.c ****         //         case 2: timeArr[counter]= 70000; break;
+  58:Core/Src/main.c ****         //         case 3: timeArr[counter]= 150000; break;
+  59:Core/Src/main.c ****         //              }
+  60:Core/Src/main.c ****         //             }
+  61:Core/Src/main.c ****         //             if(fortime2>=300000){
+  62:Core/Src/main.c ****         //                 counter=(counter+1)%4;
+  63:Core/Src/main.c ****         //                 button=0;
+  64:Core/Src/main.c ****         //             }
+  65:Core/Src/main.c ****         //             fortime2=0;
+  66:Core/Src/main.c ****         //             }
+  67:Core/Src/main.c **** 
+  68:Core/Src/main.c ****         // }
+  69:Core/Src/main.c ****         //     if (counter == 1)
+  70:Core/Src/main.c ****         //         {
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccgTQxAt.s 			page 3
+
+
+  71:Core/Src/main.c ****         //             RESET_GPIO_C12;
+  72:Core/Src/main.c ****         //             RESET_GPIO_D2;
+  73:Core/Src/main.c ****         //             SET_BIT(GPIOB->BSRR, GPIO_BSRR_BS_7);
+  74:Core/Src/main.c ****         //             for (volatile int i = 0; i < timeArr[counter]; i++)
+  75:Core/Src/main.c ****         //             {
+  76:Core/Src/main.c ****         //                 if(READ_GPIO_B9==0 && READ_BIT(GPIOB->IDR, GPIO_IDR_IDR_8))
+  77:Core/Src/main.c ****         //                 break;
+  78:Core/Src/main.c **** 
+  79:Core/Src/main.c ****         //             }
+  80:Core/Src/main.c ****         //             SET_BIT(GPIOB->BSRR, GPIO_BSRR_BR_7);
+  81:Core/Src/main.c ****         //             for (volatile int i = 0; i < timeArr[counter]; i++){
+  82:Core/Src/main.c ****         //                   if(READ_GPIO_B9==0 && READ_BIT(GPIOB->IDR, GPIO_IDR_IDR_8))
+  83:Core/Src/main.c ****         //                 break;
+  84:Core/Src/main.c ****         //             }
+  85:Core/Src/main.c ****         //         }
+  86:Core/Src/main.c **** 
+  87:Core/Src/main.c ****         //         else if (counter == 2)
+  88:Core/Src/main.c ****         //         {
+  89:Core/Src/main.c ****         //             RESET_GPIO_B7;
+  90:Core/Src/main.c ****         //             RESET_GPIO_D2;
+  91:Core/Src/main.c ****         //             SET_BIT(GPIOC->BSRR, GPIO_BSRR_BS_12); // Включить
+  92:Core/Src/main.c ****         //             for (volatile int i = 0; i < timeArr[counter]; i++){
+  93:Core/Src/main.c ****         //                   if(READ_GPIO_B9==0 && READ_BIT(GPIOB->IDR, GPIO_IDR_IDR_8))
+  94:Core/Src/main.c ****         //                 break;
+  95:Core/Src/main.c ****         //             }
+  96:Core/Src/main.c ****         //             SET_BIT(GPIOC->BSRR, GPIO_BSRR_BR_12); // Выключить
+  97:Core/Src/main.c ****         //             for (volatile int i = 0; i < timeArr[counter]; i++)
+  98:Core/Src/main.c ****         //             {
+  99:Core/Src/main.c ****         //                   if(READ_GPIO_B9==0 && READ_BIT(GPIOB->IDR, GPIO_IDR_IDR_8))
+ 100:Core/Src/main.c ****         //                 break;
+ 101:Core/Src/main.c ****         //             }
+ 102:Core/Src/main.c ****         //         }
+ 103:Core/Src/main.c ****         //         else if (counter == 3)
+ 104:Core/Src/main.c ****         //         {
+ 105:Core/Src/main.c ****         //             RESET_GPIO_B7;
+ 106:Core/Src/main.c ****         //             RESET_GPIO_C12;
+ 107:Core/Src/main.c ****         //             SET_BIT(GPIOD->BSRR, GPIO_BSRR_BS_2); // Включить
+ 108:Core/Src/main.c ****         //             for (volatile int i = 0; i < timeArr[counter]; i++){
+ 109:Core/Src/main.c ****         //                   if(READ_GPIO_B9==0 && READ_BIT(GPIOB->IDR, GPIO_IDR_IDR_8))
+ 110:Core/Src/main.c ****         //                 break;
+ 111:Core/Src/main.c ****         //             }
+ 112:Core/Src/main.c ****         //             SET_BIT(GPIOD->BSRR, GPIO_BSRR_BR_2); // Выключить
+ 113:Core/Src/main.c ****         //             for (volatile int i = 0; i < timeArr[counter]; i++){
+ 114:Core/Src/main.c ****         //                   if(READ_GPIO_B9==0 && READ_BIT(GPIOB->IDR, GPIO_IDR_IDR_8))
+ 115:Core/Src/main.c ****         //                 break;
+ 116:Core/Src/main.c ****         //             }
+ 117:Core/Src/main.c ****         //         }
+ 118:Core/Src/main.c ****         // }
+ 119:Core/Src/main.c ****         // }
+ 120:Core/Src/main.c **** 
+ 121:Core/Src/main.c ****         if (READ_GPIO_B9 == 0)
+ 122:Core/Src/main.c ****         {
+ 123:Core/Src/main.c ****             for (volatile int i = 0; i < 2000; i++);
+  46              		.loc 1 123 13 view .LVU2
+  47              	.LBB2:
+  48              		.loc 1 123 18 view .LVU3
+  49              		.loc 1 123 31 is_stmt 0 view .LVU4
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccgTQxAt.s 			page 4
+
+
+  50 000a 0023     		movs	r3, #0
+  51 000c 0093     		str	r3, [sp]
+  52              		.loc 1 123 13 view .LVU5
+  53 000e 02E0     		b	.L4
+  54              	.L5:
+  55              		.loc 1 123 49 is_stmt 1 discriminator 3 view .LVU6
+  56 0010 009B     		ldr	r3, [sp]
+  57 0012 0133     		adds	r3, r3, #1
+  58 0014 0093     		str	r3, [sp]
+  59              	.L4:
+  60              		.loc 1 123 40 discriminator 1 view .LVU7
+  61 0016 009B     		ldr	r3, [sp]
+  62 0018 B3F5FA6F 		cmp	r3, #2000
+  63 001c F8DB     		blt	.L5
+  64              	.LBE2:
+ 124:Core/Src/main.c ****             if (READ_GPIO_B9 == 0 && prev_state2 == 0)
+  65              		.loc 1 124 13 view .LVU8
+  66              		.loc 1 124 17 is_stmt 0 view .LVU9
+  67 001e 7D4B     		ldr	r3, .L31
+  68 0020 D3F81034 		ldr	r3, [r3, #1040]
+  69              		.loc 1 124 16 view .LVU10
+  70 0024 13F4007F 		tst	r3, #512
+  71 0028 40F0EC80 		bne	.L6
+  72              		.loc 1 124 50 discriminator 1 view .LVU11
+  73 002c 7A4B     		ldr	r3, .L31+4
+  74 002e 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+  75              		.loc 1 124 35 discriminator 1 view .LVU12
+  76 0030 002B     		cmp	r3, #0
+  77 0032 40F0E780 		bne	.L6
+ 125:Core/Src/main.c ****             {
+ 126:Core/Src/main.c ****                 counter++;
+  78              		.loc 1 126 17 is_stmt 1 view .LVU13
+  79              		.loc 1 126 24 is_stmt 0 view .LVU14
+  80 0036 794A     		ldr	r2, .L31+8
+  81 0038 1378     		ldrb	r3, [r2]	@ zero_extendqisi2
+  82 003a 0133     		adds	r3, r3, #1
+  83 003c DBB2     		uxtb	r3, r3
+  84 003e 1370     		strb	r3, [r2]
+ 127:Core/Src/main.c ****                 RESET_GPIO_C12;
+  85              		.loc 1 127 17 is_stmt 1 view .LVU15
+  86 0040 744A     		ldr	r2, .L31
+  87 0042 D2F81818 		ldr	r1, [r2, #2072]
+  88 0046 41F08051 		orr	r1, r1, #268435456
+  89 004a C2F81818 		str	r1, [r2, #2072]
+ 128:Core/Src/main.c ****                 RESET_GPIO_D2;
+  90              		.loc 1 128 17 view .LVU16
+  91 004e D2F8181C 		ldr	r1, [r2, #3096]
+  92 0052 41F48021 		orr	r1, r1, #262144
+  93 0056 C2F8181C 		str	r1, [r2, #3096]
+ 129:Core/Src/main.c ****                 RESET_GPIO_B7;
+  94              		.loc 1 129 17 view .LVU17
+  95 005a D2F81814 		ldr	r1, [r2, #1048]
+  96 005e 41F40001 		orr	r1, r1, #8388608
+  97 0062 C2F81814 		str	r1, [r2, #1048]
+ 130:Core/Src/main.c ****                 if (counter == 4)
+  98              		.loc 1 130 17 view .LVU18
+  99              		.loc 1 130 20 is_stmt 0 view .LVU19
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccgTQxAt.s 			page 5
+
+
+ 100 0066 042B     		cmp	r3, #4
+ 101 0068 03D0     		beq	.L24
+ 102              	.L7:
+ 131:Core/Src/main.c ****                 {
+ 132:Core/Src/main.c ****                     counter = 1;
+ 133:Core/Src/main.c ****                 }
+ 134:Core/Src/main.c ****                 prev_state2 = 1;
+ 103              		.loc 1 134 17 is_stmt 1 view .LVU20
+ 104              		.loc 1 134 29 is_stmt 0 view .LVU21
+ 105 006a 6B4B     		ldr	r3, .L31+4
+ 106 006c 0122     		movs	r2, #1
+ 107 006e 1A70     		strb	r2, [r3]
+ 108 0070 C8E0     		b	.L6
+ 109              	.L24:
+ 132:Core/Src/main.c ****                 }
+ 110              		.loc 1 132 21 is_stmt 1 view .LVU22
+ 132:Core/Src/main.c ****                 }
+ 111              		.loc 1 132 29 is_stmt 0 view .LVU23
+ 112 0072 6A4B     		ldr	r3, .L31+8
+ 113 0074 0122     		movs	r2, #1
+ 114 0076 1A70     		strb	r2, [r3]
+ 115 0078 F7E7     		b	.L7
+ 116              	.L10:
+ 117              	.LBB3:
+ 135:Core/Src/main.c ****             }
+ 136:Core/Src/main.c ****         }
+ 137:Core/Src/main.c ****         else
+ 138:Core/Src/main.c ****         {
+ 139:Core/Src/main.c ****             prev_state2 = 0;
+ 140:Core/Src/main.c ****         }
+ 141:Core/Src/main.c **** 
+ 142:Core/Src/main.c ****         if (READ_BIT(GPIOB->IDR, GPIO_IDR_IDR_8) == 0)
+ 143:Core/Src/main.c ****         {
+ 144:Core/Src/main.c ****             for (volatile int i = 0; i < 2000; i++);
+ 118              		.loc 1 144 49 is_stmt 1 discriminator 3 view .LVU24
+ 119 007a 019B     		ldr	r3, [sp, #4]
+ 120 007c 0133     		adds	r3, r3, #1
+ 121 007e 0193     		str	r3, [sp, #4]
+ 122              	.L9:
+ 123              		.loc 1 144 40 discriminator 1 view .LVU25
+ 124 0080 019B     		ldr	r3, [sp, #4]
+ 125 0082 B3F5FA6F 		cmp	r3, #2000
+ 126 0086 F8DB     		blt	.L10
+ 127              	.LBE3:
+ 145:Core/Src/main.c ****             if (READ_BIT(GPIOB->IDR, GPIO_IDR_IDR_8) == 0 && prev_state1 == 0)
+ 128              		.loc 1 145 13 view .LVU26
+ 129              		.loc 1 145 17 is_stmt 0 view .LVU27
+ 130 0088 654B     		ldr	r3, .L31+12
+ 131 008a 1B69     		ldr	r3, [r3, #16]
+ 132              		.loc 1 145 16 view .LVU28
+ 133 008c 13F4807F 		tst	r3, #256
+ 134 0090 40F0AE80 		bne	.L2
+ 135              		.loc 1 145 74 discriminator 1 view .LVU29
+ 136 0094 634B     		ldr	r3, .L31+16
+ 137 0096 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 138              		.loc 1 145 59 discriminator 1 view .LVU30
+ 139 0098 002B     		cmp	r3, #0
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccgTQxAt.s 			page 6
+
+
+ 140 009a 40F0A980 		bne	.L2
+ 146:Core/Src/main.c ****             {
+ 147:Core/Src/main.c ****                 RESET_GPIO_C12;
+ 141              		.loc 1 147 17 is_stmt 1 view .LVU31
+ 142 009e 5D4B     		ldr	r3, .L31
+ 143 00a0 D3F81828 		ldr	r2, [r3, #2072]
+ 144 00a4 42F08052 		orr	r2, r2, #268435456
+ 145 00a8 C3F81828 		str	r2, [r3, #2072]
+ 148:Core/Src/main.c ****                 RESET_GPIO_D2;
+ 146              		.loc 1 148 17 view .LVU32
+ 147 00ac D3F8182C 		ldr	r2, [r3, #3096]
+ 148 00b0 42F48022 		orr	r2, r2, #262144
+ 149 00b4 C3F8182C 		str	r2, [r3, #3096]
+ 149:Core/Src/main.c ****                 RESET_GPIO_B7;
+ 150              		.loc 1 149 17 view .LVU33
+ 151 00b8 D3F81824 		ldr	r2, [r3, #1048]
+ 152 00bc 42F40002 		orr	r2, r2, #8388608
+ 153 00c0 C3F81824 		str	r2, [r3, #1048]
+ 150:Core/Src/main.c ****                 button = (button + 1);
+ 154              		.loc 1 150 17 view .LVU34
+ 155              		.loc 1 150 34 is_stmt 0 view .LVU35
+ 156 00c4 584A     		ldr	r2, .L31+20
+ 157 00c6 1378     		ldrb	r3, [r2]	@ zero_extendqisi2
+ 158 00c8 0133     		adds	r3, r3, #1
+ 159 00ca DBB2     		uxtb	r3, r3
+ 160              		.loc 1 150 24 view .LVU36
+ 161 00cc 1370     		strb	r3, [r2]
+ 151:Core/Src/main.c ****                 if (button == 4)
+ 162              		.loc 1 151 17 is_stmt 1 view .LVU37
+ 163              		.loc 1 151 20 is_stmt 0 view .LVU38
+ 164 00ce 042B     		cmp	r3, #4
+ 165 00d0 0FD0     		beq	.L25
+ 166              	.L12:
+ 152:Core/Src/main.c ****                 {
+ 153:Core/Src/main.c ****                     button = 1;
+ 154:Core/Src/main.c ****                 }
+ 155:Core/Src/main.c ****                  if (button == 3 && counter == 3)
+ 167              		.loc 1 155 18 is_stmt 1 view .LVU39
+ 168              		.loc 1 155 29 is_stmt 0 view .LVU40
+ 169 00d2 554B     		ldr	r3, .L31+20
+ 170 00d4 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 171              		.loc 1 155 21 view .LVU41
+ 172 00d6 032B     		cmp	r3, #3
+ 173 00d8 0FD0     		beq	.L26
+ 174              	.L13:
+ 156:Core/Src/main.c ****                 {
+ 157:Core/Src/main.c ****                     button = 1;
+ 158:Core/Src/main.c ****                 }
+ 159:Core/Src/main.c ****                 if( counter == 1){
+ 175              		.loc 1 159 17 is_stmt 1 view .LVU42
+ 176              		.loc 1 159 29 is_stmt 0 view .LVU43
+ 177 00da 504B     		ldr	r3, .L31+8
+ 178 00dc 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 179              		.loc 1 159 19 view .LVU44
+ 180 00de 012B     		cmp	r3, #1
+ 181 00e0 13D0     		beq	.L27
+ 182              	.L14:
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccgTQxAt.s 			page 7
+
+
+ 160:Core/Src/main.c ****                 switch (button)
+ 161:Core/Src/main.c ****                 {
+ 162:Core/Src/main.c ****                 case 1:
+ 163:Core/Src/main.c ****                     SET_BIT(GPIOC->BSRR, GPIO_BSRR_BS_12);
+ 164:Core/Src/main.c ****                     break;
+ 165:Core/Src/main.c ****                 case 2:
+ 166:Core/Src/main.c ****                     SET_BIT(GPIOB->BSRR, GPIO_BSRR_BS_7);
+ 167:Core/Src/main.c ****                     break;
+ 168:Core/Src/main.c ****                 case 3:
+ 169:Core/Src/main.c ****                     SET_BIT(GPIOD->BSRR, GPIO_BSRR_BS_2);
+ 170:Core/Src/main.c ****                     break;
+ 171:Core/Src/main.c ****                 default:
+ 172:Core/Src/main.c ****                     break;
+ 173:Core/Src/main.c ****                 } 
+ 174:Core/Src/main.c ****             }
+ 175:Core/Src/main.c ****             if( counter == 2){
+ 183              		.loc 1 175 13 is_stmt 1 view .LVU45
+ 184              		.loc 1 175 15 is_stmt 0 view .LVU46
+ 185 00e2 022B     		cmp	r3, #2
+ 186 00e4 2BD0     		beq	.L28
+ 187              	.L17:
+ 176:Core/Src/main.c ****                switch (button)
+ 177:Core/Src/main.c ****                 {
+ 178:Core/Src/main.c ****                 case 1:
+ 179:Core/Src/main.c **** 
+ 180:Core/Src/main.c ****                     SET_BIT(GPIOB->BSRR, GPIO_BSRR_BS7);
+ 181:Core/Src/main.c ****                     SET_BIT(GPIOC->BSRR, GPIO_BSRR_BS12);
+ 182:Core/Src/main.c ****                     
+ 183:Core/Src/main.c ****                     break;
+ 184:Core/Src/main.c ****                 case 2:
+ 185:Core/Src/main.c **** 
+ 186:Core/Src/main.c ****                     SET_BIT(GPIOD->BSRR, GPIO_BSRR_BS2);
+ 187:Core/Src/main.c ****                     SET_BIT(GPIOC->BSRR, GPIO_BSRR_BS12);
+ 188:Core/Src/main.c ****                    
+ 189:Core/Src/main.c ****                     break;
+ 190:Core/Src/main.c ****                 case 3:
+ 191:Core/Src/main.c **** 
+ 192:Core/Src/main.c ****                     SET_BIT(GPIOD->BSRR, GPIO_BSRR_BS2);
+ 193:Core/Src/main.c ****                     SET_BIT(GPIOB->BSRR, GPIO_BSRR_BS7);
+ 194:Core/Src/main.c ****                    
+ 195:Core/Src/main.c ****                     break;
+ 196:Core/Src/main.c ****                 default:
+ 197:Core/Src/main.c ****                     break;
+ 198:Core/Src/main.c ****                 } 
+ 199:Core/Src/main.c ****             }
+ 200:Core/Src/main.c ****              if( counter == 3){
+ 188              		.loc 1 200 14 is_stmt 1 view .LVU47
+ 189              		.loc 1 200 16 is_stmt 0 view .LVU48
+ 190 00e6 032B     		cmp	r3, #3
+ 191 00e8 55D0     		beq	.L29
+ 192              	.L20:
+ 201:Core/Src/main.c ****                switch (button)
+ 202:Core/Src/main.c ****                 {
+ 203:Core/Src/main.c ****                 case 1:
+ 204:Core/Src/main.c ****                     SET_BIT(GPIOC->BSRR, GPIO_BSRR_BS12);
+ 205:Core/Src/main.c ****                     SET_BIT(GPIOD->BSRR, GPIO_BSRR_BS2);
+ 206:Core/Src/main.c ****                     SET_BIT(GPIOB->BSRR, GPIO_BSRR_BS7);
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccgTQxAt.s 			page 8
+
+
+ 207:Core/Src/main.c ****                     break;
+ 208:Core/Src/main.c ****                 case 2:
+ 209:Core/Src/main.c ****                     SET_BIT(GPIOC->BSRR, GPIO_BSRR_BR12);
+ 210:Core/Src/main.c ****                     SET_BIT(GPIOD->BSRR, GPIO_BSRR_BR2);
+ 211:Core/Src/main.c ****                     SET_BIT(GPIOB->BSRR, GPIO_BSRR_BR7);
+ 212:Core/Src/main.c ****                     break;
+ 213:Core/Src/main.c ****                 default:
+ 214:Core/Src/main.c ****                     break;
+ 215:Core/Src/main.c ****                 }  
+ 216:Core/Src/main.c ****             }
+ 217:Core/Src/main.c ****             prev_state1 = 1;
+ 193              		.loc 1 217 13 is_stmt 1 view .LVU49
+ 194              		.loc 1 217 25 is_stmt 0 view .LVU50
+ 195 00ea 4E4B     		ldr	r3, .L31+16
+ 196 00ec 0122     		movs	r2, #1
+ 197 00ee 1A70     		strb	r2, [r3]
+ 198 00f0 7EE0     		b	.L2
+ 199              	.L25:
+ 153:Core/Src/main.c ****                 }
+ 200              		.loc 1 153 21 is_stmt 1 view .LVU51
+ 153:Core/Src/main.c ****                 }
+ 201              		.loc 1 153 28 is_stmt 0 view .LVU52
+ 202 00f2 1346     		mov	r3, r2
+ 203 00f4 0122     		movs	r2, #1
+ 204 00f6 1A70     		strb	r2, [r3]
+ 205 00f8 EBE7     		b	.L12
+ 206              	.L26:
+ 155:Core/Src/main.c ****                 {
+ 207              		.loc 1 155 45 discriminator 1 view .LVU53
+ 208 00fa 484B     		ldr	r3, .L31+8
+ 209 00fc 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 155:Core/Src/main.c ****                 {
+ 210              		.loc 1 155 34 discriminator 1 view .LVU54
+ 211 00fe 032B     		cmp	r3, #3
+ 212 0100 EBD1     		bne	.L13
+ 157:Core/Src/main.c ****                 }
+ 213              		.loc 1 157 21 is_stmt 1 view .LVU55
+ 157:Core/Src/main.c ****                 }
+ 214              		.loc 1 157 28 is_stmt 0 view .LVU56
+ 215 0102 494B     		ldr	r3, .L31+20
+ 216 0104 0122     		movs	r2, #1
+ 217 0106 1A70     		strb	r2, [r3]
+ 218 0108 E7E7     		b	.L13
+ 219              	.L27:
+ 160:Core/Src/main.c ****                 {
+ 220              		.loc 1 160 17 is_stmt 1 view .LVU57
+ 221 010a 474A     		ldr	r2, .L31+20
+ 222 010c 1278     		ldrb	r2, [r2]	@ zero_extendqisi2
+ 223 010e 022A     		cmp	r2, #2
+ 224 0110 09D0     		beq	.L15
+ 225 0112 032A     		cmp	r2, #3
+ 226 0114 0DD0     		beq	.L16
+ 227 0116 012A     		cmp	r2, #1
+ 228 0118 E3D1     		bne	.L14
+ 163:Core/Src/main.c ****                     break;
+ 229              		.loc 1 163 21 view .LVU58
+ 230 011a 4449     		ldr	r1, .L31+24
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccgTQxAt.s 			page 9
+
+
+ 231 011c 8A69     		ldr	r2, [r1, #24]
+ 232 011e 42F48052 		orr	r2, r2, #4096
+ 233 0122 8A61     		str	r2, [r1, #24]
+ 164:Core/Src/main.c ****                 case 2:
+ 234              		.loc 1 164 21 view .LVU59
+ 235 0124 DDE7     		b	.L14
+ 236              	.L15:
+ 166:Core/Src/main.c ****                     break;
+ 237              		.loc 1 166 21 view .LVU60
+ 238 0126 3E49     		ldr	r1, .L31+12
+ 239 0128 8A69     		ldr	r2, [r1, #24]
+ 240 012a 42F08002 		orr	r2, r2, #128
+ 241 012e 8A61     		str	r2, [r1, #24]
+ 167:Core/Src/main.c ****                 case 3:
+ 242              		.loc 1 167 21 view .LVU61
+ 243 0130 D7E7     		b	.L14
+ 244              	.L16:
+ 169:Core/Src/main.c ****                     break;
+ 245              		.loc 1 169 21 view .LVU62
+ 246 0132 3F49     		ldr	r1, .L31+28
+ 247 0134 8A69     		ldr	r2, [r1, #24]
+ 248 0136 42F00402 		orr	r2, r2, #4
+ 249 013a 8A61     		str	r2, [r1, #24]
+ 170:Core/Src/main.c ****                 default:
+ 250              		.loc 1 170 21 view .LVU63
+ 251 013c D1E7     		b	.L14
+ 252              	.L28:
+ 176:Core/Src/main.c ****                 {
+ 253              		.loc 1 176 16 view .LVU64
+ 254 013e 3A4A     		ldr	r2, .L31+20
+ 255 0140 1278     		ldrb	r2, [r2]	@ zero_extendqisi2
+ 256 0142 022A     		cmp	r2, #2
+ 257 0144 0FD0     		beq	.L18
+ 258 0146 032A     		cmp	r2, #3
+ 259 0148 19D0     		beq	.L19
+ 260 014a 012A     		cmp	r2, #1
+ 261 014c CBD1     		bne	.L17
+ 180:Core/Src/main.c ****                     SET_BIT(GPIOC->BSRR, GPIO_BSRR_BS12);
+ 262              		.loc 1 180 21 view .LVU65
+ 263 014e 3449     		ldr	r1, .L31+12
+ 264 0150 8A69     		ldr	r2, [r1, #24]
+ 265 0152 42F08002 		orr	r2, r2, #128
+ 266 0156 8A61     		str	r2, [r1, #24]
+ 181:Core/Src/main.c ****                     
+ 267              		.loc 1 181 21 view .LVU66
+ 268 0158 01F58061 		add	r1, r1, #1024
+ 269 015c 8A69     		ldr	r2, [r1, #24]
+ 270 015e 42F48052 		orr	r2, r2, #4096
+ 271 0162 8A61     		str	r2, [r1, #24]
+ 183:Core/Src/main.c ****                 case 2:
+ 272              		.loc 1 183 21 view .LVU67
+ 273 0164 BFE7     		b	.L17
+ 274              	.L18:
+ 186:Core/Src/main.c ****                     SET_BIT(GPIOC->BSRR, GPIO_BSRR_BS12);
+ 275              		.loc 1 186 21 view .LVU68
+ 276 0166 3249     		ldr	r1, .L31+28
+ 277 0168 8A69     		ldr	r2, [r1, #24]
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccgTQxAt.s 			page 10
+
+
+ 278 016a 42F00402 		orr	r2, r2, #4
+ 279 016e 8A61     		str	r2, [r1, #24]
+ 187:Core/Src/main.c ****                    
+ 280              		.loc 1 187 21 view .LVU69
+ 281 0170 A1F58061 		sub	r1, r1, #1024
+ 282 0174 8A69     		ldr	r2, [r1, #24]
+ 283 0176 42F48052 		orr	r2, r2, #4096
+ 284 017a 8A61     		str	r2, [r1, #24]
+ 189:Core/Src/main.c ****                 case 3:
+ 285              		.loc 1 189 21 view .LVU70
+ 286 017c B3E7     		b	.L17
+ 287              	.L19:
+ 192:Core/Src/main.c ****                     SET_BIT(GPIOB->BSRR, GPIO_BSRR_BS7);
+ 288              		.loc 1 192 21 view .LVU71
+ 289 017e 2C49     		ldr	r1, .L31+28
+ 290 0180 8A69     		ldr	r2, [r1, #24]
+ 291 0182 42F00402 		orr	r2, r2, #4
+ 292 0186 8A61     		str	r2, [r1, #24]
+ 193:Core/Src/main.c ****                    
+ 293              		.loc 1 193 21 view .LVU72
+ 294 0188 A1F50061 		sub	r1, r1, #2048
+ 295 018c 8A69     		ldr	r2, [r1, #24]
+ 296 018e 42F08002 		orr	r2, r2, #128
+ 297 0192 8A61     		str	r2, [r1, #24]
+ 195:Core/Src/main.c ****                 default:
+ 298              		.loc 1 195 21 view .LVU73
+ 299 0194 A7E7     		b	.L17
+ 300              	.L29:
+ 201:Core/Src/main.c ****                 {
+ 301              		.loc 1 201 16 view .LVU74
+ 302 0196 244B     		ldr	r3, .L31+20
+ 303 0198 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 304 019a 012B     		cmp	r3, #1
+ 305 019c 13D0     		beq	.L21
+ 306 019e 022B     		cmp	r3, #2
+ 307 01a0 A3D1     		bne	.L20
+ 209:Core/Src/main.c ****                     SET_BIT(GPIOD->BSRR, GPIO_BSRR_BR2);
+ 308              		.loc 1 209 21 view .LVU75
+ 309 01a2 224A     		ldr	r2, .L31+24
+ 310 01a4 9369     		ldr	r3, [r2, #24]
+ 311 01a6 43F08053 		orr	r3, r3, #268435456
+ 312 01aa 9361     		str	r3, [r2, #24]
+ 210:Core/Src/main.c ****                     SET_BIT(GPIOB->BSRR, GPIO_BSRR_BR7);
+ 313              		.loc 1 210 21 view .LVU76
+ 314 01ac 02F58062 		add	r2, r2, #1024
+ 315 01b0 9369     		ldr	r3, [r2, #24]
+ 316 01b2 43F48023 		orr	r3, r3, #262144
+ 317 01b6 9361     		str	r3, [r2, #24]
+ 211:Core/Src/main.c ****                     break;
+ 318              		.loc 1 211 21 view .LVU77
+ 319 01b8 A2F50062 		sub	r2, r2, #2048
+ 320 01bc 9369     		ldr	r3, [r2, #24]
+ 321 01be 43F40003 		orr	r3, r3, #8388608
+ 322 01c2 9361     		str	r3, [r2, #24]
+ 212:Core/Src/main.c ****                 default:
+ 323              		.loc 1 212 21 view .LVU78
+ 324 01c4 91E7     		b	.L20
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccgTQxAt.s 			page 11
+
+
+ 325              	.L21:
+ 204:Core/Src/main.c ****                     SET_BIT(GPIOD->BSRR, GPIO_BSRR_BS2);
+ 326              		.loc 1 204 21 view .LVU79
+ 327 01c6 194A     		ldr	r2, .L31+24
+ 328 01c8 9369     		ldr	r3, [r2, #24]
+ 329 01ca 43F48053 		orr	r3, r3, #4096
+ 330 01ce 9361     		str	r3, [r2, #24]
+ 205:Core/Src/main.c ****                     SET_BIT(GPIOB->BSRR, GPIO_BSRR_BS7);
+ 331              		.loc 1 205 21 view .LVU80
+ 332 01d0 02F58062 		add	r2, r2, #1024
+ 333 01d4 9369     		ldr	r3, [r2, #24]
+ 334 01d6 43F00403 		orr	r3, r3, #4
+ 335 01da 9361     		str	r3, [r2, #24]
+ 206:Core/Src/main.c ****                     break;
+ 336              		.loc 1 206 21 view .LVU81
+ 337 01dc A2F50062 		sub	r2, r2, #2048
+ 338 01e0 9369     		ldr	r3, [r2, #24]
+ 339 01e2 43F08003 		orr	r3, r3, #128
+ 340 01e6 9361     		str	r3, [r2, #24]
+ 207:Core/Src/main.c ****                 case 2:
+ 341              		.loc 1 207 21 view .LVU82
+ 342 01e8 7FE7     		b	.L20
+ 343              	.L8:
+ 218:Core/Src/main.c ****         }
+ 219:Core/Src/main.c ****     }
+ 220:Core/Src/main.c ****         else
+ 221:Core/Src/main.c ****         {
+ 222:Core/Src/main.c ****             prev_state1 = 0;
+ 344              		.loc 1 222 13 view .LVU83
+ 345              		.loc 1 222 25 is_stmt 0 view .LVU84
+ 346 01ea 0E4B     		ldr	r3, .L31+16
+ 347 01ec 0022     		movs	r2, #0
+ 348 01ee 1A70     		strb	r2, [r3]
+ 349              	.L2:
+  21:Core/Src/main.c ****     {
+ 350              		.loc 1 21 5 is_stmt 1 view .LVU85
+ 121:Core/Src/main.c ****         {
+ 351              		.loc 1 121 9 view .LVU86
+ 121:Core/Src/main.c ****         {
+ 352              		.loc 1 121 13 is_stmt 0 view .LVU87
+ 353 01f0 084B     		ldr	r3, .L31
+ 354 01f2 D3F81034 		ldr	r3, [r3, #1040]
+ 121:Core/Src/main.c ****         {
+ 355              		.loc 1 121 12 view .LVU88
+ 356 01f6 13F4007F 		tst	r3, #512
+ 357 01fa 3FF406AF 		beq	.L30
+ 139:Core/Src/main.c ****         }
+ 358              		.loc 1 139 13 is_stmt 1 view .LVU89
+ 139:Core/Src/main.c ****         }
+ 359              		.loc 1 139 25 is_stmt 0 view .LVU90
+ 360 01fe 064B     		ldr	r3, .L31+4
+ 361 0200 0022     		movs	r2, #0
+ 362 0202 1A70     		strb	r2, [r3]
+ 363              	.L6:
+ 142:Core/Src/main.c ****         {
+ 364              		.loc 1 142 9 is_stmt 1 view .LVU91
+ 142:Core/Src/main.c ****         {
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccgTQxAt.s 			page 12
+
+
+ 365              		.loc 1 142 13 is_stmt 0 view .LVU92
+ 366 0204 064B     		ldr	r3, .L31+12
+ 367 0206 1B69     		ldr	r3, [r3, #16]
+ 142:Core/Src/main.c ****         {
+ 368              		.loc 1 142 12 view .LVU93
+ 369 0208 13F4807F 		tst	r3, #256
+ 370 020c EDD1     		bne	.L8
+ 144:Core/Src/main.c ****             if (READ_BIT(GPIOB->IDR, GPIO_IDR_IDR_8) == 0 && prev_state1 == 0)
+ 371              		.loc 1 144 13 is_stmt 1 view .LVU94
+ 372              	.LBB4:
+ 144:Core/Src/main.c ****             if (READ_BIT(GPIOB->IDR, GPIO_IDR_IDR_8) == 0 && prev_state1 == 0)
+ 373              		.loc 1 144 18 view .LVU95
+ 144:Core/Src/main.c ****             if (READ_BIT(GPIOB->IDR, GPIO_IDR_IDR_8) == 0 && prev_state1 == 0)
+ 374              		.loc 1 144 31 is_stmt 0 view .LVU96
+ 375 020e 0023     		movs	r3, #0
+ 376 0210 0193     		str	r3, [sp, #4]
+ 144:Core/Src/main.c ****             if (READ_BIT(GPIOB->IDR, GPIO_IDR_IDR_8) == 0 && prev_state1 == 0)
+ 377              		.loc 1 144 13 view .LVU97
+ 378 0212 35E7     		b	.L9
+ 379              	.L32:
+ 380              		.align	2
+ 381              	.L31:
+ 382 0214 00000240 		.word	1073872896
+ 383 0218 00000000 		.word	prev_state2
+ 384 021c 00000000 		.word	counter
+ 385 0220 00040240 		.word	1073873920
+ 386 0224 00000000 		.word	prev_state1
+ 387 0228 00000000 		.word	button
+ 388 022c 00080240 		.word	1073874944
+ 389 0230 000C0240 		.word	1073875968
+ 390              	.LBE4:
+ 391              		.cfi_endproc
+ 392              	.LFE130:
+ 394              		.global	prev_state2
+ 395              		.section	.bss.prev_state2,"aw",%nobits
+ 398              	prev_state2:
+ 399 0000 00       		.space	1
+ 400              		.global	prev_state1
+ 401              		.section	.bss.prev_state1,"aw",%nobits
+ 404              	prev_state1:
+ 405 0000 00       		.space	1
+ 406              		.global	button
+ 407              		.section	.bss.button,"aw",%nobits
+ 410              	button:
+ 411 0000 00       		.space	1
+ 412              		.global	counter
+ 413              		.section	.data.counter,"aw"
+ 416              	counter:
+ 417 0000 01       		.byte	1
+ 418              		.text
+ 419              	.Letext0:
+ 420              		.file 2 "C:/Bools/xpack-arm-none-eabi-gcc-13.2.1-1.1/arm-none-eabi/include/machine/_default_types.
+ 421              		.file 3 "C:/Bools/xpack-arm-none-eabi-gcc-13.2.1-1.1/arm-none-eabi/include/sys/_stdint.h"
+ 422              		.file 4 "CMSIS/Devices/STM32F4xx/Inc/STM32F411xE/stm32f411xe.h"
+ 423              		.file 5 "Core/Inc/init.h"
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccgTQxAt.s 			page 13
 
 
 DEFINED SYMBOLS
                             *ABS*:00000000 main.c
-C:\Users\Life\AppData\Local\Temp\ccu6SH5G.s:21     .text.main:00000000 $t
-C:\Users\Life\AppData\Local\Temp\ccu6SH5G.s:27     .text.main:00000000 main
+C:\Users\Life\AppData\Local\Temp\ccgTQxAt.s:21     .text.main:00000000 $t
+C:\Users\Life\AppData\Local\Temp\ccgTQxAt.s:27     .text.main:00000000 main
+C:\Users\Life\AppData\Local\Temp\ccgTQxAt.s:382    .text.main:00000214 $d
+C:\Users\Life\AppData\Local\Temp\ccgTQxAt.s:398    .bss.prev_state2:00000000 prev_state2
+C:\Users\Life\AppData\Local\Temp\ccgTQxAt.s:416    .data.counter:00000000 counter
+C:\Users\Life\AppData\Local\Temp\ccgTQxAt.s:404    .bss.prev_state1:00000000 prev_state1
+C:\Users\Life\AppData\Local\Temp\ccgTQxAt.s:410    .bss.button:00000000 button
+C:\Users\Life\AppData\Local\Temp\ccgTQxAt.s:399    .bss.prev_state2:00000000 $d
+C:\Users\Life\AppData\Local\Temp\ccgTQxAt.s:405    .bss.prev_state1:00000000 $d
+C:\Users\Life\AppData\Local\Temp\ccgTQxAt.s:411    .bss.button:00000000 $d
 
-NO UNDEFINED SYMBOLS
+UNDEFINED SYMBOLS
+GPIO_Ini
