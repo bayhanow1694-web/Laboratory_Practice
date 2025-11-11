@@ -15,4 +15,5 @@
 
 
 void GPIO_Ini(void);
-// void RCC_Init(void);
+void dop_test(uint8_t *counter1, uint8_t *button1, uint8_t *prev_state3, uint32_t *fortime2);
+//void main_task(uint8_t *counter, uint8_t *button, uint8_t *prev_state1, uint8_t *prev_state2);
