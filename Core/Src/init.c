@@ -4,7 +4,7 @@ void GPIO_Ini(void)
 {
 
     RCC_GPIO_en |= RCC_GPIOB_en + RCC_GPIOD_en + RCC_GPIOC_en; // включаем тактирование на C B D портах
-    
+
 
     *(uint32_t *)(0x40020800UL + 0x00UL) |= 0x1000000UL; // C moder1 12 cvetadiod output
     *(uint32_t *)(0x40020C00UL + 0x00UL) |= 0x10UL;      // D moder2 01 cvetadiod output
@@ -16,7 +16,7 @@ void GPIO_Ini(void)
     *(uint32_t *)(0x40020800UL + 0x08UL) |= 0x1000000UL; //С порт на средную скороть
     *(uint32_t *)(0x40020C00UL + 0x08UL) |= 0x10UL; //D порт на средную скороть
 
-    // pull_up/down rezistors 
+    // pull_up/down rezistors, устанавливаем нули 
 
     *(uint32_t *)(0x40020400UL + 0x0CUL) |= 0x00UL;
     *(uint32_t *)(0x40020800UL + 0x0CUL) |= 0x00UL;
