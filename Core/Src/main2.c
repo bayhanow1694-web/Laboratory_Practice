@@ -1,4 +1,4 @@
-#include "init.h"
+#include "init2.h"
 #include <stdint.h>
 
 uint8_t counter = 1;
