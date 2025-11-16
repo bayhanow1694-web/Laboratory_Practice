@@ -1,12 +1,15 @@
-#include "init2.h"
+#include "init.h"
 
 void GPIO_Ini(void)
 {
     // инициализация С порта через прямого обрашения к памяти
     *(uint32_t*)(0x40023800UL+0x30UL)|= 0x04UL;// включаем тактирование на  С  порте 
     *(uint32_t *)(0x40020800UL + 0x00UL) |= 0x1000000UL; // C moder1 12 cvetadiod output
-    *(uint32_t *)(0x40020800UL + 0x08UL) |= 0x1000000UL; //С7 порт на средную скороть
-    *(uint32_t *)(0x40020800UL + 0x0CUL) |= 0x00UL; //С7 порт
+    SET_BIT(GPIOC->MODER, GPIO_MODER_MODE10_0 | GPIO_MODER_MODE11_0 | GPIO_MODER_MODE3_0);
+    *(uint32_t *)(0x40020800UL + 0x08UL) |= 0x1000000UL; //С12 порт на средную скороть
+    SET_BIT(GPIOC->OSPEEDR, GPIO_OSPEEDER_OSPEEDR10_0 | GPIO_OSPEEDER_OSPEEDR11_0 | GPIO_OSPEEDER_OSPEEDR3_0);
+    *(uint32_t *)(0x40020800UL + 0x0CUL) |= 0x00UL; //С12 порт
+    SET_BIT(GPIOC->PUPDR, GPIO_PUPDR_PUPD10_0 | GPIO_PUPDR_PUPD11_0 | GPIO_PUPDR_PUPD3_0);
 
     // инициализация В порта через макросы
     SET_bit(RCC_GPIO_en, RCC_GPIOB_en); // включаем тактирование на  B  порте
@@ -20,10 +23,6 @@ void GPIO_Ini(void)
    SET_BIT(GPIOB->OSPEEDR, GPIO_OSPEEDER_OSPEEDR2_0); //D2 порт на средную скороть
    SET_BIT(GPIOB->PUPDR, GPIO_PUPDR_PUPD2_0); //D2 порт 0
 
-    SET_BIT(RCC->AHB1ENR, RCC_AHB1ENR_GPIOAEN);
-
-    SET_BIT(GPIOA->MODER, GPIO_MODER_MODE5_0);
-    SET_BIT(GPIOA->BSRR, GPIO_BSRR_BR5);
 
     //настройка PC9 в режиме алтернативной функции
     SET_BIT(GPIOC->MODER, GPIO_MODER_MODER9_1);
@@ -71,13 +70,24 @@ void RCC_Init(void){
 
 void IRO_INInt(void){
     SET_BIT(RCC->APB2ENR, RCC_APB2ENR_SYSCFGEN);
-    MODIFY_REG(SYSCFG->EXTICR[3], SYSCFG_EXTICR4_EXTI13_Msk, SYSCFG_EXTICR4_EXTI13_PC);
+    MODIFY_REG(SYSCFG->EXTICR[2], SYSCFG_EXTICR3_EXTI8_Msk | SYSCFG_EXTICR3_EXTI9_Msk, SYSCFG_EXTICR3_EXTI8_PB | SYSCFG_EXTICR3_EXTI9_PB);
 
-    SET_BIT(EXIT->IMR, EXTI_IMR_IM13);
-    SET_BIT(EXIT->RTCR, EXTI_RTSR_TR13);
-    CLEAR_BIT(EXIT->FTCR, EXTI_FTSR_TR13);
+    SET_BIT(EXTI->IMR, EXTI_IMR_IM8 | EXTI_IMR_IM9); 
+    SET_BIT(EXTI->RTSR, EXTI_RTSR_TR8 | EXTI_RTSR_TR9); // прерывание по фронту
+    SET_BIT(EXTI->FTSR, EXTI_FTSR_TR8 | EXTI_FTSR_TR9); // прерывание по спаду
 
-    NVIC_SetPriority(EXTI15_10_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 0, 0));
-    NVIC_EnableIRQ(EXTI15_10_IRQn);
-
+   
+    NVIC_SetPriority(EXTI9_5_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 0, 0)); //Установка 0 приоритета прерывания для вектора EXTI9_5
+    NVIC_EnableIRQ(EXTI9_5_IRQn);
 }
+
+void SysTick_Init(void)
+{ 
+    CLEAR_BIT(SysTick->CTRL, SysTick_CTRL_ENABLE_Msk); //На всякий случай, предварительно, выключим счётчик 
+    SET_BIT(SysTick->CTRL, SysTick_CTRL_TICKINT_Msk); //Разрешаем прерывание по системному таймеру 
+    SET_BIT(SysTick->CTRL, SysTick_CTRL_CLKSOURCE_Msk); //Источник тактирования будет идти из AHB без деления 
+    MODIFY_REG(SysTick->LOAD, SysTick_LOAD_RELOAD_Msk, 95999 << SysTick_LOAD_RELOAD_Pos); //Значение с которого начинается счёт, эквивалентное 1 кГц 
+    MODIFY_REG(SysTick->VAL, SysTick_VAL_CURRENT_Msk, 95999 << SysTick_VAL_CURRENT_Pos); //Очистка поля 
+    SET_BIT(SysTick->CTRL, SysTick_CTRL_ENABLE_Msk); //Включим счётчик 
+}
+    
