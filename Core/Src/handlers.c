@@ -18,13 +18,13 @@ void EXTI9_5_IRQHandler(void){
         else { 
             // Кнопка отпущена
             uint32_t hold = now - btn8_press_time;
-
+            if ((now - btn8_press_time) >= 5) {   
             if (hold >= 2000) {
                 btn8_hold = 1;
             } else if (hold >= 2) {
                 btn8_pressed = 1;
             }
-
+        }
             // сброс
             btn8_press_time = 0;
         }
@@ -39,7 +39,7 @@ void EXTI9_5_IRQHandler(void){
         }
         else {
             // Кнопка отпущено
-            if ((now - btn9_press_time) >= 2) {
+            if ((now - btn9_press_time) >= 5) {
                 btn9_pressed = 1;
             }
 
