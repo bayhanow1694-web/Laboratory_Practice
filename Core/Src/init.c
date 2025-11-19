@@ -2,32 +2,10 @@
 
 void GPIO_Ini(void)
 {
-    // инициализация С порта через прямого обрашения к памяти
-    *(uint32_t*)(0x40023800UL+0x30UL)|= 0x04UL;// включаем тактирование на  С  порте 
-    *(uint32_t *)(0x40020800UL + 0x00UL) |= 0x1000000UL; // C moder1 12 cvetadiod output
-    SET_BIT(GPIOC->MODER, GPIO_MODER_MODE10_0 | GPIO_MODER_MODE11_0 | GPIO_MODER_MODE3_0);
-    *(uint32_t *)(0x40020800UL + 0x08UL) |= 0x1000000UL; //С12 порт на средную скороть
-    SET_BIT(GPIOC->OSPEEDR, GPIO_OSPEEDER_OSPEEDR10_0 | GPIO_OSPEEDER_OSPEEDR11_0 | GPIO_OSPEEDER_OSPEEDR3_0);
-    *(uint32_t *)(0x40020800UL + 0x0CUL) |= 0x00UL; //С12 порт
-    SET_BIT(GPIOC->PUPDR, GPIO_PUPDR_PUPD10_0 | GPIO_PUPDR_PUPD11_0 | GPIO_PUPDR_PUPD3_0);
-
     // инициализация В порта через макросы
-    SET_bit(RCC_GPIO_en, RCC_GPIOB_en); // включаем тактирование на  B  порте
-    SET_bit(GPIOB_moder, GPIOB_moder_PIN7);    // B moder7 01 cvetadiod output 
-    SET_bit(GPIOB_ospeed, GPIOB_ospeed_PIN7);  //B7порт на средную скороть
-    SET_bit(GPIOB_pull_up_down, GPIOB_pull_up_down_PIN7); //B7 порт 0 
-
-    // инициализация D порта через CMSIS
-   SET_BIT(RCC->AHB1ENR, RCC_AHB1ENR_GPIODEN); // включаем тактирование на  D  порте через CMSIS
-   SET_BIT(GPIOD->MODER, GPIO_MODER_MODE2_0);  // D moder2 01 cvetadiod output
-   SET_BIT(GPIOB->OSPEEDR, GPIO_OSPEEDER_OSPEEDR2_0); //D2 порт на средную скороть
-   SET_BIT(GPIOB->PUPDR, GPIO_PUPDR_PUPD2_0); //D2 порт 0
-
-
-    //настройка PC9 в режиме алтернативной функции
-    SET_BIT(GPIOC->MODER, GPIO_MODER_MODER9_1);
-    SET_BIT(GPIOC->OSPEEDR, GPIO_OSPEEDR_OSPEED9_Msk);
-    MODIFY_REG(GPIOC->AFR[1], GPIO_AFRH_AFSEL9_Msk, 0x0);
+    SET_BIT(RCC->AHB1ENR, RCC_AHB1ENR_GPIOBEN); // включаем тактирование на  B  порте
+     GPIOB->MODER &= ~(GPIO_MODER_MODER8 | GPIO_MODER_MODER9);
+     SET_BIT(RCC->AHB1ENR, RCC_AHB1ENR_GPIOCEN);
 }
 
 void RCC_Init(void){
@@ -60,8 +38,6 @@ void RCC_Init(void){
     MODIFY_REG(RCC->CFGR, RCC_CFGR_HPRE, RCC_CFGR_HPRE_DIV1); //предделитель ABH, без делителя
     MODIFY_REG(RCC->CFGR, RCC_CFGR_PPRE1, RCC_CFGR_PPRE1_DIV2); //предделитель APB1, на 2
     MODIFY_REG(RCC->CFGR, RCC_CFGR_PPRE2, RCC_CFGR_PPRE2_DIV1); //предделитель APB2, без делителя
-    MODIFY_REG(RCC->CFGR, RCC_CFGR_MCO2PRE, RCC_CFGR_MCO2PRE_2 | RCC_CFGR_MCO2PRE_0); //предделитель на выходе MCO2(PC9)=3
-    CLEAR_BIT(RCC->CFGR, RCC_CFGR_MCO2); //настройка на выход
     MODIFY_REG(FLASH->ACR, FLASH_ACR_LATENCY, FLASH_ACR_LATENCY_3WS);
 
     SET_BIT(RCC->CR, RCC_CR_PLLON);//Запуск PLL
@@ -70,24 +46,78 @@ void RCC_Init(void){
 
 void IRO_INInt(void){
     SET_BIT(RCC->APB2ENR, RCC_APB2ENR_SYSCFGEN);
-    MODIFY_REG(SYSCFG->EXTICR[2], SYSCFG_EXTICR3_EXTI8_Msk | SYSCFG_EXTICR3_EXTI9_Msk, SYSCFG_EXTICR3_EXTI8_PB | SYSCFG_EXTICR3_EXTI9_PB);
+    MODIFY_REG(SYSCFG->EXTICR[2], SYSCFG_EXTICR3_EXTI9_Msk, SYSCFG_EXTICR3_EXTI9_PB);
 
-    SET_BIT(EXTI->IMR, EXTI_IMR_IM8 | EXTI_IMR_IM9); 
-    SET_BIT(EXTI->RTSR, EXTI_RTSR_TR8 | EXTI_RTSR_TR9); // прерывание по фронту
-    SET_BIT(EXTI->FTSR, EXTI_FTSR_TR8 | EXTI_FTSR_TR9); // прерывание по спаду
+    SET_BIT(EXTI->IMR, EXTI_IMR_IM9); 
+    SET_BIT(EXTI->RTSR,  EXTI_RTSR_TR9); // прерывание по фронту
+    SET_BIT(EXTI->FTSR, EXTI_FTSR_TR9); // прерывание по спаду
 
-   
     NVIC_SetPriority(EXTI9_5_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 0, 0)); //Установка 0 приоритета прерывания для вектора EXTI9_5
     NVIC_EnableIRQ(EXTI9_5_IRQn);
 }
 
-void SysTick_Init(void)
-{ 
-    CLEAR_BIT(SysTick->CTRL, SysTick_CTRL_ENABLE_Msk); //На всякий случай, предварительно, выключим счётчик 
-    SET_BIT(SysTick->CTRL, SysTick_CTRL_TICKINT_Msk); //Разрешаем прерывание по системному таймеру 
-    SET_BIT(SysTick->CTRL, SysTick_CTRL_CLKSOURCE_Msk); //Источник тактирования будет идти из AHB без деления 
-    MODIFY_REG(SysTick->LOAD, SysTick_LOAD_RELOAD_Msk, 95999 << SysTick_LOAD_RELOAD_Pos); //Значение с которого начинается счёт, эквивалентное 1 кГц 
-    MODIFY_REG(SysTick->VAL, SysTick_VAL_CURRENT_Msk, 95999 << SysTick_VAL_CURRENT_Pos); //Очистка поля 
-    SET_BIT(SysTick->CTRL, SysTick_CTRL_ENABLE_Msk); //Включим счётчик 
+
+void TIM10_Init(void){
+   SET_BIT(RCC->APB2ENR, RCC_APB2ENR_TIM10EN); 
+   
+   //при 96 МГц тактовой  96 000 000 / (95+1) / (999+1) = 1000 Гц
+    MODIFY_REG(TIM10->PSC, TIM_PSC_PSC_Msk, 95UL);      // PSC = 2
+    MODIFY_REG(TIM10->ARR, TIM_ARR_ARR_Msk, 999UL);    // ARR = 799 → 20 кГц
+
+    //Генерируем Update-событие (чтобы сразу загрузились PSC и ARR)
+    SET_BIT(TIM10->EGR, TIM_EGR_UG);
+
+     //Генерируем Update-событие (чтобы сразу загрузились PSC и ARR)
+    SET_BIT(TIM10->DIER, TIM_DIER_UIE);
+
+      // Включаем прерывание в NVIC
+    NVIC_EnableIRQ(TIM1_UP_TIM10_IRQn);
+
+    //Запускаем таймер
+    SET_BIT(TIM10->CR1, TIM_CR1_CEN);
+
+}
+
+
+void TIM2_PWM_Init(void)
+{
+    //Тактирование порта A и TIM2 
+    SET_BIT(RCC->AHB1ENR, RCC_AHB1ENR_GPIOAEN);
+    SET_BIT(RCC->APB1ENR, RCC_APB1ENR_TIM2EN);
+
+    // PA0 и PA1  Alternate Function mode (10)
+    MODIFY_REG(GPIOA->MODER,GPIO_MODER_MODE0 | GPIO_MODER_MODE1,GPIO_MODER_MODE0_1 | GPIO_MODER_MODE1_1);
+
+    //Назначаем AF1 (TIM2) для PA0 и PA1
+    MODIFY_REG(GPIOA->AFR[0], GPIO_AFRL_AFSEL0 | GPIO_AFRL_AFSEL1, 1UL << GPIO_AFRL_AFSEL0_Pos |   1UL << GPIO_AFRL_AFSEL1_Pos);   
+
+    //Останавливаем таймер перед настройкой 
+    CLEAR_BIT(TIM2->CR1, TIM_CR1_CEN);
+
+    //при 48 МГц тактовой  48 000 000 / (2+1) / (799+1) = 20 000 Гц
+    MODIFY_REG(TIM2->PSC, TIM_PSC_PSC_Msk, 2UL);      // PSC = 2
+    MODIFY_REG(TIM2->ARR, TIM_ARR_ARR_Msk, 799UL);    // ARR = 799 → 20 кГц
+
+    //Включаем preload для ARR
+    SET_BIT(TIM2->CR1, TIM_CR1_ARPE);
+
+    // Канал 1  PWM mode 1 (110) + preload
+    MODIFY_REG(TIM2->CCMR1,TIM_CCMR1_OC1M_Msk | TIM_CCMR1_OC1PE_Msk, (6UL << TIM_CCMR1_OC1M_Pos) | TIM_CCMR1_OC1PE);  
+
+    //Канал 2  PWM mode 1 (110) + preload 
+    MODIFY_REG(TIM2->CCMR1,TIM_CCMR1_OC2M_Msk | TIM_CCMR1_OC2PE_Msk,(6UL << TIM_CCMR1_OC2M_Pos) | TIM_CCMR1_OC2PE);   // 6 = 110b
+
+    // Включаем выходы каналов
+    SET_BIT(TIM2->CCER, TIM_CCER_CC1E | TIM_CCER_CC2E);
+
+    //Начальные значения скважности = 0%
+    MODIFY_REG(TIM2->CCR1, TIM_CCR1_CCR1_Msk, 0UL);
+    MODIFY_REG(TIM2->CCR2, TIM_CCR2_CCR2_Msk, 0UL);
+
+    //Генерируем Update-событие (чтобы сразу загрузились PSC и ARR)
+    SET_BIT(TIM2->EGR, TIM_EGR_UG);
+
+    //Запускаем таймер
+    SET_BIT(TIM2->CR1, TIM_CR1_CEN);
 }
     
