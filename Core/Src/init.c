@@ -1,12 +1,5 @@
 #include "init.h"
 
-void GPIO_Ini(void)
-{
-    // инициализация В порта через макросы
-    SET_BIT(RCC->AHB1ENR, RCC_AHB1ENR_GPIOBEN); // включаем тактирование на  B  порте
-     GPIOB->MODER &= ~(GPIO_MODER_MODER8 | GPIO_MODER_MODER9);
-     SET_BIT(RCC->AHB1ENR, RCC_AHB1ENR_GPIOCEN);
-}
 
  void RCC_Init(void){
     //предварительная очистка регистров RCC устанавливается внутренный высокочастотный генератор
@@ -44,19 +37,6 @@ void GPIO_Ini(void)
     while(READ_BIT(RCC->CR, RCC_CR_PLLRDY) == RESET);
 } 
 
-void IRO_INInt(void){
-    SET_BIT(RCC->APB2ENR, RCC_APB2ENR_SYSCFGEN);
-    MODIFY_REG(SYSCFG->EXTICR[2], SYSCFG_EXTICR3_EXTI8_Msk |
-         SYSCFG_EXTICR3_EXTI9_Msk, SYSCFG_EXTICR3_EXTI8_PB | SYSCFG_EXTICR3_EXTI9_PB);
-
-    SET_BIT(EXTI->IMR, EXTI_IMR_IM8 | EXTI_IMR_IM9); 
-    SET_BIT(EXTI->RTSR, EXTI_RTSR_TR8 | EXTI_RTSR_TR9); // прерывание по фронту
-    SET_BIT(EXTI->FTSR, EXTI_FTSR_TR8 | EXTI_FTSR_TR9); // прерывание по спаду
-
-    NVIC_SetPriority(EXTI9_5_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 0, 0)); //Установка 0 приоритета прерывания для вектора EXTI9_5
-    NVIC_EnableIRQ(EXTI9_5_IRQn);
-}
-
 
 void TIM10_Init(void){
    SET_BIT(RCC->APB2ENR, RCC_APB2ENR_TIM10EN); 
@@ -77,92 +57,6 @@ void TIM10_Init(void){
     //Запускаем таймер
     SET_BIT(TIM10->CR1, TIM_CR1_CEN);
 
-}
-
-
-void TIM2_PWM_Init(void)
-{
-    //Тактирование порта A и TIM2 
-    SET_BIT(RCC->AHB1ENR, RCC_AHB1ENR_GPIOAEN);
-    SET_BIT(RCC->APB1ENR, RCC_APB1ENR_TIM2EN);
-
-    // PA0 и PA1  Alternate Function mode (10)
-    MODIFY_REG(GPIOA->MODER,GPIO_MODER_MODE0 | GPIO_MODER_MODE1,GPIO_MODER_MODE0_1 | GPIO_MODER_MODE1_1);
-
-    //Назначаем AF1 (TIM2) для PA0 и PA1
-    MODIFY_REG(GPIOA->AFR[0], GPIO_AFRL_AFSEL0 | GPIO_AFRL_AFSEL1, 1UL << GPIO_AFRL_AFSEL0_Pos |   1UL << GPIO_AFRL_AFSEL1_Pos);   
-
-    //Останавливаем таймер перед настройкой 
-    CLEAR_BIT(TIM2->CR1, TIM_CR1_CEN);
-
-    //при 48 МГц тактовой  48 000 000 / (2+1) / (799+1) = 20 000 Гц
-    MODIFY_REG(TIM2->PSC, TIM_PSC_PSC_Msk, 2UL);      // PSC = 2
-    MODIFY_REG(TIM2->ARR, TIM_ARR_ARR_Msk, 799UL);    // ARR = 799 → 20 кГц
-
-    //Включаем preload для ARR
-    SET_BIT(TIM2->CR1, TIM_CR1_ARPE);
-
-    // Канал 1  PWM mode 1 (110) + preload
-    MODIFY_REG(TIM2->CCMR1,TIM_CCMR1_OC1M_Msk | TIM_CCMR1_OC1PE_Msk, (6UL << TIM_CCMR1_OC1M_Pos) | TIM_CCMR1_OC1PE);  
-
-    //Канал 2  PWM mode 1 (110) + preload 
-    MODIFY_REG(TIM2->CCMR1,TIM_CCMR1_OC2M_Msk | TIM_CCMR1_OC2PE_Msk,(6UL << TIM_CCMR1_OC2M_Pos) | TIM_CCMR1_OC2PE);   // 6 = 110b
-
-    // Включаем выходы каналов
-    SET_BIT(TIM2->CCER, TIM_CCER_CC1E | TIM_CCER_CC2E);
-
-    //Начальные значения скважности = 0%
-    MODIFY_REG(TIM2->CCR1, TIM_CCR1_CCR1_Msk, 0UL);
-    MODIFY_REG(TIM2->CCR2, TIM_CCR2_CCR2_Msk, 0UL);
-
-    //Генерируем Update-событие (чтобы сразу загрузились PSC и ARR)
-    SET_BIT(TIM2->EGR, TIM_EGR_UG);
-
-    //Запускаем таймер
-    SET_BIT(TIM2->CR1, TIM_CR1_CEN);
-}
-
-void TIM3_PWM_Init(void)
-{
-    //Тактирование порта A и TIM3
-    SET_BIT(RCC->APB1ENR, RCC_APB1ENR_TIM3EN);
-    SET_BIT(RCC->AHB1ENR, RCC_AHB1ENR_GPIOBEN);
-
- 
-    // PB4 и PB5 в Alternate Function mode
-    MODIFY_REG(GPIOB->MODER, GPIO_MODER_MODE4 | GPIO_MODER_MODE5, GPIO_MODER_MODE4_1 | GPIO_MODER_MODE5_1);
-   
-      // Назначаем AF2 (TIM3) для PB4 и PB5
-    MODIFY_REG(GPIOB->AFR[0], GPIO_AFRL_AFSEL4 | GPIO_AFRL_AFSEL5, 2UL << GPIO_AFRL_AFSEL4_Pos | 2UL << GPIO_AFRL_AFSEL5_Pos);
-
-    //Останавливаем таймер перед настройкой 
-    CLEAR_BIT(TIM3->CR1, TIM_CR1_CEN);
-
-    //при 48 МГц тактовой  48 000 000 / (2+1) / (799+1) = 20 000 Гц
-    MODIFY_REG(TIM3->PSC, TIM_PSC_PSC_Msk, 2UL);      // PSC = 2
-    MODIFY_REG(TIM3->ARR, TIM_ARR_ARR_Msk, 799UL);    // ARR = 799 → 20 кГц
-
-    //Включаем preload для ARR
-    SET_BIT(TIM3->CR1, TIM_CR1_ARPE);
-
-    // Канал 1  PWM mode 1 (110) + preload
-    MODIFY_REG(TIM3->CCMR1,TIM_CCMR1_OC1M_Msk | TIM_CCMR1_OC1PE_Msk, (6UL << TIM_CCMR1_OC1M_Pos) | TIM_CCMR1_OC1PE);  
-
-    //Канал 2  PWM mode 1 (110) + preload 
-    MODIFY_REG(TIM3->CCMR1,TIM_CCMR1_OC2M_Msk | TIM_CCMR1_OC2PE_Msk,(6UL << TIM_CCMR1_OC2M_Pos) | TIM_CCMR1_OC2PE);   // 6 = 110b
-
-    // Включаем выходы каналов
-    SET_BIT(TIM3->CCER, TIM_CCER_CC1E | TIM_CCER_CC2E);
-
-    //Начальные значения скважности = 0%
-    MODIFY_REG(TIM3->CCR1, TIM_CCR1_CCR1_Msk, 0UL);
-    MODIFY_REG(TIM3->CCR2, TIM_CCR2_CCR2_Msk, 0UL);
-
-    //Генерируем Update-событие (чтобы сразу загрузились PSC и ARR)
-    SET_BIT(TIM3->EGR, TIM_EGR_UG);
-
-    //Запускаем таймер
-    SET_BIT(TIM3->CR1, TIM_CR1_CEN);
 }
     
 void TIM1_PWM_Init(void)
@@ -220,4 +114,20 @@ void TIM1_PWM_Init(void)
     //Запускаем таймер
     SET_BIT(TIM1->CR1, TIM_CR1_CEN);
 }
+
+void UART2_Init(void) {
+    RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
+    RCC->APB1ENR |= RCC_APB1ENR_USART2EN;
     
+    GPIOA->MODER &= ~(3 << 4);
+    GPIOA->MODER |= (2 << 4);
+    GPIOA->AFR[0] &= ~(0xF << 8);
+    GPIOA->AFR[0] |= (7 << 8);
+    
+    // Для 9600 бод при 48 МГц APB1
+    USART2->BRR = 5000;  // 48000000 / 9600 = 5000
+    
+    USART2->CR1 = USART_CR1_TE | USART_CR1_UE;
+    
+    for(volatile int i = 0; i < 10000; i++);
+}

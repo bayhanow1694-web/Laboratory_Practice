@@ -138,6 +138,7 @@ Core/Src/main.c \
 Core/Src/init.c \
 Core/Src/handlers.c \
 Core/Src/task.c \
+Core/Src/I2C.c \
 
 # ASM sources
 ASM_SOURCES =  \
