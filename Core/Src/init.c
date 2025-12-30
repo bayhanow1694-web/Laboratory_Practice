@@ -124,10 +124,49 @@ void UART2_Init(void) {
     GPIOA->AFR[0] &= ~(0xF << 8);
     GPIOA->AFR[0] |= (7 << 8);
     
-    // Для 9600 бод при 48 МГц APB1
-    USART2->BRR = 5000;  // 48000000 / 9600 = 5000
+   
+      USART2->BRR = 417;  // 48000000 / 115200 = 416.67
     
     USART2->CR1 = USART_CR1_TE | USART_CR1_UE;
-    
-    for(volatile int i = 0; i < 10000; i++);
+}
+
+// Режим энкодера
+void TIM3_Encoder_Init(void)
+{
+    //Тактирование порта A и TIM3
+    SET_BIT(RCC->APB1ENR, RCC_APB1ENR_TIM3EN);
+    SET_BIT(RCC->AHB1ENR, RCC_AHB1ENR_GPIOBEN);
+
+ 
+    // PB4 и PB5 в Alternate Function mode
+    MODIFY_REG(GPIOB->MODER, GPIO_MODER_MODE4 | GPIO_MODER_MODE5, GPIO_MODER_MODE4_1 | GPIO_MODER_MODE5_1);
+   
+      // Назначаем AF2 (TIM3) для PB4 и PB5
+    MODIFY_REG(GPIOB->AFR[0], GPIO_AFRL_AFSEL4 | GPIO_AFRL_AFSEL5, 2UL << GPIO_AFRL_AFSEL4_Pos | 2UL << GPIO_AFRL_AFSEL5_Pos);
+
+    GPIOB->PUPDR |= (GPIO_PUPDR_PUPD4_0); // Включить Pull-up для PB4
+    GPIOB->PUPDR |= (GPIO_PUPDR_PUPD5_0); // Включить Pull-up для PB5
+
+     // сбросить slave mode
+    TIM3->SMCR &= ~TIM_SMCR_SMS;
+    TIM3->SMCR |=3; //SMS=011 Encoder mode (по обоим каналам)
+
+    // Настройка захвата каналов как вход
+    TIM3->CCMR1 &= ~(TIM_CCMR1_CC1S | TIM_CCMR1_CC2S);
+    TIM3->CCMR1 |= (1<<TIM_CCMR1_CC1S_Pos) | (1<<TIM_CCMR1_CC2S_Pos); // 01 na vhod
+
+    // Фильтрация и полярность
+    TIM3->CCMR1 |= (0b0011<<TIM_CCMR1_IC1F_Pos); //Filtr dlya podavleniya drebezga
+    TIM3->CCMR1 |= (0b0011<<TIM_CCMR1_IC2F_Pos);
+
+    TIM3->CCER &= ~(TIM_CCER_CC1P | TIM_CCER_CC2P); // polyarnost po umolchaniyu (na front signala)
+
+    // Autoperegruzka
+    TIM3->ARR = 0xFFFF; // Max 16-bit
+
+    // Reser schetchik
+    TIM3->CNT = 0;
+
+    TIM3->CR1 |= TIM_CR1_CEN; // Включить таймер
+
 }

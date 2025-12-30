@@ -1,0 +1,514 @@
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccsnIVaW.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"MCU6050.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.file 1 "Core/Src/MCU6050.c"
+  20              		.section	.text.MPU6050_Init,"ax",%progbits
+  21              		.align	1
+  22              		.global	MPU6050_Init
+  23              		.syntax unified
+  24              		.thumb
+  25              		.thumb_func
+  27              	MPU6050_Init:
+  28              	.LFB133:
+   1:Core/Src/MCU6050.c **** #include "MCU6050.h"
+   2:Core/Src/MCU6050.c **** #include "I2C.h"
+   3:Core/Src/MCU6050.c **** #include "task.h"
+   4:Core/Src/MCU6050.c **** #include "handlers.h"
+   5:Core/Src/MCU6050.c **** 
+   6:Core/Src/MCU6050.c **** #include <stdio.h> 
+   7:Core/Src/MCU6050.c **** 
+   8:Core/Src/MCU6050.c **** 
+   9:Core/Src/MCU6050.c **** uint8_t MPU6050_Init(void)
+  10:Core/Src/MCU6050.c **** {
+  29              		.loc 1 10 1 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 8
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33 0000 00B5     		push	{lr}
+  34              	.LCFI0:
+  35              		.cfi_def_cfa_offset 4
+  36              		.cfi_offset 14, -4
+  37 0002 83B0     		sub	sp, sp, #12
+  38              	.LCFI1:
+  39              		.cfi_def_cfa_offset 16
+  11:Core/Src/MCU6050.c ****     uint8_t check;
+  40              		.loc 1 11 5 view .LVU1
+  12:Core/Src/MCU6050.c ****     
+  13:Core/Src/MCU6050.c ****     MPU_Read(MPU6050_ADDR, WHO_AM_I_REG, &check, 1);
+  41              		.loc 1 13 5 view .LVU2
+  42 0004 0123     		movs	r3, #1
+  43 0006 0DF10702 		add	r2, sp, #7
+  44 000a 7521     		movs	r1, #117
+  45 000c 6820     		movs	r0, #104
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccsnIVaW.s 			page 2
+
+
+  46 000e FFF7FEFF 		bl	MPU_Read
+  47              	.LVL0:
+  14:Core/Src/MCU6050.c ****     if (check != 0x68 && check != 0x98) return 1;  // Поддержка поддельных да�
+  48              		.loc 1 14 5 view .LVU3
+  49              		.loc 1 14 15 is_stmt 0 view .LVU4
+  50 0012 9DF80730 		ldrb	r3, [sp, #7]	@ zero_extendqisi2
+  51              		.loc 1 14 8 view .LVU5
+  52 0016 682B     		cmp	r3, #104
+  53 0018 01D0     		beq	.L2
+  54              		.loc 1 14 23 discriminator 1 view .LVU6
+  55 001a 982B     		cmp	r3, #152
+  56 001c 1ED1     		bne	.L5
+  57              	.L2:
+  15:Core/Src/MCU6050.c ****     
+  16:Core/Src/MCU6050.c ****     MPU_Write(MPU6050_ADDR, PWR_MGMT_1_REG, 0x00);
+  58              		.loc 1 16 5 is_stmt 1 view .LVU7
+  59 001e 0022     		movs	r2, #0
+  60 0020 6B21     		movs	r1, #107
+  61 0022 6820     		movs	r0, #104
+  62 0024 FFF7FEFF 		bl	MPU_Write
+  63              	.LVL1:
+  17:Core/Src/MCU6050.c ****      uint32_t start_tick = tick_count; // Предполагая, что tick_count растет в
+  64              		.loc 1 17 6 view .LVU8
+  65              		.loc 1 17 15 is_stmt 0 view .LVU9
+  66 0028 0D4B     		ldr	r3, .L7
+  67 002a 1A68     		ldr	r2, [r3]
+  68              	.LVL2:
+  18:Core/Src/MCU6050.c ****        while((tick_count - start_tick) < 30);
+  69              		.loc 1 18 8 is_stmt 1 view .LVU10
+  70              	.L4:
+  71              		.loc 1 18 40 discriminator 1 view .LVU11
+  72              		.loc 1 18 26 is_stmt 0 discriminator 1 view .LVU12
+  73 002c 0C4B     		ldr	r3, .L7
+  74 002e 1B68     		ldr	r3, [r3]
+  75 0030 9B1A     		subs	r3, r3, r2
+  76              		.loc 1 18 40 discriminator 1 view .LVU13
+  77 0032 1D2B     		cmp	r3, #29
+  78 0034 FAD9     		bls	.L4
+  19:Core/Src/MCU6050.c ****     
+  20:Core/Src/MCU6050.c ****     MPU_Write(MPU6050_ADDR, SMPLRT_DIV_REG, 0x07);
+  79              		.loc 1 20 5 is_stmt 1 view .LVU14
+  80 0036 0722     		movs	r2, #7
+  81              	.LVL3:
+  82              		.loc 1 20 5 is_stmt 0 view .LVU15
+  83 0038 1921     		movs	r1, #25
+  84 003a 6820     		movs	r0, #104
+  85 003c FFF7FEFF 		bl	MPU_Write
+  86              	.LVL4:
+  21:Core/Src/MCU6050.c ****     MPU_Write(MPU6050_ADDR, ACCEL_CONFIG_REG, 0x00);
+  87              		.loc 1 21 5 is_stmt 1 view .LVU16
+  88 0040 0022     		movs	r2, #0
+  89 0042 1C21     		movs	r1, #28
+  90 0044 6820     		movs	r0, #104
+  91 0046 FFF7FEFF 		bl	MPU_Write
+  92              	.LVL5:
+  22:Core/Src/MCU6050.c ****     MPU_Write(MPU6050_ADDR, GYRO_CONFIG_REG, 0x00);
+  93              		.loc 1 22 5 view .LVU17
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccsnIVaW.s 			page 3
+
+
+  94 004a 0022     		movs	r2, #0
+  95 004c 1B21     		movs	r1, #27
+  96 004e 6820     		movs	r0, #104
+  97 0050 FFF7FEFF 		bl	MPU_Write
+  98              	.LVL6:
+  23:Core/Src/MCU6050.c ****     
+  24:Core/Src/MCU6050.c ****     return 0;
+  99              		.loc 1 24 5 view .LVU18
+ 100              		.loc 1 24 12 is_stmt 0 view .LVU19
+ 101 0054 0020     		movs	r0, #0
+ 102              	.LVL7:
+ 103              	.L3:
+  25:Core/Src/MCU6050.c **** }
+ 104              		.loc 1 25 1 view .LVU20
+ 105 0056 03B0     		add	sp, sp, #12
+ 106              	.LCFI2:
+ 107              		.cfi_remember_state
+ 108              		.cfi_def_cfa_offset 4
+ 109              		@ sp needed
+ 110 0058 5DF804FB 		ldr	pc, [sp], #4
+ 111              	.L5:
+ 112              	.LCFI3:
+ 113              		.cfi_restore_state
+  14:Core/Src/MCU6050.c ****     
+ 114              		.loc 1 14 48 discriminator 2 view .LVU21
+ 115 005c 0120     		movs	r0, #1
+ 116 005e FAE7     		b	.L3
+ 117              	.L8:
+ 118              		.align	2
+ 119              	.L7:
+ 120 0060 00000000 		.word	tick_count
+ 121              		.cfi_endproc
+ 122              	.LFE133:
+ 124              		.section	.text.MPU6050_Read_All,"ax",%progbits
+ 125              		.align	1
+ 126              		.global	MPU6050_Read_All
+ 127              		.syntax unified
+ 128              		.thumb
+ 129              		.thumb_func
+ 131              	MPU6050_Read_All:
+ 132              	.LFB134:
+  26:Core/Src/MCU6050.c **** 
+  27:Core/Src/MCU6050.c **** void MPU6050_Read_All(void)
+  28:Core/Src/MCU6050.c **** {
+ 133              		.loc 1 28 1 is_stmt 1 view -0
+ 134              		.cfi_startproc
+ 135              		@ args = 0, pretend = 0, frame = 16
+ 136              		@ frame_needed = 0, uses_anonymous_args = 0
+ 137 0000 30B5     		push	{r4, r5, lr}
+ 138              	.LCFI4:
+ 139              		.cfi_def_cfa_offset 12
+ 140              		.cfi_offset 4, -12
+ 141              		.cfi_offset 5, -8
+ 142              		.cfi_offset 14, -4
+ 143 0002 85B0     		sub	sp, sp, #20
+ 144              	.LCFI5:
+ 145              		.cfi_def_cfa_offset 32
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccsnIVaW.s 			page 4
+
+
+  29:Core/Src/MCU6050.c ****     uint8_t d[14];
+ 146              		.loc 1 29 5 view .LVU23
+  30:Core/Src/MCU6050.c ****     MPU_Read(MPU6050_ADDR, ACCEL_XOUT_H_REG, d, 14);
+ 147              		.loc 1 30 5 view .LVU24
+ 148 0004 0E23     		movs	r3, #14
+ 149 0006 6A46     		mov	r2, sp
+ 150 0008 3B21     		movs	r1, #59
+ 151 000a 6820     		movs	r0, #104
+ 152 000c FFF7FEFF 		bl	MPU_Read
+ 153              	.LVL8:
+  31:Core/Src/MCU6050.c **** 
+  32:Core/Src/MCU6050.c ****     MPU6050.Accel_X_RAW = (int16_t)((d[0] << 8) | d[1]);
+ 154              		.loc 1 32 5 view .LVU25
+ 155              		.loc 1 32 39 is_stmt 0 view .LVU26
+ 156 0010 9DF80030 		ldrb	r3, [sp]	@ zero_extendqisi2
+ 157              		.loc 1 32 52 view .LVU27
+ 158 0014 9DF80100 		ldrb	r0, [sp, #1]	@ zero_extendqisi2
+ 159              		.loc 1 32 27 view .LVU28
+ 160 0018 40EA0320 		orr	r0, r0, r3, lsl #8
+ 161 001c 00B2     		sxth	r0, r0
+ 162              		.loc 1 32 25 view .LVU29
+ 163 001e 324B     		ldr	r3, .L11
+ 164 0020 1880     		strh	r0, [r3]	@ movhi
+  33:Core/Src/MCU6050.c ****     MPU6050.Accel_Y_RAW = (int16_t)((d[2] << 8) | d[3]);
+ 165              		.loc 1 33 5 is_stmt 1 view .LVU30
+ 166              		.loc 1 33 39 is_stmt 0 view .LVU31
+ 167 0022 9DF80220 		ldrb	r2, [sp, #2]	@ zero_extendqisi2
+ 168              		.loc 1 33 52 view .LVU32
+ 169 0026 9DF80310 		ldrb	r1, [sp, #3]	@ zero_extendqisi2
+ 170              		.loc 1 33 27 view .LVU33
+ 171 002a 41EA0221 		orr	r1, r1, r2, lsl #8
+ 172 002e 09B2     		sxth	r1, r1
+ 173              		.loc 1 33 25 view .LVU34
+ 174 0030 5980     		strh	r1, [r3, #2]	@ movhi
+  34:Core/Src/MCU6050.c ****     MPU6050.Accel_Z_RAW = (int16_t)((d[4] << 8) | d[5]);
+ 175              		.loc 1 34 5 is_stmt 1 view .LVU35
+ 176              		.loc 1 34 39 is_stmt 0 view .LVU36
+ 177 0032 9DF80440 		ldrb	r4, [sp, #4]	@ zero_extendqisi2
+ 178              		.loc 1 34 52 view .LVU37
+ 179 0036 9DF80520 		ldrb	r2, [sp, #5]	@ zero_extendqisi2
+ 180              		.loc 1 34 27 view .LVU38
+ 181 003a 42EA0422 		orr	r2, r2, r4, lsl #8
+ 182 003e 12B2     		sxth	r2, r2
+ 183              		.loc 1 34 25 view .LVU39
+ 184 0040 9A80     		strh	r2, [r3, #4]	@ movhi
+  35:Core/Src/MCU6050.c **** 
+  36:Core/Src/MCU6050.c ****     MPU6050.Gyro_X_RAW  = (int16_t)((d[8] << 8) | d[9]);
+ 185              		.loc 1 36 5 is_stmt 1 view .LVU40
+ 186              		.loc 1 36 39 is_stmt 0 view .LVU41
+ 187 0042 9DF80850 		ldrb	r5, [sp, #8]	@ zero_extendqisi2
+ 188              		.loc 1 36 52 view .LVU42
+ 189 0046 9DF80940 		ldrb	r4, [sp, #9]	@ zero_extendqisi2
+ 190              		.loc 1 36 27 view .LVU43
+ 191 004a 44EA0524 		orr	r4, r4, r5, lsl #8
+ 192 004e 24B2     		sxth	r4, r4
+ 193              		.loc 1 36 25 view .LVU44
+ 194 0050 DC80     		strh	r4, [r3, #6]	@ movhi
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccsnIVaW.s 			page 5
+
+
+  37:Core/Src/MCU6050.c ****     MPU6050.Gyro_Y_RAW  = (int16_t)((d[10] << 8) | d[11]);
+ 195              		.loc 1 37 5 is_stmt 1 view .LVU45
+ 196              		.loc 1 37 39 is_stmt 0 view .LVU46
+ 197 0052 9DF80A50 		ldrb	r5, [sp, #10]	@ zero_extendqisi2
+ 198              		.loc 1 37 53 view .LVU47
+ 199 0056 9DF80BE0 		ldrb	lr, [sp, #11]	@ zero_extendqisi2
+ 200              		.loc 1 37 27 view .LVU48
+ 201 005a 4EEA052E 		orr	lr, lr, r5, lsl #8
+ 202 005e 0FFA8EFE 		sxth	lr, lr
+ 203              		.loc 1 37 25 view .LVU49
+ 204 0062 A3F808E0 		strh	lr, [r3, #8]	@ movhi
+  38:Core/Src/MCU6050.c ****     MPU6050.Gyro_Z_RAW  = (int16_t)((d[12] << 8) | d[13]);
+ 205              		.loc 1 38 5 is_stmt 1 view .LVU50
+ 206              		.loc 1 38 39 is_stmt 0 view .LVU51
+ 207 0066 9DF80C50 		ldrb	r5, [sp, #12]	@ zero_extendqisi2
+ 208              		.loc 1 38 53 view .LVU52
+ 209 006a 9DF80DC0 		ldrb	ip, [sp, #13]	@ zero_extendqisi2
+ 210              		.loc 1 38 27 view .LVU53
+ 211 006e 4CEA052C 		orr	ip, ip, r5, lsl #8
+ 212 0072 0FFA8CFC 		sxth	ip, ip
+ 213              		.loc 1 38 25 view .LVU54
+ 214 0076 A3F80AC0 		strh	ip, [r3, #10]	@ movhi
+  39:Core/Src/MCU6050.c **** 
+  40:Core/Src/MCU6050.c ****     MPU6050.Ax = MPU6050.Accel_X_RAW / 16384.0f;
+ 215              		.loc 1 40 5 is_stmt 1 view .LVU55
+ 216              		.loc 1 40 38 is_stmt 0 view .LVU56
+ 217 007a 07EE900A 		vmov	s15, r0	@ int
+ 218 007e F8EEE77A 		vcvt.f32.s32	s15, s15
+ 219 0082 9FED1A7A 		vldr.32	s14, .L11+4
+ 220 0086 67EE877A 		vmul.f32	s15, s15, s14
+ 221              		.loc 1 40 16 view .LVU57
+ 222 008a C3ED037A 		vstr.32	s15, [r3, #12]
+  41:Core/Src/MCU6050.c ****     MPU6050.Ay = MPU6050.Accel_Y_RAW / 16384.0f;
+ 223              		.loc 1 41 5 is_stmt 1 view .LVU58
+ 224              		.loc 1 41 38 is_stmt 0 view .LVU59
+ 225 008e 07EE901A 		vmov	s15, r1	@ int
+ 226 0092 F8EEE77A 		vcvt.f32.s32	s15, s15
+ 227 0096 67EE877A 		vmul.f32	s15, s15, s14
+ 228              		.loc 1 41 16 view .LVU60
+ 229 009a C3ED047A 		vstr.32	s15, [r3, #16]
+  42:Core/Src/MCU6050.c ****     MPU6050.Az = MPU6050.Accel_Z_RAW / 16384.0f;
+ 230              		.loc 1 42 5 is_stmt 1 view .LVU61
+ 231              		.loc 1 42 38 is_stmt 0 view .LVU62
+ 232 009e 07EE902A 		vmov	s15, r2	@ int
+ 233 00a2 F8EEE77A 		vcvt.f32.s32	s15, s15
+ 234 00a6 67EE877A 		vmul.f32	s15, s15, s14
+ 235              		.loc 1 42 16 view .LVU63
+ 236 00aa C3ED057A 		vstr.32	s15, [r3, #20]
+  43:Core/Src/MCU6050.c **** 
+  44:Core/Src/MCU6050.c ****     MPU6050.Gx = MPU6050.Gyro_X_RAW / 131.0f;
+ 237              		.loc 1 44 5 is_stmt 1 view .LVU64
+ 238              		.loc 1 44 37 is_stmt 0 view .LVU65
+ 239 00ae 07EE904A 		vmov	s15, r4	@ int
+ 240 00b2 F8EEE77A 		vcvt.f32.s32	s15, s15
+ 241 00b6 9FED0E7A 		vldr.32	s14, .L11+8
+ 242 00ba C7EE876A 		vdiv.f32	s13, s15, s14
+ 243              		.loc 1 44 16 view .LVU66
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccsnIVaW.s 			page 6
+
+
+ 244 00be C3ED066A 		vstr.32	s13, [r3, #24]
+  45:Core/Src/MCU6050.c ****     MPU6050.Gy = MPU6050.Gyro_Y_RAW / 131.0f;
+ 245              		.loc 1 45 5 is_stmt 1 view .LVU67
+ 246              		.loc 1 45 37 is_stmt 0 view .LVU68
+ 247 00c2 07EE90EA 		vmov	s15, lr	@ int
+ 248 00c6 F8EEE77A 		vcvt.f32.s32	s15, s15
+ 249 00ca C7EE876A 		vdiv.f32	s13, s15, s14
+ 250              		.loc 1 45 16 view .LVU69
+ 251 00ce C3ED076A 		vstr.32	s13, [r3, #28]
+  46:Core/Src/MCU6050.c ****     MPU6050.Gz = MPU6050.Gyro_Z_RAW / 131.0f;
+ 252              		.loc 1 46 5 is_stmt 1 view .LVU70
+ 253              		.loc 1 46 37 is_stmt 0 view .LVU71
+ 254 00d2 07EE90CA 		vmov	s15, ip	@ int
+ 255 00d6 F8EEE77A 		vcvt.f32.s32	s15, s15
+ 256 00da C7EE876A 		vdiv.f32	s13, s15, s14
+ 257              		.loc 1 46 16 view .LVU72
+ 258 00de C3ED086A 		vstr.32	s13, [r3, #32]
+  47:Core/Src/MCU6050.c **** }
+ 259              		.loc 1 47 1 view .LVU73
+ 260 00e2 05B0     		add	sp, sp, #20
+ 261              	.LCFI6:
+ 262              		.cfi_def_cfa_offset 12
+ 263              		@ sp needed
+ 264 00e4 30BD     		pop	{r4, r5, pc}
+ 265              	.L12:
+ 266 00e6 00BF     		.align	2
+ 267              	.L11:
+ 268 00e8 00000000 		.word	MPU6050
+ 269 00ec 00008038 		.word	947912704
+ 270 00f0 00000343 		.word	1124270080
+ 271              		.cfi_endproc
+ 272              	.LFE134:
+ 274              		.section	.rodata.MPU6050_Send_Data.str1.4,"aMS",%progbits,1
+ 275              		.align	2
+ 276              	.LC0:
+ 277 0000 41783A25 		.ascii	"Ax:%.2f Ay:%.2f Az:%.2f | Gx:%.2f Gy:%.2f Gz:%.2f\015"
+ 277      2E326620 
+ 277      41793A25 
+ 277      2E326620 
+ 277      417A3A25 
+ 278 0032 0A00     		.ascii	"\012\000"
+ 279              		.global	__aeabi_f2d
+ 280              		.section	.text.MPU6050_Send_Data,"ax",%progbits
+ 281              		.align	1
+ 282              		.global	MPU6050_Send_Data
+ 283              		.syntax unified
+ 284              		.thumb
+ 285              		.thumb_func
+ 287              	MPU6050_Send_Data:
+ 288              	.LFB135:
+  48:Core/Src/MCU6050.c **** 
+  49:Core/Src/MCU6050.c **** 
+  50:Core/Src/MCU6050.c **** void MPU6050_Send_Data(void)
+  51:Core/Src/MCU6050.c **** {
+ 289              		.loc 1 51 1 is_stmt 1 view -0
+ 290              		.cfi_startproc
+ 291              		@ args = 0, pretend = 0, frame = 80
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccsnIVaW.s 			page 7
+
+
+ 292              		@ frame_needed = 0, uses_anonymous_args = 0
+ 293 0000 2DE9F041 		push	{r4, r5, r6, r7, r8, lr}
+ 294              	.LCFI7:
+ 295              		.cfi_def_cfa_offset 24
+ 296              		.cfi_offset 4, -24
+ 297              		.cfi_offset 5, -20
+ 298              		.cfi_offset 6, -16
+ 299              		.cfi_offset 7, -12
+ 300              		.cfi_offset 8, -8
+ 301              		.cfi_offset 14, -4
+ 302 0004 A0B0     		sub	sp, sp, #128
+ 303              	.LCFI8:
+ 304              		.cfi_def_cfa_offset 152
+  52:Core/Src/MCU6050.c ****     char buf[80];
+ 305              		.loc 1 52 5 view .LVU75
+  53:Core/Src/MCU6050.c **** 
+  54:Core/Src/MCU6050.c ****     snprintf(buf, sizeof(buf),
+ 306              		.loc 1 54 5 view .LVU76
+  55:Core/Src/MCU6050.c ****         "Ax:%.2f Ay:%.2f Az:%.2f | Gx:%.2f Gy:%.2f Gz:%.2f\r\n",
+  56:Core/Src/MCU6050.c ****         MPU6050.Ax, MPU6050.Ay, MPU6050.Az,
+ 307              		.loc 1 56 16 is_stmt 0 view .LVU77
+ 308 0006 1C4B     		ldr	r3, .L17
+ 309 0008 DC68     		ldr	r4, [r3, #12]	@ float
+ 310              		.loc 1 56 28 view .LVU78
+ 311 000a 1D69     		ldr	r5, [r3, #16]	@ float
+ 312              		.loc 1 56 40 view .LVU79
+ 313 000c 5E69     		ldr	r6, [r3, #20]	@ float
+  57:Core/Src/MCU6050.c ****         MPU6050.Gx, MPU6050.Gy, MPU6050.Gz);
+ 314              		.loc 1 57 16 view .LVU80
+ 315 000e 9F69     		ldr	r7, [r3, #24]	@ float
+ 316              		.loc 1 57 28 view .LVU81
+ 317 0010 D3F81C80 		ldr	r8, [r3, #28]	@ float
+  54:Core/Src/MCU6050.c ****         "Ax:%.2f Ay:%.2f Az:%.2f | Gx:%.2f Gy:%.2f Gz:%.2f\r\n",
+ 318              		.loc 1 54 5 view .LVU82
+ 319 0014 186A     		ldr	r0, [r3, #32]	@ float
+ 320 0016 FFF7FEFF 		bl	__aeabi_f2d
+ 321              	.LVL9:
+ 322 001a CDE90A01 		strd	r0, [sp, #40]
+ 323 001e 4046     		mov	r0, r8	@ float
+ 324 0020 FFF7FEFF 		bl	__aeabi_f2d
+ 325              	.LVL10:
+ 326 0024 CDE90801 		strd	r0, [sp, #32]
+ 327 0028 3846     		mov	r0, r7	@ float
+ 328 002a FFF7FEFF 		bl	__aeabi_f2d
+ 329              	.LVL11:
+ 330 002e CDE90601 		strd	r0, [sp, #24]
+ 331 0032 3046     		mov	r0, r6	@ float
+ 332 0034 FFF7FEFF 		bl	__aeabi_f2d
+ 333              	.LVL12:
+ 334 0038 CDE90401 		strd	r0, [sp, #16]
+ 335 003c 2846     		mov	r0, r5	@ float
+ 336 003e FFF7FEFF 		bl	__aeabi_f2d
+ 337              	.LVL13:
+ 338 0042 CDE90201 		strd	r0, [sp, #8]
+ 339 0046 2046     		mov	r0, r4	@ float
+ 340 0048 FFF7FEFF 		bl	__aeabi_f2d
+ 341              	.LVL14:
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccsnIVaW.s 			page 8
+
+
+ 342 004c CDE90001 		strd	r0, [sp]
+ 343 0050 0A4A     		ldr	r2, .L17+4
+ 344 0052 5021     		movs	r1, #80
+ 345 0054 0CA8     		add	r0, sp, #48
+ 346 0056 FFF7FEFF 		bl	snprintf
+ 347              	.LVL15:
+  58:Core/Src/MCU6050.c **** 
+  59:Core/Src/MCU6050.c ****     for (int i = 0; buf[i]; i++)
+ 348              		.loc 1 59 5 is_stmt 1 view .LVU83
+ 349              	.LBB2:
+ 350              		.loc 1 59 10 view .LVU84
+ 351              		.loc 1 59 14 is_stmt 0 view .LVU85
+ 352 005a 0024     		movs	r4, #0
+ 353              		.loc 1 59 5 view .LVU86
+ 354 005c 02E0     		b	.L14
+ 355              	.LVL16:
+ 356              	.L15:
+  60:Core/Src/MCU6050.c ****         UART_SendChar(buf[i]);
+ 357              		.loc 1 60 9 is_stmt 1 view .LVU87
+ 358 005e FFF7FEFF 		bl	UART_SendChar
+ 359              	.LVL17:
+  59:Core/Src/MCU6050.c ****         UART_SendChar(buf[i]);
+ 360              		.loc 1 59 30 discriminator 3 view .LVU88
+ 361 0062 0134     		adds	r4, r4, #1
+ 362              	.LVL18:
+ 363              	.L14:
+  59:Core/Src/MCU6050.c ****         UART_SendChar(buf[i]);
+ 364              		.loc 1 59 21 discriminator 1 view .LVU89
+  59:Core/Src/MCU6050.c ****         UART_SendChar(buf[i]);
+ 365              		.loc 1 59 24 is_stmt 0 discriminator 1 view .LVU90
+ 366 0064 04F18003 		add	r3, r4, #128
+ 367 0068 6B44     		add	r3, sp, r3
+ 368 006a 13F8500C 		ldrb	r0, [r3, #-80]	@ zero_extendqisi2
+  59:Core/Src/MCU6050.c ****         UART_SendChar(buf[i]);
+ 369              		.loc 1 59 21 discriminator 1 view .LVU91
+ 370 006e 0028     		cmp	r0, #0
+ 371 0070 F5D1     		bne	.L15
+ 372              	.LBE2:
+  61:Core/Src/MCU6050.c **** }...
+ 373              		.loc 1 61 1 view .LVU92
+ 374 0072 20B0     		add	sp, sp, #128
+ 375              	.LCFI9:
+ 376              		.cfi_def_cfa_offset 24
+ 377              		@ sp needed
+ 378 0074 BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 379              	.LVL19:
+ 380              	.L18:
+ 381              		.loc 1 61 1 view .LVU93
+ 382              		.align	2
+ 383              	.L17:
+ 384 0078 00000000 		.word	MPU6050
+ 385 007c 00000000 		.word	.LC0
+ 386              		.cfi_endproc
+ 387              	.LFE135:
+ 389              		.text
+ 390              	.Letext0:
+ 391              		.file 2 "C:/Bools/xpack-arm-none-eabi-gcc-13.2.1-1.1/arm-none-eabi/include/machine/_default_types.
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccsnIVaW.s 			page 9
+
+
+ 392              		.file 3 "C:/Bools/xpack-arm-none-eabi-gcc-13.2.1-1.1/arm-none-eabi/include/sys/_stdint.h"
+ 393              		.file 4 "Core/Inc/MCU6050.h"
+ 394              		.file 5 "Core/Inc/handlers.h"
+ 395              		.file 6 "C:/Bools/xpack-arm-none-eabi-gcc-13.2.1-1.1/lib/gcc/arm-none-eabi/13.2.1/include/stddef.h
+ 396              		.file 7 "Core/Inc/task.h"
+ 397              		.file 8 "Core/Inc/I2C.h"
+ 398              		.file 9 "C:/Bools/xpack-arm-none-eabi-gcc-13.2.1-1.1/arm-none-eabi/include/stdio.h"
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccsnIVaW.s 			page 10
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 MCU6050.c
+C:\Users\Life\AppData\Local\Temp\ccsnIVaW.s:21     .text.MPU6050_Init:00000000 $t
+C:\Users\Life\AppData\Local\Temp\ccsnIVaW.s:27     .text.MPU6050_Init:00000000 MPU6050_Init
+C:\Users\Life\AppData\Local\Temp\ccsnIVaW.s:120    .text.MPU6050_Init:00000060 $d
+C:\Users\Life\AppData\Local\Temp\ccsnIVaW.s:125    .text.MPU6050_Read_All:00000000 $t
+C:\Users\Life\AppData\Local\Temp\ccsnIVaW.s:131    .text.MPU6050_Read_All:00000000 MPU6050_Read_All
+C:\Users\Life\AppData\Local\Temp\ccsnIVaW.s:268    .text.MPU6050_Read_All:000000e8 $d
+C:\Users\Life\AppData\Local\Temp\ccsnIVaW.s:275    .rodata.MPU6050_Send_Data.str1.4:00000000 $d
+C:\Users\Life\AppData\Local\Temp\ccsnIVaW.s:281    .text.MPU6050_Send_Data:00000000 $t
+C:\Users\Life\AppData\Local\Temp\ccsnIVaW.s:287    .text.MPU6050_Send_Data:00000000 MPU6050_Send_Data
+C:\Users\Life\AppData\Local\Temp\ccsnIVaW.s:384    .text.MPU6050_Send_Data:00000078 $d
+
+UNDEFINED SYMBOLS
+MPU_Read
+MPU_Write
+tick_count
+MPU6050
+__aeabi_f2d
+snprintf
+UART_SendChar
