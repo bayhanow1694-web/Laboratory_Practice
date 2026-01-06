@@ -4,8 +4,8 @@
 
 void UART2_Init(void);
 
-
+void GPIO_Init(void);
 void RCC_Init(void);
 void TIM1_PWM_Init(void);
 void TIM10_Init(void);
-void TIM3_Encoder_Init(void);
+void IRO_INInt_PB5_PB6(void);

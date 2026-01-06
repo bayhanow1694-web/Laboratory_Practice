@@ -7,5 +7,6 @@ void UART_SendChar(char c) {
 }
 
 void UART_SendString(char* str) {
-    while (*str) UART_SendChar(*str++);
+ 
+   while (*str) UART_SendChar(*str++);
 }

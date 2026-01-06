@@ -1,0 +1,1953 @@
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"motor.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.file 1 "Core/Src/motor.c"
+  20              		.section	.text.Motor_Set,"ax",%progbits
+  21              		.align	1
+  22              		.global	Motor_Set
+  23              		.syntax unified
+  24              		.thumb
+  25              		.thumb_func
+  27              	Motor_Set:
+  28              	.LVL0:
+  29              	.LFB134:
+   1:Core/Src/motor.c **** 
+   2:Core/Src/motor.c **** #include "motor.h"
+   3:Core/Src/motor.c **** #include "MCU6050.h"
+   4:Core/Src/motor.c **** #include <math.h>
+   5:Core/Src/motor.c **** #include "task.h"
+   6:Core/Src/motor.c **** #include <stdio.h>
+   7:Core/Src/motor.c **** #include "handlers.h"
+   8:Core/Src/motor.c **** 
+   9:Core/Src/motor.c **** // ================== PID КОЭФФИЦИЕНТЫ (Подстройка) ==================
+  10:Core/Src/motor.c **** static float Kp = 8.0f;   // На 1 градус ошибки меняем ШИМ на 8 едини
+  11:Core/Src/motor.c **** static float Kd = 3.5f;   // Сильное демпфирование, чтобы не раска�
+  12:Core/Src/motor.c **** static float Ki = 0.2f;   // Небольшой интеграл для компенсации ра
+  13:Core/Src/motor.c **** // Фильтр низких частот для yaw_rate (простейший)
+  14:Core/Src/motor.c **** static float yaw_rate_filtered = 0.0f;
+  15:Core/Src/motor.c **** // ================== ВНУТРЕННИЕ ПЕРЕМЕННЫЕ ==================
+  16:Core/Src/motor.c **** 
+  17:Core/Src/motor.c **** // Ограничение интеграла (anti-windup)
+  18:Core/Src/motor.c **** #define I_LIMIT 40.0f
+  19:Core/Src/motor.c **** #define I_THRESHOLD 20.0f  // градусы
+  20:Core/Src/motor.c **** 
+  21:Core/Src/motor.c **** // Максимальная коррекция (не даем одному мотору остан�
+  22:Core/Src/motor.c **** #define MAX_CORRECTION 150 
+  23:Core/Src/motor.c **** 
+  24:Core/Src/motor.c **** // ==========================================================
+  25:Core/Src/motor.c **** // УПРАВЛЕНИЕ МОТОРАМИ
+  26:Core/Src/motor.c **** // ==========================================================
+  27:Core/Src/motor.c **** void Motor_Set(int16_t left, int16_t right)
+  28:Core/Src/motor.c **** {
+  30              		.loc 1 28 1 view -0
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s 			page 2
+
+
+  31              		.cfi_startproc
+  32              		@ args = 0, pretend = 0, frame = 0
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34              		@ link register save eliminated.
+  29:Core/Src/motor.c ****     // Жесткое ограничение диапазонов PWM
+  30:Core/Src/motor.c ****     left  = clamp_i16(left,  -MAX_PWM, MAX_PWM);
+  35              		.loc 1 30 5 view .LVU1
+  36              	.LBB28:
+  37              	.LBI28:
+  38              		.file 2 "Core/Inc/motor.h"
+   1:Core/Inc/motor.h **** #ifndef MOTOR_H
+   2:Core/Inc/motor.h **** #define MOTOR_H
+   3:Core/Inc/motor.h **** 
+   4:Core/Inc/motor.h **** #include <stdint.h>
+   5:Core/Inc/motor.h **** #include "stm32f411xe.h"
+   6:Core/Inc/motor.h **** 
+   7:Core/Inc/motor.h **** // ================== НАСТРОЙКИ ==================
+   8:Core/Inc/motor.h **** #define MAX_PWM 999
+   9:Core/Inc/motor.h **** 
+  10:Core/Inc/motor.h **** #define WHEEL_DIAMETER_MM  67.5f
+  11:Core/Inc/motor.h **** #define ENCODER_TICKS_REV  40.0f
+  12:Core/Inc/motor.h **** 
+  13:Core/Inc/motor.h **** 
+  14:Core/Inc/motor.h **** #define MM_PER_TICK  ((WHEEL_DIAMETER_MM * 3.1415926f) / ENCODER_TICKS_REV)
+  15:Core/Inc/motor.h **** // ================== ВНЕШНИЕ ПЕРЕМЕННЫЕ ==================
+  16:Core/Inc/motor.h **** extern volatile int16_t base_speed;
+  17:Core/Inc/motor.h **** extern volatile uint8_t robot_started;
+  18:Core/Inc/motor.h **** extern volatile uint8_t btn_prev;
+  19:Core/Inc/motor.h **** extern volatile uint32_t btn_time;
+  20:Core/Inc/motor.h **** extern volatile uint32_t tick_count;
+  21:Core/Inc/motor.h **** extern volatile float yaw_target;
+  22:Core/Inc/motor.h **** extern volatile float yaw_i;
+  23:Core/Inc/motor.h **** extern volatile uint8_t turning;
+  24:Core/Inc/motor.h **** extern volatile float turn_target;
+  25:Core/Inc/motor.h **** extern volatile uint8_t driving;
+  26:Core/Inc/motor.h **** extern volatile float drive_target_mm;
+  27:Core/Inc/motor.h **** 
+  28:Core/Inc/motor.h **** #define OFFSET_LIMIT 20.0f
+  29:Core/Inc/motor.h **** // ================== INLINE ==================
+  30:Core/Inc/motor.h **** static inline int16_t clamp_i16(int16_t v, int16_t min, int16_t max)
+  39              		.loc 2 30 23 view .LVU2
+  40              	.LBB29:
+  31:Core/Inc/motor.h **** {
+  32:Core/Inc/motor.h ****     if (v > max) return max;
+  41              		.loc 2 32 5 view .LVU3
+  42              		.loc 2 32 8 is_stmt 0 view .LVU4
+  43 0000 B0F57A7F 		cmp	r0, #1000
+  44 0004 15DA     		bge	.L8
+  33:Core/Inc/motor.h ****     if (v < min) return min;
+  45              		.loc 2 33 5 is_stmt 1 view .LVU5
+  46              		.loc 2 33 8 is_stmt 0 view .LVU6
+  47 0006 10F57A7F 		cmn	r0, #1000
+  48 000a 15DD     		ble	.L12
+  49              	.LVL1:
+  50              	.L2:
+  51              		.loc 2 33 8 view .LVU7
+  52              	.LBE29:
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s 			page 3
+
+
+  53              	.LBE28:
+  31:Core/Src/motor.c ****     right = clamp_i16(right, -MAX_PWM, MAX_PWM);
+  54              		.loc 1 31 5 is_stmt 1 view .LVU8
+  55              	.LBB31:
+  56              	.LBI31:
+  30:Core/Inc/motor.h **** {
+  57              		.loc 2 30 23 view .LVU9
+  58              	.LBB32:
+  32:Core/Inc/motor.h ****     if (v < min) return min;
+  59              		.loc 2 32 5 view .LVU10
+  32:Core/Inc/motor.h ****     if (v < min) return min;
+  60              		.loc 2 32 8 is_stmt 0 view .LVU11
+  61 000c B1F57A7F 		cmp	r1, #1000
+  62 0010 14DA     		bge	.L10
+  63              		.loc 2 33 5 is_stmt 1 view .LVU12
+  64              		.loc 2 33 8 is_stmt 0 view .LVU13
+  65 0012 11F57A7F 		cmn	r1, #1000
+  66 0016 14DD     		ble	.L13
+  67              	.LVL2:
+  68              	.L3:
+  69              		.loc 2 33 8 view .LVU14
+  70              	.LBE32:
+  71              	.LBE31:
+  32:Core/Src/motor.c **** 
+  33:Core/Src/motor.c ****     // Управление каналами таймера
+  34:Core/Src/motor.c ****     if (left >= 0) {
+  72              		.loc 1 34 5 is_stmt 1 view .LVU15
+  73              		.loc 1 34 8 is_stmt 0 view .LVU16
+  74 0018 0028     		cmp	r0, #0
+  75 001a 14DB     		blt	.L4
+  35:Core/Src/motor.c ****         TIM1->CCR1 = left;
+  76              		.loc 1 35 9 is_stmt 1 view .LVU17
+  77              		.loc 1 35 20 is_stmt 0 view .LVU18
+  78 001c 104B     		ldr	r3, .L14
+  79 001e 5863     		str	r0, [r3, #52]
+  36:Core/Src/motor.c ****         TIM1->CCR2 = 0;
+  80              		.loc 1 36 9 is_stmt 1 view .LVU19
+  81              		.loc 1 36 20 is_stmt 0 view .LVU20
+  82 0020 0022     		movs	r2, #0
+  83 0022 9A63     		str	r2, [r3, #56]
+  84              	.LVL3:
+  85              	.L5:
+  37:Core/Src/motor.c ****     } else {
+  38:Core/Src/motor.c ****         TIM1->CCR1 = 0;
+  39:Core/Src/motor.c ****         TIM1->CCR2 = -left;
+  40:Core/Src/motor.c ****     }
+  41:Core/Src/motor.c **** 
+  42:Core/Src/motor.c ****     if (right >= 0) {
+  86              		.loc 1 42 5 is_stmt 1 view .LVU21
+  87              		.loc 1 42 8 is_stmt 0 view .LVU22
+  88 0024 0029     		cmp	r1, #0
+  89 0026 14DB     		blt	.L6
+  43:Core/Src/motor.c ****         TIM1->CCR3 = right;
+  90              		.loc 1 43 9 is_stmt 1 view .LVU23
+  91              		.loc 1 43 20 is_stmt 0 view .LVU24
+  92 0028 0D4B     		ldr	r3, .L14
+  93 002a D963     		str	r1, [r3, #60]
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s 			page 4
+
+
+  44:Core/Src/motor.c ****         TIM1->CCR4 = 0;
+  94              		.loc 1 44 9 is_stmt 1 view .LVU25
+  95              		.loc 1 44 20 is_stmt 0 view .LVU26
+  96 002c 0022     		movs	r2, #0
+  97 002e 1A64     		str	r2, [r3, #64]
+  98 0030 7047     		bx	lr
+  99              	.LVL4:
+ 100              	.L8:
+ 101              	.LBB34:
+ 102              	.LBB30:
+  32:Core/Inc/motor.h ****     if (v < min) return min;
+ 103              		.loc 2 32 25 discriminator 1 view .LVU27
+ 104 0032 40F2E730 		movw	r0, #999
+ 105              	.LVL5:
+  32:Core/Inc/motor.h ****     if (v < min) return min;
+ 106              		.loc 2 32 25 discriminator 1 view .LVU28
+ 107 0036 E9E7     		b	.L2
+ 108              	.LVL6:
+ 109              	.L12:
+ 110              		.loc 2 33 25 discriminator 1 view .LVU29
+ 111 0038 0A48     		ldr	r0, .L14+4
+ 112              	.LVL7:
+ 113              		.loc 2 33 25 discriminator 1 view .LVU30
+ 114 003a E7E7     		b	.L2
+ 115              	.LVL8:
+ 116              	.L10:
+ 117              		.loc 2 33 25 discriminator 1 view .LVU31
+ 118              	.LBE30:
+ 119              	.LBE34:
+ 120              	.LBB35:
+ 121              	.LBB33:
+  32:Core/Inc/motor.h ****     if (v < min) return min;
+ 122              		.loc 2 32 25 discriminator 1 view .LVU32
+ 123 003c 40F2E731 		movw	r1, #999
+ 124              	.LVL9:
+  32:Core/Inc/motor.h ****     if (v < min) return min;
+ 125              		.loc 2 32 25 discriminator 1 view .LVU33
+ 126 0040 EAE7     		b	.L3
+ 127              	.LVL10:
+ 128              	.L13:
+ 129              		.loc 2 33 25 discriminator 1 view .LVU34
+ 130 0042 0849     		ldr	r1, .L14+4
+ 131              	.LVL11:
+ 132              		.loc 2 33 25 discriminator 1 view .LVU35
+ 133 0044 E8E7     		b	.L3
+ 134              	.LVL12:
+ 135              	.L4:
+ 136              		.loc 2 33 25 discriminator 1 view .LVU36
+ 137              	.LBE33:
+ 138              	.LBE35:
+  38:Core/Src/motor.c ****         TIM1->CCR2 = -left;
+ 139              		.loc 1 38 9 is_stmt 1 view .LVU37
+  38:Core/Src/motor.c ****         TIM1->CCR2 = -left;
+ 140              		.loc 1 38 20 is_stmt 0 view .LVU38
+ 141 0046 064B     		ldr	r3, .L14
+ 142 0048 0022     		movs	r2, #0
+ 143 004a 5A63     		str	r2, [r3, #52]
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s 			page 5
+
+
+  39:Core/Src/motor.c ****     }
+ 144              		.loc 1 39 9 is_stmt 1 view .LVU39
+  39:Core/Src/motor.c ****     }
+ 145              		.loc 1 39 22 is_stmt 0 view .LVU40
+ 146 004c 4042     		rsbs	r0, r0, #0
+ 147              	.LVL13:
+  39:Core/Src/motor.c ****     }
+ 148              		.loc 1 39 20 view .LVU41
+ 149 004e 9863     		str	r0, [r3, #56]
+ 150 0050 E8E7     		b	.L5
+ 151              	.L6:
+  45:Core/Src/motor.c ****     } else {
+  46:Core/Src/motor.c ****         TIM1->CCR3 = 0;
+ 152              		.loc 1 46 9 is_stmt 1 view .LVU42
+ 153              		.loc 1 46 20 is_stmt 0 view .LVU43
+ 154 0052 034B     		ldr	r3, .L14
+ 155 0054 0022     		movs	r2, #0
+ 156 0056 DA63     		str	r2, [r3, #60]
+  47:Core/Src/motor.c ****         TIM1->CCR4 = -right;
+ 157              		.loc 1 47 9 is_stmt 1 view .LVU44
+ 158              		.loc 1 47 22 is_stmt 0 view .LVU45
+ 159 0058 4942     		rsbs	r1, r1, #0
+ 160              	.LVL14:
+ 161              		.loc 1 47 20 view .LVU46
+ 162 005a 1964     		str	r1, [r3, #64]
+  48:Core/Src/motor.c ****     }
+  49:Core/Src/motor.c **** }
+ 163              		.loc 1 49 1 view .LVU47
+ 164 005c 7047     		bx	lr
+ 165              	.L15:
+ 166 005e 00BF     		.align	2
+ 167              	.L14:
+ 168 0060 00000140 		.word	1073807360
+ 169 0064 19FCFFFF 		.word	-999
+ 170              		.cfi_endproc
+ 171              	.LFE134:
+ 173              		.section	.text.Course_Control_1ms,"ax",%progbits
+ 174              		.align	1
+ 175              		.global	Course_Control_1ms
+ 176              		.syntax unified
+ 177              		.thumb
+ 178              		.thumb_func
+ 180              	Course_Control_1ms:
+ 181              	.LFB135:
+  50:Core/Src/motor.c **** 
+  51:Core/Src/motor.c **** // ==========================================================
+  52:Core/Src/motor.c **** // КУРСОВОЙ PID (Вызывать раз в 1 мс)
+  53:Core/Src/motor.c **** // ==========================================================
+  54:Core/Src/motor.c **** // void Course_Control_1ms(void)
+  55:Core/Src/motor.c **** // {
+  56:Core/Src/motor.c **** //     if (!robot_started)
+  57:Core/Src/motor.c **** //     {
+  58:Core/Src/motor.c **** //         yaw_i = 0.0f;
+  59:Core/Src/motor.c **** //         Motor_Set(0, 0);
+  60:Core/Src/motor.c **** //         return;
+  61:Core/Src/motor.c **** //     }
+  62:Core/Src/motor.c **** 
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s 			page 6
+
+
+  63:Core/Src/motor.c **** //     float yaw = MPU6050.yaw_angle;
+  64:Core/Src/motor.c **** //     yaw_rate_filtered = yaw_rate_filtered * 0.90f + MPU6050.yaw_rate * 0.10f; 
+  65:Core/Src/motor.c **** 
+  66:Core/Src/motor.c **** //     // ---------- Расчет ошибки курса ----------
+  67:Core/Src/motor.c **** //     float yaw_error = yaw_target - yaw;
+  68:Core/Src/motor.c ****     
+  69:Core/Src/motor.c **** //     // Нормализация ошибки к диапазону -180...+180
+  70:Core/Src/motor.c **** //     if (yaw_error > 180.0f) yaw_error -= 360.0f;
+  71:Core/Src/motor.c **** //     else if (yaw_error < -180.0f) yaw_error += 360.0f;
+  72:Core/Src/motor.c **** 
+  73:Core/Src/motor.c **** //     // ---------- Интеграл (накопление) ----------
+  74:Core/Src/motor.c **** //     // Копим ошибку только если мы уже близко к цели (ме�
+  75:Core/Src/motor.c **** //     // Это помогает убрать микро-снос
+  76:Core/Src/motor.c **** //    if (fabs(yaw_error) < 3.0f)
+  77:Core/Src/motor.c **** // {
+  78:Core/Src/motor.c **** //     yaw_i += yaw_error;
+  79:Core/Src/motor.c **** // }
+  80:Core/Src/motor.c **** // else
+  81:Core/Src/motor.c **** // {
+  82:Core/Src/motor.c **** //     yaw_i *= 0.9f;   // стравливание
+  83:Core/Src/motor.c **** // }
+  84:Core/Src/motor.c ****     
+  85:Core/Src/motor.c **** //     // Ограничиваем, чтобы не переполнился
+  86:Core/Src/motor.c **** //     if (yaw_i > I_LIMIT) yaw_i = I_LIMIT;
+  87:Core/Src/motor.c **** //     else if (yaw_i < -I_LIMIT) yaw_i = -I_LIMIT;
+  88:Core/Src/motor.c ****     
+  89:Core/Src/motor.c **** //     // Если мы пересекли ноль (вернулись на курс), сбрас�
+  90:Core/Src/motor.c **** //     // чтобы не проскочить мимо.
+  91:Core/Src/motor.c **** //     if ((yaw_error > 0 && yaw_i < 0) || (yaw_error < 0 && yaw_i > 0)) {
+  92:Core/Src/motor.c **** //        yaw_i = 0;
+  93:Core/Src/motor.c **** //     }
+  94:Core/Src/motor.c **** 
+  95:Core/Src/motor.c **** //     // ---------- PID Формула ----------
+  96:Core/Src/motor.c **** //     // P: тянет к нулю
+  97:Core/Src/motor.c **** //     // I: дожимает мелочи
+  98:Core/Src/motor.c **** //     // D: (yaw_rate) сопротивляется изменению скорости повор
+  99:Core/Src/motor.c **** //     float corr = (Kp * yaw_error) + (Ki * yaw_i) - (Kd * yaw_rate_filtered);
+ 100:Core/Src/motor.c **** 
+ 101:Core/Src/motor.c **** //     // ---------- 4. Ограничение коррекции ----------
+ 102:Core/Src/motor.c **** //     // Приводим к int16_t с насыщением
+ 103:Core/Src/motor.c **** //     int16_t correction_pwm = (int16_t)corr;
+ 104:Core/Src/motor.c **** //     correction_pwm = clamp_i16(correction_pwm, -MAX_CORRECTION, MAX_CORRECTION);
+ 105:Core/Src/motor.c ****     
+ 106:Core/Src/motor.c **** //     int16_t left = base_speed + correction_pwm;
+ 107:Core/Src/motor.c **** //     int16_t right = base_speed - correction_pwm;
+ 108:Core/Src/motor.c **** 
+ 109:Core/Src/motor.c **** //     if (left < 280) left = 280;
+ 110:Core/Src/motor.c **** //     if (right < 280) right = 289;
+ 111:Core/Src/motor.c **** 
+ 112:Core/Src/motor.c **** //     Motor_Set(left, right);
+ 113:Core/Src/motor.c **** 
+ 114:Core/Src/motor.c **** // }
+ 115:Core/Src/motor.c **** void Course_Control_1ms(void)
+ 116:Core/Src/motor.c **** {
+ 182              		.loc 1 116 1 is_stmt 1 view -0
+ 183              		.cfi_startproc
+ 184              		@ args = 0, pretend = 0, frame = 0
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s 			page 7
+
+
+ 185              		@ frame_needed = 0, uses_anonymous_args = 0
+ 186 0000 08B5     		push	{r3, lr}
+ 187              	.LCFI0:
+ 188              		.cfi_def_cfa_offset 8
+ 189              		.cfi_offset 3, -8
+ 190              		.cfi_offset 14, -4
+ 117:Core/Src/motor.c ****     if (!robot_started)
+ 191              		.loc 1 117 5 view .LVU49
+ 192              		.loc 1 117 9 is_stmt 0 view .LVU50
+ 193 0002 714B     		ldr	r3, .L57
+ 194 0004 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 195              		.loc 1 117 8 view .LVU51
+ 196 0006 002B     		cmp	r3, #0
+ 197 0008 00F09F80 		beq	.L54
+ 118:Core/Src/motor.c ****     {
+ 119:Core/Src/motor.c ****         yaw_i = 0.0f;
+ 120:Core/Src/motor.c ****         Motor_Set(0, 0);
+ 121:Core/Src/motor.c ****         return;
+ 122:Core/Src/motor.c ****     }
+ 123:Core/Src/motor.c **** 
+ 124:Core/Src/motor.c ****     // ---------- 1. Читаем гироскоп ----------
+ 125:Core/Src/motor.c ****     float yaw = MPU6050.yaw_angle;
+ 198              		.loc 1 125 5 is_stmt 1 view .LVU52
+ 199              		.loc 1 125 11 is_stmt 0 view .LVU53
+ 200 000c 6F4A     		ldr	r2, .L57+4
+ 201 000e D2ED006A 		vldr.32	s13, [r2]
+ 202              	.LVL15:
+ 126:Core/Src/motor.c ****     yaw_rate_filtered = yaw_rate_filtered * 0.90f + MPU6050.yaw_rate * 0.10f; 
+ 203              		.loc 1 126 5 is_stmt 1 view .LVU54
+ 204              		.loc 1 126 43 is_stmt 0 view .LVU55
+ 205 0012 6F4B     		ldr	r3, .L57+8
+ 206 0014 93ED007A 		vldr.32	s14, [r3]
+ 207 0018 DFED6E7A 		vldr.32	s15, .L57+12
+ 208 001c 27EE277A 		vmul.f32	s14, s14, s15
+ 209              		.loc 1 126 60 view .LVU56
+ 210 0020 D2ED017A 		vldr.32	s15, [r2, #4]
+ 211              		.loc 1 126 70 view .LVU57
+ 212 0024 9FED6C6A 		vldr.32	s12, .L57+16
+ 213 0028 67EE867A 		vmul.f32	s15, s15, s12
+ 214              		.loc 1 126 51 view .LVU58
+ 215 002c 37EE277A 		vadd.f32	s14, s14, s15
+ 216              		.loc 1 126 23 view .LVU59
+ 217 0030 83ED007A 		vstr.32	s14, [r3]
+ 127:Core/Src/motor.c **** 
+ 128:Core/Src/motor.c ****     // ---------- 2. Ошибка курса ----------
+ 129:Core/Src/motor.c ****     float yaw_error = yaw_target - yaw;
+ 218              		.loc 1 129 5 is_stmt 1 view .LVU60
+ 219              		.loc 1 129 34 is_stmt 0 view .LVU61
+ 220 0034 694B     		ldr	r3, .L57+20
+ 221 0036 D3ED007A 		vldr.32	s15, [r3]
+ 222              		.loc 1 129 11 view .LVU62
+ 223 003a 77EEE67A 		vsub.f32	s15, s15, s13
+ 224              	.LVL16:
+ 130:Core/Src/motor.c ****     if (yaw_error > 180.0f) yaw_error -= 360.0f;
+ 225              		.loc 1 130 5 is_stmt 1 view .LVU63
+ 226              		.loc 1 130 8 is_stmt 0 view .LVU64
+ 227 003e DFED686A 		vldr.32	s13, .L57+24
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s 			page 8
+
+
+ 228              	.LVL17:
+ 229              		.loc 1 130 8 view .LVU65
+ 230 0042 F4EEE67A 		vcmpe.f32	s15, s13
+ 231 0046 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 232 004a 40F38680 		ble	.L50
+ 233              		.loc 1 130 29 is_stmt 1 discriminator 1 view .LVU66
+ 234              		.loc 1 130 39 is_stmt 0 discriminator 1 view .LVU67
+ 235 004e DFED656A 		vldr.32	s13, .L57+28
+ 236 0052 77EEE67A 		vsub.f32	s15, s15, s13
+ 237              	.LVL18:
+ 238              	.L21:
+ 131:Core/Src/motor.c ****     else if (yaw_error < -180.0f) yaw_error += 360.0f;
+ 132:Core/Src/motor.c **** 
+ 133:Core/Src/motor.c ****     // ---------- 3. Интеграл ----------
+ 134:Core/Src/motor.c ****     if (fabs(yaw_error) < 3.0f)
+ 239              		.loc 1 134 5 is_stmt 1 view .LVU68
+ 240              		.loc 1 134 9 is_stmt 0 view .LVU69
+ 241 0056 F0EEE76A 		vabs.f32	s13, s15
+ 242              		.loc 1 134 8 view .LVU70
+ 243 005a B0EE086A 		vmov.f32	s12, #3.0e+0
+ 244 005e F4EEC66A 		vcmpe.f32	s13, s12
+ 245 0062 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 246 0066 40F18580 		bpl	.L51
+ 135:Core/Src/motor.c ****         yaw_i += yaw_error;
+ 247              		.loc 1 135 9 is_stmt 1 view .LVU71
+ 248              		.loc 1 135 15 is_stmt 0 view .LVU72
+ 249 006a 5F4B     		ldr	r3, .L57+32
+ 250 006c D3ED006A 		vldr.32	s13, [r3]
+ 251 0070 76EEA76A 		vadd.f32	s13, s13, s15
+ 252 0074 C3ED006A 		vstr.32	s13, [r3]
+ 253              	.L25:
+ 136:Core/Src/motor.c ****     else
+ 137:Core/Src/motor.c ****         yaw_i *= 0.9f;
+ 138:Core/Src/motor.c **** 
+ 139:Core/Src/motor.c ****     if (yaw_i > I_LIMIT) yaw_i = I_LIMIT;
+ 254              		.loc 1 139 5 is_stmt 1 view .LVU73
+ 255              		.loc 1 139 15 is_stmt 0 view .LVU74
+ 256 0078 5B4B     		ldr	r3, .L57+32
+ 257 007a 93ED006A 		vldr.32	s12, [r3]
+ 258              		.loc 1 139 8 view .LVU75
+ 259 007e DFED5B6A 		vldr.32	s13, .L57+36
+ 260 0082 B4EEE66A 		vcmpe.f32	s12, s13
+ 261 0086 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 262 008a 7DDD     		ble	.L52
+ 263              		.loc 1 139 26 is_stmt 1 discriminator 1 view .LVU76
+ 264              		.loc 1 139 32 is_stmt 0 discriminator 1 view .LVU77
+ 265 008c C3ED006A 		vstr.32	s13, [r3]
+ 266              	.L28:
+ 140:Core/Src/motor.c ****     else if (yaw_i < -I_LIMIT) yaw_i = -I_LIMIT;
+ 141:Core/Src/motor.c **** 
+ 142:Core/Src/motor.c ****     if ((yaw_error > 0 && yaw_i < 0) || (yaw_error < 0 && yaw_i > 0))
+ 267              		.loc 1 142 5 is_stmt 1 view .LVU78
+ 268              		.loc 1 142 8 is_stmt 0 view .LVU79
+ 269 0090 F5EEC07A 		vcmpe.f32	s15, #0
+ 270 0094 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 271 0098 08DD     		ble	.L30
+ 272              		.loc 1 142 33 discriminator 1 view .LVU80
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s 			page 9
+
+
+ 273 009a 534B     		ldr	r3, .L57+32
+ 274 009c D3ED006A 		vldr.32	s13, [r3]
+ 275              		.loc 1 142 24 discriminator 1 view .LVU81
+ 276 00a0 F5EEC06A 		vcmpe.f32	s13, #0
+ 277 00a4 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 278 00a8 00F18480 		bmi	.L32
+ 279              	.L30:
+ 280              		.loc 1 142 38 discriminator 3 view .LVU82
+ 281 00ac F5EEC07A 		vcmpe.f32	s15, #0
+ 282 00b0 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 283 00b4 76D4     		bmi	.L55
+ 284              	.LVL19:
+ 285              	.L33:
+ 143:Core/Src/motor.c ****         yaw_i = 0;
+ 144:Core/Src/motor.c **** 
+ 145:Core/Src/motor.c ****     // ---------- 4. PID по курсу ----------
+ 146:Core/Src/motor.c ****     float corr = (Kp * yaw_error) + (Ki * yaw_i) - (Kd * yaw_rate_filtered);
+ 286              		.loc 1 146 5 is_stmt 1 view .LVU83
+ 287              		.loc 1 146 22 is_stmt 0 view .LVU84
+ 288 00b6 F2EE006A 		vmov.f32	s13, #8.0e+0
+ 289 00ba 67EEA67A 		vmul.f32	s15, s15, s13
+ 290              	.LVL20:
+ 291              		.loc 1 146 41 view .LVU85
+ 292 00be 4A4B     		ldr	r3, .L57+32
+ 293 00c0 D3ED006A 		vldr.32	s13, [r3]
+ 294 00c4 9FED4A6A 		vldr.32	s12, .L57+40
+ 295 00c8 66EE866A 		vmul.f32	s13, s13, s12
+ 296              		.loc 1 146 35 view .LVU86
+ 297 00cc 77EEA67A 		vadd.f32	s15, s15, s13
+ 298              		.loc 1 146 56 view .LVU87
+ 299 00d0 F0EE0C6A 		vmov.f32	s13, #3.5e+0
+ 300 00d4 27EE267A 		vmul.f32	s14, s14, s13
+ 301              		.loc 1 146 11 view .LVU88
+ 302 00d8 77EEC77A 		vsub.f32	s15, s15, s14
+ 303              	.LVL21:
+ 147:Core/Src/motor.c ****     int16_t correction_pwm = (int16_t)corr;
+ 304              		.loc 1 147 5 is_stmt 1 view .LVU89
+ 305              		.loc 1 147 13 is_stmt 0 view .LVU90
+ 306 00dc FDEEE77A 		vcvt.s32.f32	s15, s15
+ 307              	.LVL22:
+ 308              		.loc 1 147 13 view .LVU91
+ 309 00e0 17EE903A 		vmov	r3, s15	@ int
+ 310 00e4 1BB2     		sxth	r3, r3
+ 311              	.LVL23:
+ 148:Core/Src/motor.c ****     correction_pwm = clamp_i16(correction_pwm, -MAX_CORRECTION, MAX_CORRECTION);
+ 312              		.loc 1 148 5 is_stmt 1 view .LVU92
+ 313              	.LBB36:
+ 314              	.LBI36:
+  30:Core/Inc/motor.h **** {
+ 315              		.loc 2 30 23 view .LVU93
+ 316              	.LBB37:
+  32:Core/Inc/motor.h ****     if (v < min) return min;
+ 317              		.loc 2 32 5 view .LVU94
+  32:Core/Inc/motor.h ****     if (v < min) return min;
+ 318              		.loc 2 32 8 is_stmt 0 view .LVU95
+ 319 00e6 962B     		cmp	r3, #150
+ 320 00e8 68DC     		bgt	.L39
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s 			page 10
+
+
+ 321              		.loc 2 33 5 is_stmt 1 view .LVU96
+ 322              		.loc 2 33 8 is_stmt 0 view .LVU97
+ 323 00ea 13F1960F 		cmn	r3, #150
+ 324 00ee 67DB     		blt	.L56
+ 325              	.LVL24:
+ 326              	.L36:
+ 327              		.loc 2 33 8 view .LVU98
+ 328              	.LBE37:
+ 329              	.LBE36:
+ 149:Core/Src/motor.c **** 
+ 150:Core/Src/motor.c ****     // ---------- 5. Выравнивание моторов по энкодерам ----------
+ 151:Core/Src/motor.c ****     uint32_t e1, e2;
+ 330              		.loc 1 151 5 is_stmt 1 view .LVU99
+ 152:Core/Src/motor.c ****     __disable_irq();
+ 331              		.loc 1 152 5 view .LVU100
+ 332              	.LBB39:
+ 333              	.LBI39:
+ 334              		.file 3 "CMSIS/Include/cmsis_gcc.h"
+   1:CMSIS/Include/cmsis_gcc.h **** /**************************************************************************//**
+   2:CMSIS/Include/cmsis_gcc.h ****  * @file     cmsis_gcc.h
+   3:CMSIS/Include/cmsis_gcc.h ****  * @brief    CMSIS compiler GCC header file
+   4:CMSIS/Include/cmsis_gcc.h ****  * @version  V5.0.4
+   5:CMSIS/Include/cmsis_gcc.h ****  * @date     09. April 2018
+   6:CMSIS/Include/cmsis_gcc.h ****  ******************************************************************************/
+   7:CMSIS/Include/cmsis_gcc.h **** /*
+   8:CMSIS/Include/cmsis_gcc.h ****  * Copyright (c) 2009-2018 Arm Limited. All rights reserved.
+   9:CMSIS/Include/cmsis_gcc.h ****  *
+  10:CMSIS/Include/cmsis_gcc.h ****  * SPDX-License-Identifier: Apache-2.0
+  11:CMSIS/Include/cmsis_gcc.h ****  *
+  12:CMSIS/Include/cmsis_gcc.h ****  * Licensed under the Apache License, Version 2.0 (the License); you may
+  13:CMSIS/Include/cmsis_gcc.h ****  * not use this file except in compliance with the License.
+  14:CMSIS/Include/cmsis_gcc.h ****  * You may obtain a copy of the License at
+  15:CMSIS/Include/cmsis_gcc.h ****  *
+  16:CMSIS/Include/cmsis_gcc.h ****  * www.apache.org/licenses/LICENSE-2.0
+  17:CMSIS/Include/cmsis_gcc.h ****  *
+  18:CMSIS/Include/cmsis_gcc.h ****  * Unless required by applicable law or agreed to in writing, software
+  19:CMSIS/Include/cmsis_gcc.h ****  * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+  20:CMSIS/Include/cmsis_gcc.h ****  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  21:CMSIS/Include/cmsis_gcc.h ****  * See the License for the specific language governing permissions and
+  22:CMSIS/Include/cmsis_gcc.h ****  * limitations under the License.
+  23:CMSIS/Include/cmsis_gcc.h ****  */
+  24:CMSIS/Include/cmsis_gcc.h **** 
+  25:CMSIS/Include/cmsis_gcc.h **** #ifndef __CMSIS_GCC_H
+  26:CMSIS/Include/cmsis_gcc.h **** #define __CMSIS_GCC_H
+  27:CMSIS/Include/cmsis_gcc.h **** 
+  28:CMSIS/Include/cmsis_gcc.h **** /* ignore some GCC warnings */
+  29:CMSIS/Include/cmsis_gcc.h **** #pragma GCC diagnostic push
+  30:CMSIS/Include/cmsis_gcc.h **** #pragma GCC diagnostic ignored "-Wsign-conversion"
+  31:CMSIS/Include/cmsis_gcc.h **** #pragma GCC diagnostic ignored "-Wconversion"
+  32:CMSIS/Include/cmsis_gcc.h **** #pragma GCC diagnostic ignored "-Wunused-parameter"
+  33:CMSIS/Include/cmsis_gcc.h **** 
+  34:CMSIS/Include/cmsis_gcc.h **** /* Fallback for __has_builtin */
+  35:CMSIS/Include/cmsis_gcc.h **** #ifndef __has_builtin
+  36:CMSIS/Include/cmsis_gcc.h ****   #define __has_builtin(x) (0)
+  37:CMSIS/Include/cmsis_gcc.h **** #endif
+  38:CMSIS/Include/cmsis_gcc.h **** 
+  39:CMSIS/Include/cmsis_gcc.h **** /* CMSIS compiler specific defines */
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s 			page 11
+
+
+  40:CMSIS/Include/cmsis_gcc.h **** #ifndef   __ASM
+  41:CMSIS/Include/cmsis_gcc.h ****   #define __ASM                                  __asm
+  42:CMSIS/Include/cmsis_gcc.h **** #endif
+  43:CMSIS/Include/cmsis_gcc.h **** #ifndef   __INLINE
+  44:CMSIS/Include/cmsis_gcc.h ****   #define __INLINE                               inline
+  45:CMSIS/Include/cmsis_gcc.h **** #endif
+  46:CMSIS/Include/cmsis_gcc.h **** #ifndef   __STATIC_INLINE
+  47:CMSIS/Include/cmsis_gcc.h ****   #define __STATIC_INLINE                        static inline
+  48:CMSIS/Include/cmsis_gcc.h **** #endif
+  49:CMSIS/Include/cmsis_gcc.h **** #ifndef   __STATIC_FORCEINLINE                 
+  50:CMSIS/Include/cmsis_gcc.h ****   #define __STATIC_FORCEINLINE                   __attribute__((always_inline)) static inline
+  51:CMSIS/Include/cmsis_gcc.h **** #endif                                           
+  52:CMSIS/Include/cmsis_gcc.h **** #ifndef   __NO_RETURN
+  53:CMSIS/Include/cmsis_gcc.h ****   #define __NO_RETURN                            __attribute__((__noreturn__))
+  54:CMSIS/Include/cmsis_gcc.h **** #endif
+  55:CMSIS/Include/cmsis_gcc.h **** #ifndef   __USED
+  56:CMSIS/Include/cmsis_gcc.h ****   #define __USED                                 __attribute__((used))
+  57:CMSIS/Include/cmsis_gcc.h **** #endif
+  58:CMSIS/Include/cmsis_gcc.h **** #ifndef   __WEAK
+  59:CMSIS/Include/cmsis_gcc.h ****   #define __WEAK                                 __attribute__((weak))
+  60:CMSIS/Include/cmsis_gcc.h **** #endif
+  61:CMSIS/Include/cmsis_gcc.h **** #ifndef   __PACKED
+  62:CMSIS/Include/cmsis_gcc.h ****   #define __PACKED                               __attribute__((packed, aligned(1)))
+  63:CMSIS/Include/cmsis_gcc.h **** #endif
+  64:CMSIS/Include/cmsis_gcc.h **** #ifndef   __PACKED_STRUCT
+  65:CMSIS/Include/cmsis_gcc.h ****   #define __PACKED_STRUCT                        struct __attribute__((packed, aligned(1)))
+  66:CMSIS/Include/cmsis_gcc.h **** #endif
+  67:CMSIS/Include/cmsis_gcc.h **** #ifndef   __PACKED_UNION
+  68:CMSIS/Include/cmsis_gcc.h ****   #define __PACKED_UNION                         union __attribute__((packed, aligned(1)))
+  69:CMSIS/Include/cmsis_gcc.h **** #endif
+  70:CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT32        /* deprecated */
+  71:CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+  72:CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+  73:CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+  74:CMSIS/Include/cmsis_gcc.h ****   struct __attribute__((packed)) T_UINT32 { uint32_t v; };
+  75:CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+  76:CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT32(x)                  (((struct T_UINT32 *)(x))->v)
+  77:CMSIS/Include/cmsis_gcc.h **** #endif
+  78:CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT16_WRITE
+  79:CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+  80:CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+  81:CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+  82:CMSIS/Include/cmsis_gcc.h ****   __PACKED_STRUCT T_UINT16_WRITE { uint16_t v; };
+  83:CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+  84:CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT16_WRITE(addr, val)    (void)((((struct T_UINT16_WRITE *)(void *)(addr))-
+  85:CMSIS/Include/cmsis_gcc.h **** #endif
+  86:CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT16_READ
+  87:CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+  88:CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+  89:CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+  90:CMSIS/Include/cmsis_gcc.h ****   __PACKED_STRUCT T_UINT16_READ { uint16_t v; };
+  91:CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+  92:CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT16_READ(addr)          (((const struct T_UINT16_READ *)(const void *)(add
+  93:CMSIS/Include/cmsis_gcc.h **** #endif
+  94:CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT32_WRITE
+  95:CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+  96:CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s 			page 12
+
+
+  97:CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+  98:CMSIS/Include/cmsis_gcc.h ****   __PACKED_STRUCT T_UINT32_WRITE { uint32_t v; };
+  99:CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+ 100:CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT32_WRITE(addr, val)    (void)((((struct T_UINT32_WRITE *)(void *)(addr))-
+ 101:CMSIS/Include/cmsis_gcc.h **** #endif
+ 102:CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT32_READ
+ 103:CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+ 104:CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+ 105:CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+ 106:CMSIS/Include/cmsis_gcc.h ****   __PACKED_STRUCT T_UINT32_READ { uint32_t v; };
+ 107:CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+ 108:CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT32_READ(addr)          (((const struct T_UINT32_READ *)(const void *)(add
+ 109:CMSIS/Include/cmsis_gcc.h **** #endif
+ 110:CMSIS/Include/cmsis_gcc.h **** #ifndef   __ALIGNED
+ 111:CMSIS/Include/cmsis_gcc.h ****   #define __ALIGNED(x)                           __attribute__((aligned(x)))
+ 112:CMSIS/Include/cmsis_gcc.h **** #endif
+ 113:CMSIS/Include/cmsis_gcc.h **** #ifndef   __RESTRICT
+ 114:CMSIS/Include/cmsis_gcc.h ****   #define __RESTRICT                             __restrict
+ 115:CMSIS/Include/cmsis_gcc.h **** #endif
+ 116:CMSIS/Include/cmsis_gcc.h **** 
+ 117:CMSIS/Include/cmsis_gcc.h **** 
+ 118:CMSIS/Include/cmsis_gcc.h **** /* ###########################  Core Function Access  ########################### */
+ 119:CMSIS/Include/cmsis_gcc.h **** /** \ingroup  CMSIS_Core_FunctionInterface
+ 120:CMSIS/Include/cmsis_gcc.h ****     \defgroup CMSIS_Core_RegAccFunctions CMSIS Core Register Access Functions
+ 121:CMSIS/Include/cmsis_gcc.h ****   @{
+ 122:CMSIS/Include/cmsis_gcc.h ****  */
+ 123:CMSIS/Include/cmsis_gcc.h **** 
+ 124:CMSIS/Include/cmsis_gcc.h **** /**
+ 125:CMSIS/Include/cmsis_gcc.h ****   \brief   Enable IRQ Interrupts
+ 126:CMSIS/Include/cmsis_gcc.h ****   \details Enables IRQ interrupts by clearing the I-bit in the CPSR.
+ 127:CMSIS/Include/cmsis_gcc.h ****            Can only be executed in Privileged modes.
+ 128:CMSIS/Include/cmsis_gcc.h ****  */
+ 129:CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __enable_irq(void)
+ 130:CMSIS/Include/cmsis_gcc.h **** {
+ 131:CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("cpsie i" : : : "memory");
+ 132:CMSIS/Include/cmsis_gcc.h **** }
+ 133:CMSIS/Include/cmsis_gcc.h **** 
+ 134:CMSIS/Include/cmsis_gcc.h **** 
+ 135:CMSIS/Include/cmsis_gcc.h **** /**
+ 136:CMSIS/Include/cmsis_gcc.h ****   \brief   Disable IRQ Interrupts
+ 137:CMSIS/Include/cmsis_gcc.h ****   \details Disables IRQ interrupts by setting the I-bit in the CPSR.
+ 138:CMSIS/Include/cmsis_gcc.h ****            Can only be executed in Privileged modes.
+ 139:CMSIS/Include/cmsis_gcc.h ****  */
+ 140:CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __disable_irq(void)
+ 335              		.loc 3 140 27 view .LVU101
+ 336              	.LBB40:
+ 141:CMSIS/Include/cmsis_gcc.h **** {
+ 142:CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("cpsid i" : : : "memory");
+ 337              		.loc 3 142 3 view .LVU102
+ 338              		.syntax unified
+ 339              	@ 142 "CMSIS/Include/cmsis_gcc.h" 1
+ 340 00f0 72B6     		cpsid i
+ 341              	@ 0 "" 2
+ 342              		.thumb
+ 343              		.syntax unified
+ 344              	.LBE40:
+ 345              	.LBE39:
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s 			page 13
+
+
+ 153:Core/Src/motor.c ****     e1 = encoder1_count;
+ 346              		.loc 1 153 5 view .LVU103
+ 347              		.loc 1 153 8 is_stmt 0 view .LVU104
+ 348 00f2 404A     		ldr	r2, .L57+44
+ 349 00f4 1268     		ldr	r2, [r2]
+ 350              	.LVL25:
+ 154:Core/Src/motor.c ****     e2 = encoder2_count;
+ 351              		.loc 1 154 5 is_stmt 1 view .LVU105
+ 352              		.loc 1 154 8 is_stmt 0 view .LVU106
+ 353 00f6 4049     		ldr	r1, .L57+48
+ 354 00f8 0968     		ldr	r1, [r1]
+ 355              	.LVL26:
+ 155:Core/Src/motor.c ****     __enable_irq();
+ 356              		.loc 1 155 5 is_stmt 1 view .LVU107
+ 357              	.LBB41:
+ 358              	.LBI41:
+ 129:CMSIS/Include/cmsis_gcc.h **** {
+ 359              		.loc 3 129 27 view .LVU108
+ 360              	.LBB42:
+ 131:CMSIS/Include/cmsis_gcc.h **** }
+ 361              		.loc 3 131 3 view .LVU109
+ 362              		.syntax unified
+ 363              	@ 131 "CMSIS/Include/cmsis_gcc.h" 1
+ 364 00fa 62B6     		cpsie i
+ 365              	@ 0 "" 2
+ 366              		.thumb
+ 367              		.syntax unified
+ 368              	.LBE42:
+ 369              	.LBE41:
+ 156:Core/Src/motor.c **** 
+ 157:Core/Src/motor.c ****     // Разница моторов: положительная → левый мотор быст
+ 158:Core/Src/motor.c ****     float motor_error = (float)(e1 - e2) * 10.5f; // коэффициент 0.5 можно подб
+ 370              		.loc 1 158 5 view .LVU110
+ 371              		.loc 1 158 36 is_stmt 0 view .LVU111
+ 372 00fc 521A     		subs	r2, r2, r1
+ 373              	.LVL27:
+ 374              		.loc 1 158 36 view .LVU112
+ 375 00fe 07EE902A 		vmov	s15, r2	@ int
+ 376              		.loc 1 158 25 view .LVU113
+ 377 0102 F8EE677A 		vcvt.f32.u32	s15, s15
+ 378              		.loc 1 158 11 view .LVU114
+ 379 0106 B2EE057A 		vmov.f32	s14, #1.05e+1
+ 380 010a 67EE877A 		vmul.f32	s15, s15, s14
+ 381              	.LVL28:
+ 159:Core/Src/motor.c ****     int16_t motor_comp = (int16_t)motor_error;
+ 382              		.loc 1 159 5 is_stmt 1 view .LVU115
+ 383              		.loc 1 159 13 is_stmt 0 view .LVU116
+ 384 010e FDEEE77A 		vcvt.s32.f32	s15, s15
+ 385              	.LVL29:
+ 160:Core/Src/motor.c **** 
+ 161:Core/Src/motor.c ****     // ---------- 6. Формируем PWM для моторов ----------
+ 162:Core/Src/motor.c ****     int16_t base_left  = base_speed - motor_comp;
+ 386              		.loc 1 162 5 is_stmt 1 view .LVU117
+ 387              		.loc 1 162 37 is_stmt 0 view .LVU118
+ 388 0112 3A4A     		ldr	r2, .L57+52
+ 389              	.LVL30:
+ 390              		.loc 1 162 37 view .LVU119
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s 			page 14
+
+
+ 391 0114 1088     		ldrh	r0, [r2]
+ 392 0116 17EE901A 		vmov	r1, s15	@ int
+ 393              	.LVL31:
+ 394              		.loc 1 162 37 view .LVU120
+ 395 011a 89B2     		uxth	r1, r1
+ 396 011c 401A     		subs	r0, r0, r1
+ 397              	.LVL32:
+ 163:Core/Src/motor.c ****     int16_t base_right = base_speed + motor_comp;
+ 398              		.loc 1 163 5 is_stmt 1 view .LVU121
+ 399              		.loc 1 163 37 is_stmt 0 view .LVU122
+ 400 011e 1288     		ldrh	r2, [r2]
+ 401 0120 1144     		add	r1, r1, r2
+ 402 0122 89B2     		uxth	r1, r1
+ 403              	.LVL33:
+ 164:Core/Src/motor.c **** 
+ 165:Core/Src/motor.c ****     int16_t left  = base_left + correction_pwm;
+ 404              		.loc 1 165 5 is_stmt 1 view .LVU123
+ 405              		.loc 1 165 31 is_stmt 0 view .LVU124
+ 406 0124 9BB2     		uxth	r3, r3
+ 407              		.loc 1 165 31 view .LVU125
+ 408 0126 13FA80F0 		uxtah	r0, r3, r0
+ 409              	.LVL34:
+ 410              		.loc 1 165 13 view .LVU126
+ 411 012a 00B2     		sxth	r0, r0
+ 412              	.LVL35:
+ 166:Core/Src/motor.c ****     int16_t right = base_right - correction_pwm;
+ 413              		.loc 1 166 5 is_stmt 1 view .LVU127
+ 414              		.loc 1 166 32 is_stmt 0 view .LVU128
+ 415 012c C91A     		subs	r1, r1, r3
+ 416              	.LVL36:
+ 417              		.loc 1 166 13 view .LVU129
+ 418 012e 09B2     		sxth	r1, r1
+ 419              	.LVL37:
+ 167:Core/Src/motor.c **** 
+ 168:Core/Src/motor.c ****     // Ограничение минимальной скорости
+ 169:Core/Src/motor.c ****     if (left < 294) left = 294;
+ 420              		.loc 1 169 5 is_stmt 1 view .LVU130
+ 421              		.loc 1 169 8 is_stmt 0 view .LVU131
+ 422 0130 B0F5937F 		cmp	r0, #294
+ 423 0134 01DA     		bge	.L37
+ 424              		.loc 1 169 26 discriminator 1 view .LVU132
+ 425 0136 4FF49370 		mov	r0, #294
+ 426              	.LVL38:
+ 427              	.L37:
+ 170:Core/Src/motor.c ****     if (right < 280) right = 280;
+ 428              		.loc 1 170 5 is_stmt 1 view .LVU133
+ 429              		.loc 1 170 8 is_stmt 0 view .LVU134
+ 430 013a B1F58C7F 		cmp	r1, #280
+ 431 013e 01DA     		bge	.L38
+ 432              		.loc 1 170 28 discriminator 1 view .LVU135
+ 433 0140 4FF48C71 		mov	r1, #280
+ 434              	.LVL39:
+ 435              	.L38:
+ 171:Core/Src/motor.c **** 
+ 172:Core/Src/motor.c ****     Motor_Set(left, right);
+ 436              		.loc 1 172 5 is_stmt 1 view .LVU136
+ 437 0144 FFF7FEFF 		bl	Motor_Set
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s 			page 15
+
+
+ 438              	.LVL40:
+ 439              	.L16:
+ 173:Core/Src/motor.c **** }
+ 440              		.loc 1 173 1 is_stmt 0 view .LVU137
+ 441 0148 08BD     		pop	{r3, pc}
+ 442              	.L54:
+ 119:Core/Src/motor.c ****         Motor_Set(0, 0);
+ 443              		.loc 1 119 9 is_stmt 1 view .LVU138
+ 119:Core/Src/motor.c ****         Motor_Set(0, 0);
+ 444              		.loc 1 119 15 is_stmt 0 view .LVU139
+ 445 014a 274B     		ldr	r3, .L57+32
+ 446 014c 0022     		movs	r2, #0
+ 447 014e 1A60     		str	r2, [r3]	@ float
+ 120:Core/Src/motor.c ****         return;
+ 448              		.loc 1 120 9 is_stmt 1 view .LVU140
+ 449 0150 0021     		movs	r1, #0
+ 450 0152 0846     		mov	r0, r1
+ 451 0154 FFF7FEFF 		bl	Motor_Set
+ 452              	.LVL41:
+ 121:Core/Src/motor.c ****     }
+ 453              		.loc 1 121 9 view .LVU141
+ 454 0158 F6E7     		b	.L16
+ 455              	.LVL42:
+ 456              	.L50:
+ 131:Core/Src/motor.c **** 
+ 457              		.loc 1 131 10 view .LVU142
+ 131:Core/Src/motor.c **** 
+ 458              		.loc 1 131 13 is_stmt 0 view .LVU143
+ 459 015a DFED296A 		vldr.32	s13, .L57+56
+ 460 015e F4EEE67A 		vcmpe.f32	s15, s13
+ 461 0162 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 462 0166 7FF576AF 		bpl	.L21
+ 131:Core/Src/motor.c **** 
+ 463              		.loc 1 131 35 is_stmt 1 discriminator 1 view .LVU144
+ 131:Core/Src/motor.c **** 
+ 464              		.loc 1 131 45 is_stmt 0 discriminator 1 view .LVU145
+ 465 016a DFED1E6A 		vldr.32	s13, .L57+28
+ 466 016e 77EEA67A 		vadd.f32	s15, s15, s13
+ 467              	.LVL43:
+ 131:Core/Src/motor.c **** 
+ 468              		.loc 1 131 45 discriminator 1 view .LVU146
+ 469 0172 70E7     		b	.L21
+ 470              	.L51:
+ 137:Core/Src/motor.c **** 
+ 471              		.loc 1 137 9 is_stmt 1 view .LVU147
+ 137:Core/Src/motor.c **** 
+ 472              		.loc 1 137 15 is_stmt 0 view .LVU148
+ 473 0174 1C4B     		ldr	r3, .L57+32
+ 474 0176 D3ED006A 		vldr.32	s13, [r3]
+ 475 017a 9FED166A 		vldr.32	s12, .L57+12
+ 476 017e 66EE866A 		vmul.f32	s13, s13, s12
+ 477 0182 C3ED006A 		vstr.32	s13, [r3]
+ 478 0186 77E7     		b	.L25
+ 479              	.L52:
+ 140:Core/Src/motor.c **** 
+ 480              		.loc 1 140 10 is_stmt 1 view .LVU149
+ 140:Core/Src/motor.c **** 
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s 			page 16
+
+
+ 481              		.loc 1 140 20 is_stmt 0 view .LVU150
+ 482 0188 174B     		ldr	r3, .L57+32
+ 483 018a 93ED006A 		vldr.32	s12, [r3]
+ 140:Core/Src/motor.c **** 
+ 484              		.loc 1 140 13 view .LVU151
+ 485 018e DFED1D6A 		vldr.32	s13, .L57+60
+ 486 0192 B4EEE66A 		vcmpe.f32	s12, s13
+ 487 0196 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 488 019a 7FF579AF 		bpl	.L28
+ 140:Core/Src/motor.c **** 
+ 489              		.loc 1 140 32 is_stmt 1 discriminator 1 view .LVU152
+ 140:Core/Src/motor.c **** 
+ 490              		.loc 1 140 38 is_stmt 0 discriminator 1 view .LVU153
+ 491 019e C3ED006A 		vstr.32	s13, [r3]
+ 492 01a2 75E7     		b	.L28
+ 493              	.L55:
+ 142:Core/Src/motor.c ****         yaw_i = 0;
+ 494              		.loc 1 142 65 discriminator 4 view .LVU154
+ 495 01a4 104B     		ldr	r3, .L57+32
+ 496 01a6 D3ED006A 		vldr.32	s13, [r3]
+ 142:Core/Src/motor.c ****         yaw_i = 0;
+ 497              		.loc 1 142 56 discriminator 4 view .LVU155
+ 498 01aa F5EEC06A 		vcmpe.f32	s13, #0
+ 499 01ae F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 500 01b2 80DD     		ble	.L33
+ 501              	.L32:
+ 143:Core/Src/motor.c **** 
+ 502              		.loc 1 143 9 is_stmt 1 view .LVU156
+ 143:Core/Src/motor.c **** 
+ 503              		.loc 1 143 15 is_stmt 0 view .LVU157
+ 504 01b4 0C4B     		ldr	r3, .L57+32
+ 505 01b6 0022     		movs	r2, #0
+ 506              	.LVL44:
+ 143:Core/Src/motor.c **** 
+ 507              		.loc 1 143 15 view .LVU158
+ 508 01b8 1A60     		str	r2, [r3]	@ float
+ 509 01ba 7CE7     		b	.L33
+ 510              	.LVL45:
+ 511              	.L39:
+ 512              	.LBB43:
+ 513              	.LBB38:
+  32:Core/Inc/motor.h ****     if (v < min) return min;
+ 514              		.loc 2 32 25 discriminator 1 view .LVU159
+ 515 01bc 9623     		movs	r3, #150
+ 516              	.LVL46:
+  32:Core/Inc/motor.h ****     if (v < min) return min;
+ 517              		.loc 2 32 25 discriminator 1 view .LVU160
+ 518 01be 97E7     		b	.L36
+ 519              	.LVL47:
+ 520              	.L56:
+ 521              		.loc 2 33 25 discriminator 1 view .LVU161
+ 522 01c0 6FF09503 		mvn	r3, #149
+ 523              	.LVL48:
+ 524              		.loc 2 33 25 discriminator 1 view .LVU162
+ 525 01c4 94E7     		b	.L36
+ 526              	.L58:
+ 527 01c6 00BF     		.align	2
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s 			page 17
+
+
+ 528              	.L57:
+ 529 01c8 00000000 		.word	robot_started
+ 530 01cc 00000000 		.word	MPU6050
+ 531 01d0 00000000 		.word	yaw_rate_filtered
+ 532 01d4 6666663F 		.word	1063675494
+ 533 01d8 CDCCCC3D 		.word	1036831949
+ 534 01dc 00000000 		.word	yaw_target
+ 535 01e0 00003443 		.word	1127481344
+ 536 01e4 0000B443 		.word	1135869952
+ 537 01e8 00000000 		.word	yaw_i
+ 538 01ec 00002042 		.word	1109393408
+ 539 01f0 CDCC4C3E 		.word	1045220557
+ 540 01f4 00000000 		.word	encoder1_count
+ 541 01f8 00000000 		.word	encoder2_count
+ 542 01fc 00000000 		.word	base_speed
+ 543 0200 000034C3 		.word	-1020002304
+ 544 0204 000020C2 		.word	-1038090240
+ 545              	.LBE38:
+ 546              	.LBE43:
+ 547              		.cfi_endproc
+ 548              	.LFE135:
+ 550              		.section	.text.Rotate_Start,"ax",%progbits
+ 551              		.align	1
+ 552              		.global	Rotate_Start
+ 553              		.syntax unified
+ 554              		.thumb
+ 555              		.thumb_func
+ 557              	Rotate_Start:
+ 558              	.LVL49:
+ 559              	.LFB136:
+ 174:Core/Src/motor.c **** 
+ 175:Core/Src/motor.c **** 
+ 176:Core/Src/motor.c **** void Rotate_Start(float angle_deg)
+ 177:Core/Src/motor.c **** {
+ 560              		.loc 1 177 1 is_stmt 1 view -0
+ 561              		.cfi_startproc
+ 562              		@ args = 0, pretend = 0, frame = 0
+ 563              		@ frame_needed = 0, uses_anonymous_args = 0
+ 564              		.loc 1 177 1 is_stmt 0 view .LVU164
+ 565 0000 10B5     		push	{r4, lr}
+ 566              	.LCFI1:
+ 567              		.cfi_def_cfa_offset 8
+ 568              		.cfi_offset 4, -8
+ 569              		.cfi_offset 14, -4
+ 570 0002 10EE104A 		vmov	r4, s0
+ 178:Core/Src/motor.c ****    
+ 179:Core/Src/motor.c ****   MPU6050_Reset_Yaw(); 
+ 571              		.loc 1 179 3 is_stmt 1 view .LVU165
+ 572 0006 FFF7FEFF 		bl	MPU6050_Reset_Yaw
+ 573              	.LVL50:
+ 180:Core/Src/motor.c ****     turn_target =  angle_deg;
+ 574              		.loc 1 180 5 view .LVU166
+ 575              		.loc 1 180 17 is_stmt 0 view .LVU167
+ 576 000a 034B     		ldr	r3, .L61
+ 577 000c 1C60     		str	r4, [r3]	@ float
+ 181:Core/Src/motor.c ****     turning = 1;
+ 578              		.loc 1 181 5 is_stmt 1 view .LVU168
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s 			page 18
+
+
+ 579              		.loc 1 181 13 is_stmt 0 view .LVU169
+ 580 000e 034B     		ldr	r3, .L61+4
+ 581 0010 0122     		movs	r2, #1
+ 582 0012 1A70     		strb	r2, [r3]
+ 182:Core/Src/motor.c **** }
+ 583              		.loc 1 182 1 view .LVU170
+ 584 0014 10BD     		pop	{r4, pc}
+ 585              	.LVL51:
+ 586              	.L62:
+ 587              		.loc 1 182 1 view .LVU171
+ 588 0016 00BF     		.align	2
+ 589              	.L61:
+ 590 0018 00000000 		.word	turn_target
+ 591 001c 00000000 		.word	turning
+ 592              		.cfi_endproc
+ 593              	.LFE136:
+ 595              		.section	.text.Rotate_Process_1ms,"ax",%progbits
+ 596              		.align	1
+ 597              		.global	Rotate_Process_1ms
+ 598              		.syntax unified
+ 599              		.thumb
+ 600              		.thumb_func
+ 602              	Rotate_Process_1ms:
+ 603              	.LFB137:
+ 183:Core/Src/motor.c **** 
+ 184:Core/Src/motor.c **** void Rotate_Process_1ms(void)
+ 185:Core/Src/motor.c **** {
+ 604              		.loc 1 185 1 is_stmt 1 view -0
+ 605              		.cfi_startproc
+ 606              		@ args = 0, pretend = 0, frame = 0
+ 607              		@ frame_needed = 0, uses_anonymous_args = 0
+ 608 0000 08B5     		push	{r3, lr}
+ 609              	.LCFI2:
+ 610              		.cfi_def_cfa_offset 8
+ 611              		.cfi_offset 3, -8
+ 612              		.cfi_offset 14, -4
+ 186:Core/Src/motor.c ****     if (!turning)
+ 613              		.loc 1 186 5 view .LVU173
+ 614              		.loc 1 186 9 is_stmt 0 view .LVU174
+ 615 0002 384B     		ldr	r3, .L89
+ 616 0004 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 617              		.loc 1 186 8 view .LVU175
+ 618 0006 03B9     		cbnz	r3, .L85
+ 619              	.L63:
+ 187:Core/Src/motor.c ****         return;
+ 188:Core/Src/motor.c **** 
+ 189:Core/Src/motor.c ****     float yaw = MPU6050_Get_Yaw();
+ 190:Core/Src/motor.c ****     float error = turn_target - yaw;
+ 191:Core/Src/motor.c **** 
+ 192:Core/Src/motor.c ****     // Нормализация ошибки к диапазону -180...+180
+ 193:Core/Src/motor.c ****     if (error > 180.0f) error -= 360.0f;
+ 194:Core/Src/motor.c ****     if (error < -180.0f) error += 360.0f;
+ 195:Core/Src/motor.c **** 
+ 196:Core/Src/motor.c ****     // Достигли угла
+ 197:Core/Src/motor.c ****     if (fabs(error) < 0.3f)
+ 198:Core/Src/motor.c ****     {
+ 199:Core/Src/motor.c ****         Motor_Set(0, 0);
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s 			page 19
+
+
+ 200:Core/Src/motor.c ****         turning = 0;
+ 201:Core/Src/motor.c ****         return;
+ 202:Core/Src/motor.c ****     }
+ 203:Core/Src/motor.c **** 
+ 204:Core/Src/motor.c ****     // --- PID P-регулятор ---
+ 205:Core/Src/motor.c ****     float Kp = 4.0f;
+ 206:Core/Src/motor.c ****     float kd = 0.1f;
+ 207:Core/Src/motor.c **** 
+ 208:Core/Src/motor.c ****     // скорость поворота с демпфированием
+ 209:Core/Src/motor.c ****     int16_t speed = (int16_t)(Kp * error - kd * MPU6050.yaw_rate);
+ 210:Core/Src/motor.c **** 
+ 211:Core/Src/motor.c ****     // --- базовый PWM для моторов (левый тугой, правый лёгки
+ 212:Core/Src/motor.c ****     int16_t left_base  = 304; // левый мотор
+ 213:Core/Src/motor.c ****     int16_t right_base = 290; // правый мотор
+ 214:Core/Src/motor.c **** 
+ 215:Core/Src/motor.c ****     int16_t left_pwm, right_pwm;
+ 216:Core/Src/motor.c **** 
+ 217:Core/Src/motor.c ****     if (speed >= 0)
+ 218:Core/Src/motor.c ****     {
+ 219:Core/Src/motor.c ****         left_pwm  = left_base  + speed;
+ 220:Core/Src/motor.c ****         right_pwm = -(right_base + speed);
+ 221:Core/Src/motor.c ****     }
+ 222:Core/Src/motor.c ****     else
+ 223:Core/Src/motor.c ****     {
+ 224:Core/Src/motor.c ****         left_pwm  = -left_base + speed;
+ 225:Core/Src/motor.c ****         right_pwm = right_base - speed;
+ 226:Core/Src/motor.c ****     }
+ 227:Core/Src/motor.c **** 
+ 228:Core/Src/motor.c ****     // --- ограничение ---
+ 229:Core/Src/motor.c ****     left_pwm  = clamp_i16(left_pwm,  -380, 380);
+ 230:Core/Src/motor.c ****     right_pwm = clamp_i16(right_pwm, -380, 380);
+ 231:Core/Src/motor.c **** 
+ 232:Core/Src/motor.c ****     // --- отправка на моторы ---
+ 233:Core/Src/motor.c ****     Motor_Set(left_pwm, right_pwm);
+ 234:Core/Src/motor.c **** }
+ 620              		.loc 1 234 1 view .LVU176
+ 621 0008 08BD     		pop	{r3, pc}
+ 622              	.L85:
+ 189:Core/Src/motor.c ****     float error = turn_target - yaw;
+ 623              		.loc 1 189 5 is_stmt 1 view .LVU177
+ 189:Core/Src/motor.c ****     float error = turn_target - yaw;
+ 624              		.loc 1 189 17 is_stmt 0 view .LVU178
+ 625 000a FFF7FEFF 		bl	MPU6050_Get_Yaw
+ 626              	.LVL52:
+ 190:Core/Src/motor.c **** 
+ 627              		.loc 1 190 5 is_stmt 1 view .LVU179
+ 190:Core/Src/motor.c **** 
+ 628              		.loc 1 190 31 is_stmt 0 view .LVU180
+ 629 000e 364B     		ldr	r3, .L89+4
+ 630 0010 D3ED007A 		vldr.32	s15, [r3]
+ 190:Core/Src/motor.c **** 
+ 631              		.loc 1 190 11 view .LVU181
+ 632 0014 37EEC00A 		vsub.f32	s0, s15, s0
+ 633              	.LVL53:
+ 193:Core/Src/motor.c ****     if (error < -180.0f) error += 360.0f;
+ 634              		.loc 1 193 5 is_stmt 1 view .LVU182
+ 193:Core/Src/motor.c ****     if (error < -180.0f) error += 360.0f;
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s 			page 20
+
+
+ 635              		.loc 1 193 8 is_stmt 0 view .LVU183
+ 636 0018 DFED347A 		vldr.32	s15, .L89+8
+ 637 001c B4EEE70A 		vcmpe.f32	s0, s15
+ 638 0020 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 639 0024 37DD     		ble	.L82
+ 193:Core/Src/motor.c ****     if (error < -180.0f) error += 360.0f;
+ 640              		.loc 1 193 25 is_stmt 1 discriminator 1 view .LVU184
+ 193:Core/Src/motor.c ****     if (error < -180.0f) error += 360.0f;
+ 641              		.loc 1 193 31 is_stmt 0 discriminator 1 view .LVU185
+ 642 0026 DFED327A 		vldr.32	s15, .L89+12
+ 643 002a 30EE670A 		vsub.f32	s0, s0, s15
+ 644              	.LVL54:
+ 194:Core/Src/motor.c **** 
+ 645              		.loc 1 194 5 is_stmt 1 view .LVU186
+ 646              	.L67:
+ 197:Core/Src/motor.c ****     {
+ 647              		.loc 1 197 5 view .LVU187
+ 197:Core/Src/motor.c ****     {
+ 648              		.loc 1 197 9 is_stmt 0 view .LVU188
+ 649 002e F0EEC07A 		vabs.f32	s15, s0
+ 197:Core/Src/motor.c ****     {
+ 650              		.loc 1 197 8 view .LVU189
+ 651 0032 9FED307A 		vldr.32	s14, .L89+16
+ 652 0036 F4EEC77A 		vcmpe.f32	s15, s14
+ 653 003a F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 654 003e 36D4     		bmi	.L86
+ 205:Core/Src/motor.c ****     float kd = 0.1f;
+ 655              		.loc 1 205 5 is_stmt 1 view .LVU190
+ 656              	.LVL55:
+ 206:Core/Src/motor.c **** 
+ 657              		.loc 1 206 5 view .LVU191
+ 209:Core/Src/motor.c **** 
+ 658              		.loc 1 209 5 view .LVU192
+ 209:Core/Src/motor.c **** 
+ 659              		.loc 1 209 34 is_stmt 0 view .LVU193
+ 660 0040 F1EE007A 		vmov.f32	s15, #4.0e+0
+ 661 0044 20EE270A 		vmul.f32	s0, s0, s15
+ 662              	.LVL56:
+ 209:Core/Src/motor.c **** 
+ 663              		.loc 1 209 56 view .LVU194
+ 664 0048 2B4B     		ldr	r3, .L89+20
+ 665 004a D3ED017A 		vldr.32	s15, [r3, #4]
+ 209:Core/Src/motor.c **** 
+ 666              		.loc 1 209 47 view .LVU195
+ 667 004e 9FED2B7A 		vldr.32	s14, .L89+24
+ 668 0052 67EE877A 		vmul.f32	s15, s15, s14
+ 209:Core/Src/motor.c **** 
+ 669              		.loc 1 209 42 view .LVU196
+ 670 0056 30EE670A 		vsub.f32	s0, s0, s15
+ 209:Core/Src/motor.c **** 
+ 671              		.loc 1 209 13 view .LVU197
+ 672 005a BDEEC00A 		vcvt.s32.f32	s0, s0
+ 673 005e 10EE103A 		vmov	r3, s0	@ int
+ 674 0062 19B2     		sxth	r1, r3
+ 675              	.LVL57:
+ 212:Core/Src/motor.c ****     int16_t right_base = 290; // правый мотор
+ 676              		.loc 1 212 5 is_stmt 1 view .LVU198
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s 			page 21
+
+
+ 213:Core/Src/motor.c **** 
+ 677              		.loc 1 213 5 view .LVU199
+ 215:Core/Src/motor.c **** 
+ 678              		.loc 1 215 5 view .LVU200
+ 217:Core/Src/motor.c ****     {
+ 679              		.loc 1 217 5 view .LVU201
+ 217:Core/Src/motor.c ****     {
+ 680              		.loc 1 217 8 is_stmt 0 view .LVU202
+ 681 0064 0029     		cmp	r1, #0
+ 682 0066 2ADB     		blt	.L71
+ 219:Core/Src/motor.c ****         right_pwm = -(right_base + speed);
+ 683              		.loc 1 219 9 is_stmt 1 view .LVU203
+ 219:Core/Src/motor.c ****         right_pwm = -(right_base + speed);
+ 684              		.loc 1 219 32 is_stmt 0 view .LVU204
+ 685 0068 89B2     		uxth	r1, r1
+ 219:Core/Src/motor.c ****         right_pwm = -(right_base + speed);
+ 686              		.loc 1 219 32 view .LVU205
+ 687 006a 01F59870 		add	r0, r1, #304
+ 219:Core/Src/motor.c ****         right_pwm = -(right_base + speed);
+ 688              		.loc 1 219 19 view .LVU206
+ 689 006e 00B2     		sxth	r0, r0
+ 690              	.LVL58:
+ 220:Core/Src/motor.c ****     }
+ 691              		.loc 1 220 9 is_stmt 1 view .LVU207
+ 220:Core/Src/motor.c ****     }
+ 692              		.loc 1 220 19 is_stmt 0 view .LVU208
+ 693 0070 C1F57E41 		rsb	r1, r1, #65024
+ 694              	.LVL59:
+ 220:Core/Src/motor.c ****     }
+ 695              		.loc 1 220 19 view .LVU209
+ 696 0074 DE31     		adds	r1, r1, #222
+ 697 0076 09B2     		sxth	r1, r1
+ 698              	.LVL60:
+ 699              	.L72:
+ 229:Core/Src/motor.c ****     right_pwm = clamp_i16(right_pwm, -380, 380);
+ 700              		.loc 1 229 5 is_stmt 1 view .LVU210
+ 701              	.LBB44:
+ 702              	.LBI44:
+  30:Core/Inc/motor.h **** {
+ 703              		.loc 2 30 23 view .LVU211
+ 704              	.LBB45:
+  32:Core/Inc/motor.h ****     if (v < min) return min;
+ 705              		.loc 2 32 5 view .LVU212
+  32:Core/Inc/motor.h ****     if (v < min) return min;
+ 706              		.loc 2 32 8 is_stmt 0 view .LVU213
+ 707 0078 B0F5BE7F 		cmp	r0, #380
+ 708 007c 27DC     		bgt	.L75
+ 709              		.loc 2 33 5 is_stmt 1 view .LVU214
+ 710              		.loc 2 33 8 is_stmt 0 view .LVU215
+ 711 007e 10F5BE7F 		cmn	r0, #380
+ 712 0082 27DB     		blt	.L87
+ 713              	.LVL61:
+ 714              	.L73:
+ 715              		.loc 2 33 8 view .LVU216
+ 716              	.LBE45:
+ 717              	.LBE44:
+ 230:Core/Src/motor.c **** 
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s 			page 22
+
+
+ 718              		.loc 1 230 5 is_stmt 1 view .LVU217
+ 719              	.LBB47:
+ 720              	.LBI47:
+  30:Core/Inc/motor.h **** {
+ 721              		.loc 2 30 23 view .LVU218
+ 722              	.LBB48:
+  32:Core/Inc/motor.h ****     if (v < min) return min;
+ 723              		.loc 2 32 5 view .LVU219
+  32:Core/Inc/motor.h ****     if (v < min) return min;
+ 724              		.loc 2 32 8 is_stmt 0 view .LVU220
+ 725 0084 B1F5BE7F 		cmp	r1, #380
+ 726 0088 26DC     		bgt	.L77
+ 727              		.loc 2 33 5 is_stmt 1 view .LVU221
+ 728              		.loc 2 33 8 is_stmt 0 view .LVU222
+ 729 008a 11F5BE7F 		cmn	r1, #380
+ 730 008e 26DB     		blt	.L88
+ 731              	.LVL62:
+ 732              	.L74:
+ 733              		.loc 2 33 8 view .LVU223
+ 734              	.LBE48:
+ 735              	.LBE47:
+ 233:Core/Src/motor.c **** }
+ 736              		.loc 1 233 5 is_stmt 1 view .LVU224
+ 737 0090 FFF7FEFF 		bl	Motor_Set
+ 738              	.LVL63:
+ 233:Core/Src/motor.c **** }
+ 739              		.loc 1 233 5 is_stmt 0 view .LVU225
+ 740 0094 B8E7     		b	.L63
+ 741              	.LVL64:
+ 742              	.L82:
+ 194:Core/Src/motor.c **** 
+ 743              		.loc 1 194 5 is_stmt 1 view .LVU226
+ 194:Core/Src/motor.c **** 
+ 744              		.loc 1 194 8 is_stmt 0 view .LVU227
+ 745 0096 DFED1A7A 		vldr.32	s15, .L89+28
+ 746 009a B4EEE70A 		vcmpe.f32	s0, s15
+ 747 009e F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 748 00a2 C4D5     		bpl	.L67
+ 194:Core/Src/motor.c **** 
+ 749              		.loc 1 194 26 is_stmt 1 discriminator 1 view .LVU228
+ 194:Core/Src/motor.c **** 
+ 750              		.loc 1 194 32 is_stmt 0 discriminator 1 view .LVU229
+ 751 00a4 DFED127A 		vldr.32	s15, .L89+12
+ 752 00a8 30EE270A 		vadd.f32	s0, s0, s15
+ 753              	.LVL65:
+ 194:Core/Src/motor.c **** 
+ 754              		.loc 1 194 32 discriminator 1 view .LVU230
+ 755 00ac BFE7     		b	.L67
+ 756              	.L86:
+ 199:Core/Src/motor.c ****         turning = 0;
+ 757              		.loc 1 199 9 is_stmt 1 view .LVU231
+ 758 00ae 0021     		movs	r1, #0
+ 759 00b0 0846     		mov	r0, r1
+ 760 00b2 FFF7FEFF 		bl	Motor_Set
+ 761              	.LVL66:
+ 200:Core/Src/motor.c ****         return;
+ 762              		.loc 1 200 9 view .LVU232
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s 			page 23
+
+
+ 200:Core/Src/motor.c ****         return;
+ 763              		.loc 1 200 17 is_stmt 0 view .LVU233
+ 764 00b6 0B4B     		ldr	r3, .L89
+ 765 00b8 0022     		movs	r2, #0
+ 766 00ba 1A70     		strb	r2, [r3]
+ 201:Core/Src/motor.c ****     }
+ 767              		.loc 1 201 9 is_stmt 1 view .LVU234
+ 768 00bc A4E7     		b	.L63
+ 769              	.LVL67:
+ 770              	.L71:
+ 224:Core/Src/motor.c ****         right_pwm = right_base - speed;
+ 771              		.loc 1 224 9 view .LVU235
+ 224:Core/Src/motor.c ****         right_pwm = right_base - speed;
+ 772              		.loc 1 224 32 is_stmt 0 view .LVU236
+ 773 00be 89B2     		uxth	r1, r1
+ 224:Core/Src/motor.c ****         right_pwm = right_base - speed;
+ 774              		.loc 1 224 32 view .LVU237
+ 775 00c0 A1F59870 		sub	r0, r1, #304
+ 224:Core/Src/motor.c ****         right_pwm = right_base - speed;
+ 776              		.loc 1 224 19 view .LVU238
+ 777 00c4 00B2     		sxth	r0, r0
+ 778              	.LVL68:
+ 225:Core/Src/motor.c ****     }
+ 779              		.loc 1 225 9 is_stmt 1 view .LVU239
+ 225:Core/Src/motor.c ****     }
+ 780              		.loc 1 225 32 is_stmt 0 view .LVU240
+ 781 00c6 C1F59171 		rsb	r1, r1, #290
+ 782              	.LVL69:
+ 225:Core/Src/motor.c ****     }
+ 783              		.loc 1 225 19 view .LVU241
+ 784 00ca 09B2     		sxth	r1, r1
+ 785              	.LVL70:
+ 225:Core/Src/motor.c ****     }
+ 786              		.loc 1 225 19 view .LVU242
+ 787 00cc D4E7     		b	.L72
+ 788              	.LVL71:
+ 789              	.L75:
+ 790              	.LBB50:
+ 791              	.LBB46:
+  32:Core/Inc/motor.h ****     if (v < min) return min;
+ 792              		.loc 2 32 25 discriminator 1 view .LVU243
+ 793 00ce 4FF4BE70 		mov	r0, #380
+ 794              	.LVL72:
+  32:Core/Inc/motor.h ****     if (v < min) return min;
+ 795              		.loc 2 32 25 discriminator 1 view .LVU244
+ 796 00d2 D7E7     		b	.L73
+ 797              	.LVL73:
+ 798              	.L87:
+ 799              		.loc 2 33 25 discriminator 1 view .LVU245
+ 800 00d4 0B48     		ldr	r0, .L89+32
+ 801              	.LVL74:
+ 802              		.loc 2 33 25 discriminator 1 view .LVU246
+ 803 00d6 D5E7     		b	.L73
+ 804              	.LVL75:
+ 805              	.L77:
+ 806              		.loc 2 33 25 discriminator 1 view .LVU247
+ 807              	.LBE46:
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s 			page 24
+
+
+ 808              	.LBE50:
+ 809              	.LBB51:
+ 810              	.LBB49:
+  32:Core/Inc/motor.h ****     if (v < min) return min;
+ 811              		.loc 2 32 25 discriminator 1 view .LVU248
+ 812 00d8 4FF4BE71 		mov	r1, #380
+ 813              	.LVL76:
+  32:Core/Inc/motor.h ****     if (v < min) return min;
+ 814              		.loc 2 32 25 discriminator 1 view .LVU249
+ 815 00dc D8E7     		b	.L74
+ 816              	.LVL77:
+ 817              	.L88:
+ 818              		.loc 2 33 25 discriminator 1 view .LVU250
+ 819 00de 0949     		ldr	r1, .L89+32
+ 820              	.LVL78:
+ 821              		.loc 2 33 25 discriminator 1 view .LVU251
+ 822 00e0 D6E7     		b	.L74
+ 823              	.L90:
+ 824 00e2 00BF     		.align	2
+ 825              	.L89:
+ 826 00e4 00000000 		.word	turning
+ 827 00e8 00000000 		.word	turn_target
+ 828 00ec 00003443 		.word	1127481344
+ 829 00f0 0000B443 		.word	1135869952
+ 830 00f4 9A99993E 		.word	1050253722
+ 831 00f8 00000000 		.word	MPU6050
+ 832 00fc CDCCCC3D 		.word	1036831949
+ 833 0100 000034C3 		.word	-1020002304
+ 834 0104 84FEFFFF 		.word	-380
+ 835              	.LBE49:
+ 836              	.LBE51:
+ 837              		.cfi_endproc
+ 838              	.LFE137:
+ 840              		.section	.text.Button_Process_Main,"ax",%progbits
+ 841              		.align	1
+ 842              		.global	Button_Process_Main
+ 843              		.syntax unified
+ 844              		.thumb
+ 845              		.thumb_func
+ 847              	Button_Process_Main:
+ 848              	.LFB138:
+ 235:Core/Src/motor.c **** 
+ 236:Core/Src/motor.c **** 
+ 237:Core/Src/motor.c **** // ==========================================================
+ 238:Core/Src/motor.c **** // КНОПКА СТАРТ / СТОП
+ 239:Core/Src/motor.c **** // ==========================================================
+ 240:Core/Src/motor.c **** void Button_Process_Main(void)
+ 241:Core/Src/motor.c **** {
+ 849              		.loc 1 241 1 is_stmt 1 view -0
+ 850              		.cfi_startproc
+ 851              		@ args = 0, pretend = 0, frame = 0
+ 852              		@ frame_needed = 0, uses_anonymous_args = 0
+ 853              		@ link register save eliminated.
+ 242:Core/Src/motor.c ****     uint8_t btn = (GPIOC->IDR & GPIO_IDR_ID13) ? 1 : 0;
+ 854              		.loc 1 242 5 view .LVU253
+ 855              		.loc 1 242 25 is_stmt 0 view .LVU254
+ 856 0000 0E4B     		ldr	r3, .L93
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s 			page 25
+
+
+ 857 0002 1B69     		ldr	r3, [r3, #16]
+ 858              		.loc 1 242 52 view .LVU255
+ 859 0004 03F40051 		and	r1, r3, #8192
+ 860 0008 C3F34033 		ubfx	r3, r3, #13, #1
+ 861              	.LVL79:
+ 243:Core/Src/motor.c **** 
+ 244:Core/Src/motor.c ****     if (btn_prev && !btn)
+ 862              		.loc 1 244 5 is_stmt 1 view .LVU256
+ 863              		.loc 1 244 9 is_stmt 0 view .LVU257
+ 864 000c 0C4A     		ldr	r2, .L93+4
+ 865 000e 1278     		ldrb	r2, [r2]	@ zero_extendqisi2
+ 866              		.loc 1 244 8 view .LVU258
+ 867 0010 8AB1     		cbz	r2, .L92
+ 868              		.loc 1 244 18 discriminator 1 view .LVU259
+ 869 0012 81B9     		cbnz	r1, .L92
+ 245:Core/Src/motor.c ****     {
+ 246:Core/Src/motor.c ****         if ((tick_count - btn_time) > 200)
+ 870              		.loc 1 246 9 is_stmt 1 view .LVU260
+ 871              		.loc 1 246 25 is_stmt 0 view .LVU261
+ 872 0014 0B4A     		ldr	r2, .L93+8
+ 873 0016 1268     		ldr	r2, [r2]
+ 874 0018 0B49     		ldr	r1, .L93+12
+ 875 001a 0968     		ldr	r1, [r1]
+ 876 001c 521A     		subs	r2, r2, r1
+ 877              		.loc 1 246 12 view .LVU262
+ 878 001e C82A     		cmp	r2, #200
+ 879 0020 09D9     		bls	.L92
+ 247:Core/Src/motor.c ****         {
+ 248:Core/Src/motor.c ****             robot_started = !robot_started;
+ 880              		.loc 1 248 13 is_stmt 1 view .LVU263
+ 881              		.loc 1 248 29 is_stmt 0 view .LVU264
+ 882 0022 0A49     		ldr	r1, .L93+16
+ 883 0024 0A78     		ldrb	r2, [r1]	@ zero_extendqisi2
+ 884 0026 B2FA82F2 		clz	r2, r2
+ 885 002a 5209     		lsrs	r2, r2, #5
+ 886              		.loc 1 248 27 view .LVU265
+ 887 002c 0A70     		strb	r2, [r1]
+ 249:Core/Src/motor.c ****             btn_time = tick_count;
+ 888              		.loc 1 249 13 is_stmt 1 view .LVU266
+ 889              		.loc 1 249 22 is_stmt 0 view .LVU267
+ 890 002e 054A     		ldr	r2, .L93+8
+ 891 0030 1168     		ldr	r1, [r2]
+ 892 0032 054A     		ldr	r2, .L93+12
+ 893 0034 1160     		str	r1, [r2]
+ 894              	.L92:
+ 250:Core/Src/motor.c ****             
+ 251:Core/Src/motor.c ****         }
+ 252:Core/Src/motor.c ****     }
+ 253:Core/Src/motor.c ****     btn_prev = btn;
+ 895              		.loc 1 253 5 is_stmt 1 view .LVU268
+ 896              		.loc 1 253 14 is_stmt 0 view .LVU269
+ 897 0036 024A     		ldr	r2, .L93+4
+ 898 0038 1370     		strb	r3, [r2]
+ 254:Core/Src/motor.c **** }
+ 899              		.loc 1 254 1 view .LVU270
+ 900 003a 7047     		bx	lr
+ 901              	.L94:
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s 			page 26
+
+
+ 902              		.align	2
+ 903              	.L93:
+ 904 003c 00080240 		.word	1073874944
+ 905 0040 00000000 		.word	btn_prev
+ 906 0044 00000000 		.word	tick_count
+ 907 0048 00000000 		.word	btn_time
+ 908 004c 00000000 		.word	robot_started
+ 909              		.cfi_endproc
+ 910              	.LFE138:
+ 912              		.section	.text.Reset_Distance,"ax",%progbits
+ 913              		.align	1
+ 914              		.global	Reset_Distance
+ 915              		.syntax unified
+ 916              		.thumb
+ 917              		.thumb_func
+ 919              	Reset_Distance:
+ 920              	.LFB139:
+ 255:Core/Src/motor.c **** 
+ 256:Core/Src/motor.c **** void Reset_Distance(void)
+ 257:Core/Src/motor.c **** {
+ 921              		.loc 1 257 1 is_stmt 1 view -0
+ 922              		.cfi_startproc
+ 923              		@ args = 0, pretend = 0, frame = 0
+ 924              		@ frame_needed = 0, uses_anonymous_args = 0
+ 925              		@ link register save eliminated.
+ 258:Core/Src/motor.c ****     __disable_irq();
+ 926              		.loc 1 258 5 view .LVU272
+ 927              	.LBB52:
+ 928              	.LBI52:
+ 140:CMSIS/Include/cmsis_gcc.h **** {
+ 929              		.loc 3 140 27 view .LVU273
+ 930              	.LBB53:
+ 931              		.loc 3 142 3 view .LVU274
+ 932              		.syntax unified
+ 933              	@ 142 "CMSIS/Include/cmsis_gcc.h" 1
+ 934 0000 72B6     		cpsid i
+ 935              	@ 0 "" 2
+ 936              		.thumb
+ 937              		.syntax unified
+ 938              	.LBE53:
+ 939              	.LBE52:
+ 259:Core/Src/motor.c ****     encoder1_count = 0;
+ 940              		.loc 1 259 5 view .LVU275
+ 941              		.loc 1 259 20 is_stmt 0 view .LVU276
+ 942 0002 0023     		movs	r3, #0
+ 943 0004 024A     		ldr	r2, .L96
+ 944 0006 1360     		str	r3, [r2]
+ 260:Core/Src/motor.c ****     encoder2_count = 0;
+ 945              		.loc 1 260 5 is_stmt 1 view .LVU277
+ 946              		.loc 1 260 20 is_stmt 0 view .LVU278
+ 947 0008 024A     		ldr	r2, .L96+4
+ 948 000a 1360     		str	r3, [r2]
+ 261:Core/Src/motor.c ****     __enable_irq();
+ 949              		.loc 1 261 5 is_stmt 1 view .LVU279
+ 950              	.LBB54:
+ 951              	.LBI54:
+ 129:CMSIS/Include/cmsis_gcc.h **** {
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s 			page 27
+
+
+ 952              		.loc 3 129 27 view .LVU280
+ 953              	.LBB55:
+ 131:CMSIS/Include/cmsis_gcc.h **** }
+ 954              		.loc 3 131 3 view .LVU281
+ 955              		.syntax unified
+ 956              	@ 131 "CMSIS/Include/cmsis_gcc.h" 1
+ 957 000c 62B6     		cpsie i
+ 958              	@ 0 "" 2
+ 959              		.thumb
+ 960              		.syntax unified
+ 961              	.LBE55:
+ 962              	.LBE54:
+ 262:Core/Src/motor.c **** }
+ 963              		.loc 1 262 1 is_stmt 0 view .LVU282
+ 964 000e 7047     		bx	lr
+ 965              	.L97:
+ 966              		.align	2
+ 967              	.L96:
+ 968 0010 00000000 		.word	encoder1_count
+ 969 0014 00000000 		.word	encoder2_count
+ 970              		.cfi_endproc
+ 971              	.LFE139:
+ 973              		.section	.text.Get_Distance_MM,"ax",%progbits
+ 974              		.align	1
+ 975              		.global	Get_Distance_MM
+ 976              		.syntax unified
+ 977              		.thumb
+ 978              		.thumb_func
+ 980              	Get_Distance_MM:
+ 981              	.LFB140:
+ 263:Core/Src/motor.c **** float Get_Distance_MM(void)
+ 264:Core/Src/motor.c **** {
+ 982              		.loc 1 264 1 is_stmt 1 view -0
+ 983              		.cfi_startproc
+ 984              		@ args = 0, pretend = 0, frame = 0
+ 985              		@ frame_needed = 0, uses_anonymous_args = 0
+ 986              		@ link register save eliminated.
+ 265:Core/Src/motor.c ****     uint32_t e1, e2;
+ 987              		.loc 1 265 5 view .LVU284
+ 266:Core/Src/motor.c **** 
+ 267:Core/Src/motor.c ****     __disable_irq();
+ 988              		.loc 1 267 5 view .LVU285
+ 989              	.LBB56:
+ 990              	.LBI56:
+ 140:CMSIS/Include/cmsis_gcc.h **** {
+ 991              		.loc 3 140 27 view .LVU286
+ 992              	.LBB57:
+ 993              		.loc 3 142 3 view .LVU287
+ 994              		.syntax unified
+ 995              	@ 142 "CMSIS/Include/cmsis_gcc.h" 1
+ 996 0000 72B6     		cpsid i
+ 997              	@ 0 "" 2
+ 998              		.thumb
+ 999              		.syntax unified
+ 1000              	.LBE57:
+ 1001              	.LBE56:
+ 268:Core/Src/motor.c ****     e1 = encoder1_count;
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s 			page 28
+
+
+ 1002              		.loc 1 268 5 view .LVU288
+ 1003              		.loc 1 268 8 is_stmt 0 view .LVU289
+ 1004 0002 094B     		ldr	r3, .L99
+ 1005 0004 1B68     		ldr	r3, [r3]
+ 1006              	.LVL80:
+ 269:Core/Src/motor.c ****     e2 = encoder2_count;
+ 1007              		.loc 1 269 5 is_stmt 1 view .LVU290
+ 1008              		.loc 1 269 8 is_stmt 0 view .LVU291
+ 1009 0006 094A     		ldr	r2, .L99+4
+ 1010 0008 1268     		ldr	r2, [r2]
+ 1011              	.LVL81:
+ 270:Core/Src/motor.c ****     __enable_irq();
+ 1012              		.loc 1 270 5 is_stmt 1 view .LVU292
+ 1013              	.LBB58:
+ 1014              	.LBI58:
+ 129:CMSIS/Include/cmsis_gcc.h **** {
+ 1015              		.loc 3 129 27 view .LVU293
+ 1016              	.LBB59:
+ 131:CMSIS/Include/cmsis_gcc.h **** }
+ 1017              		.loc 3 131 3 view .LVU294
+ 1018              		.syntax unified
+ 1019              	@ 131 "CMSIS/Include/cmsis_gcc.h" 1
+ 1020 000a 62B6     		cpsie i
+ 1021              	@ 0 "" 2
+ 1022              		.thumb
+ 1023              		.syntax unified
+ 1024              	.LBE59:
+ 1025              	.LBE58:
+ 271:Core/Src/motor.c **** 
+ 272:Core/Src/motor.c ****     return ((e1 + e2) * 0.5f) * MM_PER_TICK;
+ 1026              		.loc 1 272 5 view .LVU295
+ 1027              		.loc 1 272 17 is_stmt 0 view .LVU296
+ 1028 000c 1344     		add	r3, r3, r2
+ 1029              	.LVL82:
+ 1030              		.loc 1 272 17 view .LVU297
+ 1031 000e 07EE903A 		vmov	s15, r3	@ int
+ 1032              		.loc 1 272 23 view .LVU298
+ 1033 0012 F8EE677A 		vcvt.f32.u32	s15, s15
+ 1034 0016 B6EE007A 		vmov.f32	s14, #5.0e-1
+ 1035 001a 67EE877A 		vmul.f32	s15, s15, s14
+ 273:Core/Src/motor.c **** }
+ 1036              		.loc 1 273 1 view .LVU299
+ 1037 001e 9FED040A 		vldr.32	s0, .L99+8
+ 1038 0022 27EE800A 		vmul.f32	s0, s15, s0
+ 1039 0026 7047     		bx	lr
+ 1040              	.L100:
+ 1041              		.align	2
+ 1042              	.L99:
+ 1043 0028 00000000 		.word	encoder1_count
+ 1044 002c 00000000 		.word	encoder2_count
+ 1045 0030 60A5A940 		.word	1084859744
+ 1046              		.cfi_endproc
+ 1047              	.LFE140:
+ 1049              		.section	.text.Drive_Start,"ax",%progbits
+ 1050              		.align	1
+ 1051              		.global	Drive_Start
+ 1052              		.syntax unified
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s 			page 29
+
+
+ 1053              		.thumb
+ 1054              		.thumb_func
+ 1056              	Drive_Start:
+ 1057              	.LVL83:
+ 1058              	.LFB141:
+ 274:Core/Src/motor.c **** void Drive_Start(float distance_mm)
+ 275:Core/Src/motor.c **** {
+ 1059              		.loc 1 275 1 is_stmt 1 view -0
+ 1060              		.cfi_startproc
+ 1061              		@ args = 0, pretend = 0, frame = 0
+ 1062              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1063              		.loc 1 275 1 is_stmt 0 view .LVU301
+ 1064 0000 10B5     		push	{r4, lr}
+ 1065              	.LCFI3:
+ 1066              		.cfi_def_cfa_offset 8
+ 1067              		.cfi_offset 4, -8
+ 1068              		.cfi_offset 14, -4
+ 1069 0002 10EE104A 		vmov	r4, s0
+ 276:Core/Src/motor.c ****     Reset_Distance();
+ 1070              		.loc 1 276 5 is_stmt 1 view .LVU302
+ 1071 0006 FFF7FEFF 		bl	Reset_Distance
+ 1072              	.LVL84:
+ 277:Core/Src/motor.c ****     drive_target_mm = distance_mm;
+ 1073              		.loc 1 277 5 view .LVU303
+ 1074              		.loc 1 277 21 is_stmt 0 view .LVU304
+ 1075 000a 034B     		ldr	r3, .L103
+ 1076 000c 1C60     		str	r4, [r3]	@ float
+ 278:Core/Src/motor.c ****     driving = 1;
+ 1077              		.loc 1 278 5 is_stmt 1 view .LVU305
+ 1078              		.loc 1 278 13 is_stmt 0 view .LVU306
+ 1079 000e 034B     		ldr	r3, .L103+4
+ 1080 0010 0122     		movs	r2, #1
+ 1081 0012 1A70     		strb	r2, [r3]
+ 279:Core/Src/motor.c **** }
+ 1082              		.loc 1 279 1 view .LVU307
+ 1083 0014 10BD     		pop	{r4, pc}
+ 1084              	.LVL85:
+ 1085              	.L104:
+ 1086              		.loc 1 279 1 view .LVU308
+ 1087 0016 00BF     		.align	2
+ 1088              	.L103:
+ 1089 0018 00000000 		.word	drive_target_mm
+ 1090 001c 00000000 		.word	driving
+ 1091              		.cfi_endproc
+ 1092              	.LFE141:
+ 1094              		.section	.text.Drive_Process_1ms,"ax",%progbits
+ 1095              		.align	1
+ 1096              		.global	Drive_Process_1ms
+ 1097              		.syntax unified
+ 1098              		.thumb
+ 1099              		.thumb_func
+ 1101              	Drive_Process_1ms:
+ 1102              	.LFB142:
+ 280:Core/Src/motor.c **** void Drive_Process_1ms(void)
+ 281:Core/Src/motor.c **** {
+ 1103              		.loc 1 281 1 is_stmt 1 view -0
+ 1104              		.cfi_startproc
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s 			page 30
+
+
+ 1105              		@ args = 0, pretend = 0, frame = 0
+ 1106              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1107 0000 08B5     		push	{r3, lr}
+ 1108              	.LCFI4:
+ 1109              		.cfi_def_cfa_offset 8
+ 1110              		.cfi_offset 3, -8
+ 1111              		.cfi_offset 14, -4
+ 282:Core/Src/motor.c ****     if (!driving)
+ 1112              		.loc 1 282 5 view .LVU310
+ 1113              		.loc 1 282 9 is_stmt 0 view .LVU311
+ 1114 0002 1A4B     		ldr	r3, .L118
+ 1115 0004 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 1116              		.loc 1 282 8 view .LVU312
+ 1117 0006 03B9     		cbnz	r3, .L116
+ 1118              	.L105:
+ 283:Core/Src/motor.c ****         return;
+ 284:Core/Src/motor.c **** 
+ 285:Core/Src/motor.c ****     float dist = Get_Distance_MM();
+ 286:Core/Src/motor.c ****     float remain = drive_target_mm - dist;
+ 287:Core/Src/motor.c **** 
+ 288:Core/Src/motor.c ****     // --- МЯГКОЕ ТОРМОЖЕНИЕ ---
+ 289:Core/Src/motor.c ****     if (remain < 150.0f)   // за 15 см начинаем тормозить
+ 290:Core/Src/motor.c ****     {
+ 291:Core/Src/motor.c ****         base_speed = 340;
+ 292:Core/Src/motor.c ****     }
+ 293:Core/Src/motor.c ****     if (remain < 60.0f)
+ 294:Core/Src/motor.c ****     {
+ 295:Core/Src/motor.c ****         base_speed = 280;
+ 296:Core/Src/motor.c ****     }
+ 297:Core/Src/motor.c **** 
+ 298:Core/Src/motor.c ****     // --- ЦЕЛЬ ДОСТИГНУТА ---
+ 299:Core/Src/motor.c ****     if (remain <= 0.0f)
+ 300:Core/Src/motor.c ****     {
+ 301:Core/Src/motor.c ****         Motor_Set(0, 0);
+ 302:Core/Src/motor.c ****         driving = 0;
+ 303:Core/Src/motor.c ****         base_speed = 450;   // вернуть номинал
+ 304:Core/Src/motor.c ****         return;
+ 305:Core/Src/motor.c ****     }
+ 306:Core/Src/motor.c **** 
+ 307:Core/Src/motor.c ****     // --- ДЕРЖИМ КУРС ---
+ 308:Core/Src/motor.c ****     Course_Control_1ms();
+ 309:Core/Src/motor.c **** }
+ 1119              		.loc 1 309 1 view .LVU313
+ 1120 0008 08BD     		pop	{r3, pc}
+ 1121              	.L116:
+ 285:Core/Src/motor.c ****     float remain = drive_target_mm - dist;
+ 1122              		.loc 1 285 5 is_stmt 1 view .LVU314
+ 285:Core/Src/motor.c ****     float remain = drive_target_mm - dist;
+ 1123              		.loc 1 285 18 is_stmt 0 view .LVU315
+ 1124 000a FFF7FEFF 		bl	Get_Distance_MM
+ 1125              	.LVL86:
+ 286:Core/Src/motor.c **** 
+ 1126              		.loc 1 286 5 is_stmt 1 view .LVU316
+ 286:Core/Src/motor.c **** 
+ 1127              		.loc 1 286 36 is_stmt 0 view .LVU317
+ 1128 000e 184B     		ldr	r3, .L118+4
+ 1129 0010 D3ED007A 		vldr.32	s15, [r3]
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s 			page 31
+
+
+ 286:Core/Src/motor.c **** 
+ 1130              		.loc 1 286 11 view .LVU318
+ 1131 0014 37EEC00A 		vsub.f32	s0, s15, s0
+ 1132              	.LVL87:
+ 289:Core/Src/motor.c ****     {
+ 1133              		.loc 1 289 5 is_stmt 1 view .LVU319
+ 289:Core/Src/motor.c ****     {
+ 1134              		.loc 1 289 8 is_stmt 0 view .LVU320
+ 1135 0018 DFED167A 		vldr.32	s15, .L118+8
+ 1136 001c B4EEE70A 		vcmpe.f32	s0, s15
+ 1137 0020 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 1138 0024 0DD5     		bpl	.L107
+ 291:Core/Src/motor.c ****     }
+ 1139              		.loc 1 291 9 is_stmt 1 view .LVU321
+ 291:Core/Src/motor.c ****     }
+ 1140              		.loc 1 291 20 is_stmt 0 view .LVU322
+ 1141 0026 144B     		ldr	r3, .L118+12
+ 1142 0028 4FF4AA72 		mov	r2, #340
+ 1143 002c 1A80     		strh	r2, [r3]	@ movhi
+ 293:Core/Src/motor.c ****     {
+ 1144              		.loc 1 293 5 is_stmt 1 view .LVU323
+ 293:Core/Src/motor.c ****     {
+ 1145              		.loc 1 293 8 is_stmt 0 view .LVU324
+ 1146 002e DFED137A 		vldr.32	s15, .L118+16
+ 1147 0032 B4EEE70A 		vcmpe.f32	s0, s15
+ 1148 0036 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 1149 003a 07D5     		bpl	.L109
+ 295:Core/Src/motor.c ****     }
+ 1150              		.loc 1 295 9 is_stmt 1 view .LVU325
+ 295:Core/Src/motor.c ****     }
+ 1151              		.loc 1 295 20 is_stmt 0 view .LVU326
+ 1152 003c 4FF48C72 		mov	r2, #280
+ 1153 0040 1A80     		strh	r2, [r3]	@ movhi
+ 1154              	.L107:
+ 299:Core/Src/motor.c ****     {
+ 1155              		.loc 1 299 5 is_stmt 1 view .LVU327
+ 299:Core/Src/motor.c ****     {
+ 1156              		.loc 1 299 8 is_stmt 0 view .LVU328
+ 1157 0042 B5EEC00A 		vcmpe.f32	s0, #0
+ 1158 0046 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 1159 004a 02D9     		bls	.L117
+ 1160              	.L109:
+ 308:Core/Src/motor.c **** }
+ 1161              		.loc 1 308 5 is_stmt 1 view .LVU329
+ 1162 004c FFF7FEFF 		bl	Course_Control_1ms
+ 1163              	.LVL88:
+ 308:Core/Src/motor.c **** }
+ 1164              		.loc 1 308 5 is_stmt 0 view .LVU330
+ 1165 0050 DAE7     		b	.L105
+ 1166              	.LVL89:
+ 1167              	.L117:
+ 301:Core/Src/motor.c ****         driving = 0;
+ 1168              		.loc 1 301 9 is_stmt 1 view .LVU331
+ 1169 0052 0021     		movs	r1, #0
+ 1170 0054 0846     		mov	r0, r1
+ 1171 0056 FFF7FEFF 		bl	Motor_Set
+ 1172              	.LVL90:
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s 			page 32
+
+
+ 302:Core/Src/motor.c ****         base_speed = 450;   // вернуть номинал
+ 1173              		.loc 1 302 9 view .LVU332
+ 302:Core/Src/motor.c ****         base_speed = 450;   // вернуть номинал
+ 1174              		.loc 1 302 17 is_stmt 0 view .LVU333
+ 1175 005a 044B     		ldr	r3, .L118
+ 1176 005c 0022     		movs	r2, #0
+ 1177 005e 1A70     		strb	r2, [r3]
+ 303:Core/Src/motor.c ****         return;
+ 1178              		.loc 1 303 9 is_stmt 1 view .LVU334
+ 303:Core/Src/motor.c ****         return;
+ 1179              		.loc 1 303 20 is_stmt 0 view .LVU335
+ 1180 0060 054B     		ldr	r3, .L118+12
+ 1181 0062 4FF4E172 		mov	r2, #450
+ 1182 0066 1A80     		strh	r2, [r3]	@ movhi
+ 304:Core/Src/motor.c ****     }
+ 1183              		.loc 1 304 9 is_stmt 1 view .LVU336
+ 1184 0068 CEE7     		b	.L105
+ 1185              	.L119:
+ 1186 006a 00BF     		.align	2
+ 1187              	.L118:
+ 1188 006c 00000000 		.word	driving
+ 1189 0070 00000000 		.word	drive_target_mm
+ 1190 0074 00001643 		.word	1125515264
+ 1191 0078 00000000 		.word	base_speed
+ 1192 007c 00007042 		.word	1114636288
+ 1193              		.cfi_endproc
+ 1194              	.LFE142:
+ 1196              		.section	.bss.yaw_rate_filtered,"aw",%nobits
+ 1197              		.align	2
+ 1200              	yaw_rate_filtered:
+ 1201 0000 00000000 		.space	4
+ 1202              		.text
+ 1203              	.Letext0:
+ 1204              		.file 4 "C:/Bools/xpack-arm-none-eabi-gcc-13.2.1-1.1/arm-none-eabi/include/machine/_default_types.
+ 1205              		.file 5 "C:/Bools/xpack-arm-none-eabi-gcc-13.2.1-1.1/arm-none-eabi/include/sys/_stdint.h"
+ 1206              		.file 6 "CMSIS/Devices/STM32F4xx/Inc/STM32F411xE/stm32f411xe.h"
+ 1207              		.file 7 "Core/Inc/MCU6050.h"
+ 1208              		.file 8 "Core/Inc/handlers.h"
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s 			page 33
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 motor.c
+C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s:21     .text.Motor_Set:00000000 $t
+C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s:27     .text.Motor_Set:00000000 Motor_Set
+C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s:168    .text.Motor_Set:00000060 $d
+C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s:174    .text.Course_Control_1ms:00000000 $t
+C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s:180    .text.Course_Control_1ms:00000000 Course_Control_1ms
+C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s:529    .text.Course_Control_1ms:000001c8 $d
+C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s:1200   .bss.yaw_rate_filtered:00000000 yaw_rate_filtered
+C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s:551    .text.Rotate_Start:00000000 $t
+C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s:557    .text.Rotate_Start:00000000 Rotate_Start
+C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s:590    .text.Rotate_Start:00000018 $d
+C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s:596    .text.Rotate_Process_1ms:00000000 $t
+C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s:602    .text.Rotate_Process_1ms:00000000 Rotate_Process_1ms
+C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s:826    .text.Rotate_Process_1ms:000000e4 $d
+C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s:841    .text.Button_Process_Main:00000000 $t
+C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s:847    .text.Button_Process_Main:00000000 Button_Process_Main
+C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s:904    .text.Button_Process_Main:0000003c $d
+C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s:913    .text.Reset_Distance:00000000 $t
+C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s:919    .text.Reset_Distance:00000000 Reset_Distance
+C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s:968    .text.Reset_Distance:00000010 $d
+C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s:974    .text.Get_Distance_MM:00000000 $t
+C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s:980    .text.Get_Distance_MM:00000000 Get_Distance_MM
+C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s:1043   .text.Get_Distance_MM:00000028 $d
+C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s:1050   .text.Drive_Start:00000000 $t
+C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s:1056   .text.Drive_Start:00000000 Drive_Start
+C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s:1089   .text.Drive_Start:00000018 $d
+C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s:1095   .text.Drive_Process_1ms:00000000 $t
+C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s:1101   .text.Drive_Process_1ms:00000000 Drive_Process_1ms
+C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s:1188   .text.Drive_Process_1ms:0000006c $d
+C:\Users\Life\AppData\Local\Temp\ccDGqBEq.s:1197   .bss.yaw_rate_filtered:00000000 $d
+
+UNDEFINED SYMBOLS
+robot_started
+MPU6050
+yaw_target
+yaw_i
+encoder1_count
+encoder2_count
+base_speed
+MPU6050_Reset_Yaw
+turn_target
+turning
+MPU6050_Get_Yaw
+btn_prev
+tick_count
+btn_time
+drive_target_mm
+driving

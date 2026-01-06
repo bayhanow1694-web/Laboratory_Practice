@@ -2,12 +2,13 @@
 #include "stm32f4xx.h"
 #include "stm32f411xe.h"
 
+// Глобальные переменные для подсчёта импульсов
+extern volatile uint32_t encoder1_count; // PB5
+extern volatile uint32_t encoder2_count; // PB6
 extern volatile uint32_t tick_count;
-extern volatile uint8_t btn9_pressed; // PB9  смена частоты 
-extern volatile uint32_t btn9_press_time;   // время нажатия PB9
-
-extern volatile uint8_t  btn8_pressed; // PB8 переключение LED
-extern volatile uint32_t btn8_press_time;
-extern volatile uint8_t pwm_mode;
+extern volatile uint8_t encoder1_delay;    // антидребезг PB5
+extern volatile uint8_t encoder2_delay;    // антидребезг PB6
+extern  volatile uint8_t imu_ready;
 
 void TIM1_UP_TIM10_IRQHandler(void);
+void EXTI9_5_IRQHandler(void);

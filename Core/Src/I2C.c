@@ -1,4 +1,8 @@
+
+
 #include "I2C.h"
+
+#define I2C_TIMEOUT 10000  // таймаут цикла (регулируй при необходимости)
 
 void I2C_Config(void)
 {
@@ -33,68 +37,77 @@ void I2C_Config(void)
     I2C1->CR1 |= I2C_CR1_PE;
 }
 
-void I2C_Start(void)
+// --- Вспомогательная функция с таймаутом ---
+static int I2C_WaitFlag(volatile uint32_t *reg, uint32_t flag)
+{
+    uint32_t timeout = I2C_TIMEOUT;
+    while (!(*reg & flag) && timeout--) { __NOP(); }
+    return (timeout == 0) ? -1 : 0;
+}
+
+// --- I2C операции ---
+int I2C_Start(void)
 {
     I2C1->CR1 |= I2C_CR1_START;
-    while (!(I2C1->SR1 & I2C_SR1_SB));
+    return I2C_WaitFlag(&I2C1->SR1, I2C_SR1_SB);
 }
 
-void I2C_Stop(void)
+int I2C_Stop(void)
 {
     I2C1->CR1 |= I2C_CR1_STOP;
+    return 0;
 }
 
-void I2C_Address(uint8_t addr)
+int I2C_Address(uint8_t addr)
 {
     I2C1->DR = addr;
-    while (!(I2C1->SR1 & I2C_SR1_ADDR));
+    if (I2C_WaitFlag(&I2C1->SR1, I2C_SR1_ADDR) != 0) return -1;
     volatile uint32_t tmp = I2C1->SR1 | I2C1->SR2;
     (void)tmp;
+    return 0;
 }
 
-
-void I2C_Write(uint8_t data)
+int I2C_Write(uint8_t data)
 {
-    while (!(I2C1->SR1 & I2C_SR1_TXE));
+    if (I2C_WaitFlag(&I2C1->SR1, I2C_SR1_TXE) != 0) return -1;
     I2C1->DR = data;
-    while (!(I2C1->SR1 & I2C_SR1_BTF));
+    if (I2C_WaitFlag(&I2C1->SR1, I2C_SR1_BTF) != 0) return -1;
+    return 0;
 }
 
-void MPU_Write(uint8_t dev, uint8_t reg, uint8_t data)
+// --- MPU операции с проверкой ошибок ---
+int MPU_Write(uint8_t dev, uint8_t reg, uint8_t data)
 {
-    I2C_Start();
-    I2C_Address(dev << 1);
-    I2C_Write(reg);
-    I2C_Write(data);
+    if (I2C_Start() != 0) return -1;
+    if (I2C_Address(dev << 1) != 0) { I2C_Stop(); return -1; }
+    if (I2C_Write(reg) != 0) { I2C_Stop(); return -1; }
+    if (I2C_Write(data) != 0) { I2C_Stop(); return -1; }
     I2C_Stop();
+    return 0;
 }
 
-void MPU_Read(uint8_t dev, uint8_t reg, uint8_t *buf, uint8_t len)
+int MPU_Read(uint8_t dev, uint8_t reg, uint8_t *buf, uint8_t len)
 {
-    // Write register address
-    I2C_Start();
-    I2C_Address(dev << 1);
-    I2C_Write(reg);
+    if (I2C_Start() != 0) return -1;
+    if (I2C_Address(dev << 1) != 0) { I2C_Stop(); return -1; }
+    if (I2C_Write(reg) != 0) { I2C_Stop(); return -1; }
 
     // Repeated start for read
-    I2C_Start();
+    if (I2C_Start() != 0) return -1;
 
     if (len == 1)
     {
-        // ОСОБЫЙ СЛУЧАЙ: 1 БАЙТ
-        I2C1->CR1 &= ~I2C_CR1_ACK;      // ACK = 0
-        I2C_Address((dev << 1) | 1);    // read address
-                        
+        I2C1->CR1 &= ~I2C_CR1_ACK;      
+        if (I2C_Address((dev << 1) | 1) != 0) { I2C_Stop(); return -1; }
 
-        while (!(I2C1->SR1 & I2C_SR1_RXNE));
+        if (I2C_WaitFlag(&I2C1->SR1, I2C_SR1_RXNE) != 0) { I2C_Stop(); return -1; }
         buf[0] = I2C1->DR;
-          I2C_Stop(); 
+        I2C_Stop();
     }
     else
     {
-        // Multi-byte
         I2C1->CR1 |= I2C_CR1_ACK;
-        I2C_Address((dev << 1) | 1);
+        if (I2C_Address((dev << 1) | 1) != 0) { I2C_Stop(); return -1; }
 
         for (uint8_t i = 0; i < len; i++)
         {
@@ -103,11 +116,11 @@ void MPU_Read(uint8_t dev, uint8_t reg, uint8_t *buf, uint8_t len)
                 I2C1->CR1 &= ~I2C_CR1_ACK;
                 I2C_Stop();
             }
-            while (!(I2C1->SR1 & I2C_SR1_RXNE));
+            if (I2C_WaitFlag(&I2C1->SR1, I2C_SR1_RXNE) != 0) return -1;
             buf[i] = I2C1->DR;
         }
     }
+    return 0;
 }
-
 
 

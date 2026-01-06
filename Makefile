@@ -140,6 +140,7 @@ Core/Src/handlers.c \
 Core/Src/task.c \
 Core/Src/I2C.c \
 Core/Src/MCU6050.c \
+Core/Src/motor.c \
 
 # ASM sources
 ASM_SOURCES =  \

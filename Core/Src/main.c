@@ -5,47 +5,353 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "MCU6050.h"
+#include "motor.h"
+#include <stdarg.h>
 
+// Определения глобальных переменных (они объявлены как extern в motor.h)
 volatile uint32_t tick_count = 0;
-volatile uint8_t btn9_pressed = 0; // PB9  смена частоты   
-volatile uint32_t btn9_press_time = 0;   // время нажатия PB9
-volatile uint8_t counter1 = 0;
 
-volatile uint8_t  btn8_pressed = 0; // PB8 переключение LED
-volatile uint32_t btn8_press_time = 0;
-volatile uint8_t pwm_mode = 0;
-MPU6050_t MPU6050;
+// Энкодеры
+volatile uint32_t encoder1_count = 0;
+volatile uint32_t encoder2_count = 0;
+volatile uint8_t encoder1_delay = 0;
+volatile uint8_t encoder2_delay = 0;
+volatile uint8_t driving = 0;
+volatile float drive_target_mm = 0;
 
 
+// Гироскоп
+volatile uint8_t imu_ready = 0;
+volatile float gz_offset = 0.0f;
+
+// Управление
+volatile int16_t base_speed = 450;
+volatile uint8_t robot_started = 0;
+volatile uint8_t btn_prev = 1;
+volatile uint32_t btn_time = 0;
+volatile float yaw_target = 0.0f;
+volatile float yaw_i = 0.0f;
+
+// Для motor.c
+volatile float gz = 0.0f;
+volatile float corr = 0.0f;
+volatile int16_t left = 0;
+volatile int16_t right = 0;
+//поворот
+volatile uint8_t turning = 0;
+volatile float turn_target = 0.0f;
+// ---------- МАРШРУТ ----------
+typedef struct {
+    uint32_t drive_mm;   // ехать прямо (мс)
+    float turn_angle;         // угол поворота
+} RouteStep_t;
+
+// 10 раз: прямо + поворот (пример)
+// RouteStep_t route[] = {
+//     {500,  0.0f},
+//     {0, 0.0f},
+//     {0,  0.0f},
+//     {0, 0.0f},
+//     {0,  0.0f},
+//     {0, 0.0f},
+//     {0,  0.0f},
+//     {0, 0.0f},
+//     {0,  0.0f},
+//     {0, 0.0f},
+// };
+RouteStep_t route[] = {
+    {500,  90.0f},
+    {600, 90.0f},
+    {25,  -120.0f},
+    {450, 60.0f},
+    {450,  60.0f},
+    {450, 60.0f},
+    {450,  60.0f},
+    {450, -120.0f},
+    {25,  90.0f},
+    {600, 90.0f},
+};
+// RouteStep_t route[] = {
+//     {0,  90.0f},
+//     {0, 0.0f},
+//     {0,  0.0f},
+//     {0, 0.0f},
+//     {0,  0.0f},
+//     {0, 0.0f},
+//     {0,  0.0f},
+//     {0, 0.0f},
+//     {0,  0.0f},
+//     {0, 0.0f},
+// };
+#define ROUTE_LEN (sizeof(route) / sizeof(route[0]))
+
+// ---------- СОСТОЯНИЯ ----------
+enum {
+    ST_WAIT = 0,
+    ST_CALIBRATE,
+    ST_DRIVE,
+    ST_TURN
+};
+
+uint8_t route_idx = 0;
+uint32_t state_time = 0;
+void UART_Printf(const char *fmt, ...)
+{
+    char buf[128];
+    va_list args;
+    va_start(args, fmt);
+    vsnprintf(buf, sizeof(buf), fmt, args);
+    va_end(args);
+    UART_SendString(buf);
+}
 
 
 int main(void)
 {
- 
-    
+    GPIO_Init();
     RCC_Init();
     TIM10_Init();
     TIM1_PWM_Init();
-    TIM3_Encoder_Init();
+    IRO_INInt_PB5_PB6();
     I2C_Config();
     UART2_Init(); 
-    MPU6050_Init();
-    char buffer[16];
+
+    // Инициализация MPU6050
+    if (MPU6050_Init() != 0) {
+        UART_SendString("MPU6050 init failed!\r\n");
+        while(1);
+    }
+
+    UART_SendString("MPU6050 initialized\r\n");
+    UART_SendString("Press button to start calibration and movement\r\n");
+
+    static uint32_t last_ctrl = 0;
+    uint8_t state = ST_WAIT;
+    uint8_t is_calibrated = 0;
 
     while (1)
     {
-        
-    //   MPU6050_Read_All();
-    // MPU6050_Send_Data();
-     uint16_t pos = (uint16_t)TIM3->CNT; // Получаем значение
-        
-        // Преобразуем число в строку (требует библиотеки stdio.h)
-        sprintf(buffer, "Pos: %u\r\n", pos);
-        UART_SendString(buffer);
-    
-      //  uint32_t start_tick = tick_count; // Предполагая, что tick_count растет в прерывании TIM10
-      //  while((tick_count - start_tick) < 500); 
+        Button_Process_Main();
 
-     
+        if (!robot_started)
+        {
+            Motor_Set(0, 0);
+            driving = 0;
+            turning = 0;
+            state = ST_WAIT;
+            is_calibrated = 0;
+            continue;
+        }
+
+        MPU6050_Update_Yaw();
+
+        switch (state)
+        {
+            case ST_WAIT:
+                route_idx = 0;
+                state = ST_CALIBRATE;
+                break;
+
+            case ST_CALIBRATE:
+                Motor_Set(0, 0);
+                if (!is_calibrated)
+                {
+                    UART_SendString("Calibrating...\r\n");
+                    MPU6050_Calibrate();
+                    MPU6050_Reset_Yaw();
+
+                    yaw_target = 0.0f;
+                    yaw_i = 0.0f;
+
+                    is_calibrated = 1;
+
+                    // Запускаем движение по дистанции
+                    Drive_Start(route[route_idx].drive_mm); // пересчет в мм
+                    state = ST_DRIVE;
+                }
+                break;
+
+           static uint32_t last_debug = 0;
+
+case ST_DRIVE:
+    if ((tick_count - last_ctrl) >= 1)
+    {
+        last_ctrl = tick_count;
+        Drive_Process_1ms();
+    }
+
+    if ((tick_count - last_debug) >= 100)
+    {
+        last_debug = tick_count;
+
+        float dist = Get_Distance_MM();
+        float remain = drive_target_mm - dist;
+
+        UART_Printf(
+            "[DRIVE] dist=%.1f mm  remain=%.1f mm  yaw=%.2f\r\n",
+            dist,
+            remain,
+            MPU6050.yaw_angle
+        );
+    }
+
+    if (!driving)
+    {
+        Motor_Set(0, 0);
+        Rotate_Start(route[route_idx].turn_angle);
+        state = ST_TURN;
+    }
+    break;
+
+            static uint32_t last_turn_dbg = 0;
+
+case ST_TURN:
+    Rotate_Process_1ms();
+
+    if ((tick_count - last_turn_dbg) >= 100)
+    {
+        last_turn_dbg = tick_count;
+
+        UART_Printf(
+            "[TURN] target=%.1f deg  yaw=%.2f deg  e1=%lu e2=%lu\r\n",
+            route[route_idx].turn_angle,
+            MPU6050.yaw_angle,
+            encoder1_count,
+            encoder2_count
+        );
+    }
+
+    if (!turning)
+    {
+        UART_Printf(
+            "[TURN DONE] target=%.1f  result=%.2f deg\r\n\r\n",
+            route[route_idx].turn_angle,
+            MPU6050.yaw_angle
+        );
+
+        route_idx++;
+        if (route_idx >= ROUTE_LEN)
+            route_idx = 0;
+
+        is_calibrated = 0;
+        state = ST_CALIBRATE;
+    }
+    break;
+        }
     }
 }
+        
+//         // Button_Process_Main();
+
+    //     // Главный цикл управления (выполняется постоянно)
+    //     // Но делает разные вещи в зависимости от state
+        
+    //     switch (state)
+    //     {
+    //         case 0: // ОЖИДАНИЕ
+    //             if (robot_started) {
+    //                 state = 1; // Переходим к калибровке
+    //             }
+    //             break;
+
+    //         case 1: // КАЛИБРОВКА (Блокирующая, делается 1 раз)
+    //             UART_SendString("Wait...\r\n");
+    //             Motor_Set(0, 0);
+                
+    //             uint32_t w = tick_count;
+    //             while((tick_count - w) < 1000); // Пауза 1 сек
+
+    //             UART_SendString("Calibrating...\r\n");
+    //             MPU6050_Calibrate();
+    //             MPU6050_Reset_Yaw();
+                
+    //             UART_SendString("Go Turn!\r\n");
+                
+    //             // ЗАПУСКАЕМ ПОВОРОТ
+    //             Rotate_Start(-90.0f); // Просто ставит флаг turning=1
+    //             state = 2; // Переходим в режим "Поворот"
+    //             break;
+
+    //         case 2: // ПРОЦЕСС ПОВОРОТА
+    //             // В этом состоянии мы крутимся в цикле и обновляем PID
+                
+    //             // Важно: нужно вызывать PID с частотой 1 кГц (или как у вас MPU обновляется)
+    //             // Если у вас нет прерываний таймера, делаем это здесь:
+    //             static uint32_t last_pid = 0;
+    //             if (tick_count - last_pid >= 1) {
+    //                 last_pid = tick_count;
+                    
+    //                 MPU6050_Update_Yaw(); // Обновляем датчик
+    //                 Rotate_Process_1ms(); // Считаем PID поворота
+    //             }
+
+    //             // Проверяем, закончился ли поворот
+    //             // Rotate_Process_1ms сама сбрасывает turning в 0, когда доедет
+    //             if (turning == 0) {
+    //                 state = 3; // Поворот завершен
+    //             }
+    //             break;
+
+    //         case 3: // ФИНИШ
+    //             UART_SendString("Turn Finished. Stop.\r\n");
+    //             Motor_Set(0, 0);
+                
+    //             robot_started = 0; // Сбрасываем кнопку
+    //             state = 0;         // Возвращаемся в ожидание
+    //             break;
+    //     }
+    // }
+
+    //     // Если нажата кнопка "Старт" (robot_started == 1)
+    //     if (robot_started) {
+
+    //         // Если мы еще не калибровались для этого заезда
+    //         if (!is_calibrated) {
+    //             // 1. Остановка перед калибровкой (на всякий случай)
+    //             Motor_Set(0, 0);
+                
+    //             UART_SendString("Calibrating... DO NOT MOVE!\r\n");
+                
+    //             // 2. Калибруем
+    //             MPU6050_Calibrate();
+    //             MPU6050_Reset_Yaw(); // Сбрасываем угол в 0
+                
+    //             // 3. Устанавливаем цель (всегда 0 после сброса)
+    //             yaw_target = 0.0f;
+    //             yaw_i = 0.0f;
+                
+    //             // 4. Засекаем время и ставим флаг
+    //             start_time = tick_count;
+    //             is_calibrated = 1; 
+                
+    //             UART_SendString("Go!\r\n");
+    //         }
+
+    //         // --- БЛОК ДВИЖЕНИЯ ---
+            
+    //         // Проверка таймера (3 секунды)
+    //         if ((uint32_t)(tick_count - start_time) >= 1820) {
+    //             robot_started = 0; // Выключаем режим старта
+    //             // В следующем цикле мы попадем в блок else
+    //             UART_SendString("Time limit reached.\r\n");
+    //         }
+    //         else {
+    //             // Едем
+    //             if ((uint32_t)(tick_count - last_ctrl) >= 1) {
+    //                 last_ctrl = tick_count;
+    //                 MPU6050_Update_Yaw();
+    //                 Course_Control_1ms();
+    //             }
+    //         }
+
+    //     } 
+    //     // Если робот остановлен (кнопкой или таймером)
+    //     else {
+    //         Motor_Set(0, 0);
+            
+    //         // САМОЕ ВАЖНОЕ: Сбрасываем флаг калибровки.
+    //         // Это значит, что при следующем нажатии кнопки (robot_started станет 1)
+    //         // мы снова зайдем в блок `if (!is_calibrated)` и сделаем новую калибровку.
+    //         is_calibrated = 0; 
+    //     }
+    // }

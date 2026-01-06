@@ -1,6 +1,19 @@
 #include "init.h"
 
 
+void GPIO_Init(void)
+{
+    SET_BIT(RCC->AHB1ENR, RCC_AHB1ENR_GPIOCEN);
+
+    // PC13 — вход
+    CLEAR_BIT(GPIOC->MODER, GPIO_MODER_MODE13);
+
+    // подтяжка вверх (кнопка обычно замыкает на GND)
+    MODIFY_REG(GPIOC->PUPDR,
+               GPIO_PUPDR_PUPD13_Msk,
+               GPIO_PUPDR_PUPD13_0);
+}
+
  void RCC_Init(void){
     //предварительная очистка регистров RCC устанавливается внутренный высокочастотный генератор
     MODIFY_REG(RCC->CR, RCC_CR_HSITRIM, 0x80U);
@@ -103,11 +116,11 @@ void TIM1_PWM_Init(void)
     SET_BIT(TIM1->CCER, TIM_CCER_CC1E | TIM_CCER_CC2E | TIM_CCER_CC3E | TIM_CCER_CC4E);
 
     //Начальные значения скважности = 0%
-    MODIFY_REG(TIM1->CCR1, TIM_CCR1_CCR1_Msk, 0UL); // ПЕРВВЫЙ двигатель - тот что ближе к драйвепру
-    MODIFY_REG(TIM1->CCR2, TIM_CCR2_CCR2_Msk, 0UL); // 999 0 500
+    MODIFY_REG(TIM1->CCR1, TIM_CCR1_CCR1_Msk, 0UL); // ПЕрвый двигатель 
+    MODIFY_REG(TIM1->CCR2, TIM_CCR2_CCR2_Msk, 0UL); // назад
 
-    MODIFY_REG(TIM1->CCR3, TIM_CCR3_CCR3_Msk, 0UL); // ПЕРВВЫЙ двигатель - тот что ближе к драйвепру
-    MODIFY_REG(TIM1->CCR4, TIM_CCR4_CCR4_Msk, 0UL);
+    MODIFY_REG(TIM1->CCR3, TIM_CCR3_CCR3_Msk, 0UL); // второй  двигатель -
+    MODIFY_REG(TIM1->CCR4, TIM_CCR4_CCR4_Msk, 0UL); //назад
     //Генерируем Update-событие (чтобы сразу загрузились PSC и ARR)
     SET_BIT(TIM1->EGR, TIM_EGR_UG);
 
@@ -127,46 +140,35 @@ void UART2_Init(void) {
    
       USART2->BRR = 417;  // 48000000 / 115200 = 416.67
     
-    USART2->CR1 = USART_CR1_TE | USART_CR1_UE;
+     USART2->CR1 = USART_CR1_TE | USART_CR1_RE | USART_CR1_UE;
 }
 
-// Режим энкодера
-void TIM3_Encoder_Init(void)
+void IRO_INInt_PB5_PB6(void)
 {
-    //Тактирование порта A и TIM3
-    SET_BIT(RCC->APB1ENR, RCC_APB1ENR_TIM3EN);
-    SET_BIT(RCC->AHB1ENR, RCC_AHB1ENR_GPIOBEN);
+    // --- Тактирование порта B ---
+    RCC->AHB1ENR |= RCC_AHB1ENR_GPIOBEN;
+    RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
 
- 
-    // PB4 и PB5 в Alternate Function mode
-    MODIFY_REG(GPIOB->MODER, GPIO_MODER_MODE4 | GPIO_MODER_MODE5, GPIO_MODER_MODE4_1 | GPIO_MODER_MODE5_1);
-   
-      // Назначаем AF2 (TIM3) для PB4 и PB5
-    MODIFY_REG(GPIOB->AFR[0], GPIO_AFRL_AFSEL4 | GPIO_AFRL_AFSEL5, 2UL << GPIO_AFRL_AFSEL4_Pos | 2UL << GPIO_AFRL_AFSEL5_Pos);
+    // --- Настройка PB5 и PB6 как вход ---
+    GPIOB->MODER &= ~(GPIO_MODER_MODE5 | GPIO_MODER_MODE6); // 00 = input
+    // Подтяжка к 3.3V для LM393 (открытый коллектор)
+    GPIOB->PUPDR &= ~(GPIO_PUPDR_PUPD5 | GPIO_PUPDR_PUPD6);
+    GPIOB->PUPDR |=  (GPIO_PUPDR_PUPD5_0 | GPIO_PUPDR_PUPD6_0); // 01 = pull-up
 
-    GPIOB->PUPDR |= (GPIO_PUPDR_PUPD4_0); // Включить Pull-up для PB4
-    GPIOB->PUPDR |= (GPIO_PUPDR_PUPD5_0); // Включить Pull-up для PB5
+    // --- Привязка EXTI к пинам PB5/PB6 ---
+    SYSCFG->EXTICR[1] &= ~(SYSCFG_EXTICR2_EXTI5 | SYSCFG_EXTICR2_EXTI6);
+    SYSCFG->EXTICR[1] |=  (SYSCFG_EXTICR2_EXTI5_PB | SYSCFG_EXTICR2_EXTI6_PB);
 
-     // сбросить slave mode
-    TIM3->SMCR &= ~TIM_SMCR_SMS;
-    TIM3->SMCR |=3; //SMS=011 Encoder mode (по обоим каналам)
+    // --- Разрешение прерываний EXTI ---
+    EXTI->IMR  |= (EXTI_IMR_IM5 | EXTI_IMR_IM6);        // Разрешаем маску прерывания
 
-    // Настройка захвата каналов как вход
-    TIM3->CCMR1 &= ~(TIM_CCMR1_CC1S | TIM_CCMR1_CC2S);
-    TIM3->CCMR1 |= (1<<TIM_CCMR1_CC1S_Pos) | (1<<TIM_CCMR1_CC2S_Pos); // 01 na vhod
+    EXTI->RTSR |= (EXTI_RTSR_TR5 | EXTI_RTSR_TR6);
+    EXTI->FTSR &= ~(EXTI_FTSR_TR5 | EXTI_FTSR_TR6); // спад отключён
 
-    // Фильтрация и полярность
-    TIM3->CCMR1 |= (0b0011<<TIM_CCMR1_IC1F_Pos); //Filtr dlya podavleniya drebezga
-    TIM3->CCMR1 |= (0b0011<<TIM_CCMR1_IC2F_Pos);
 
-    TIM3->CCER &= ~(TIM_CCER_CC1P | TIM_CCER_CC2P); // polyarnost po umolchaniyu (na front signala)
-
-    // Autoperegruzka
-    TIM3->ARR = 0xFFFF; // Max 16-bit
-
-    // Reser schetchik
-    TIM3->CNT = 0;
-
-    TIM3->CR1 |= TIM_CR1_CEN; // Включить таймер
-
+    // --- NVIC ---
+    NVIC_SetPriority(EXTI9_5_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 0, 0));
+    NVIC_EnableIRQ(EXTI9_5_IRQn);
 }
+
+
