@@ -1,4 +1,4 @@
-ARM GAS  C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s 			page 1
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccQqokdd.s 			page 1
 
 
    1              		.cpu cortex-m4
@@ -51,94 +51,98 @@ ARM GAS  C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s 			page 1
   20:Core/Src/main.c **** volatile float drive_target_mm = 0;
   21:Core/Src/main.c **** 
   22:Core/Src/main.c **** 
-  23:Core/Src/main.c **** // Гироскоп
-  24:Core/Src/main.c **** volatile uint8_t imu_ready = 0;
-  25:Core/Src/main.c **** volatile float gz_offset = 0.0f;
+  23:Core/Src/main.c **** 
+  24:Core/Src/main.c **** 
+  25:Core/Src/main.c **** 
   26:Core/Src/main.c **** 
-  27:Core/Src/main.c **** // Управление
-  28:Core/Src/main.c **** volatile int16_t base_speed = 450;
-  29:Core/Src/main.c **** volatile uint8_t robot_started = 0;
-ARM GAS  C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s 			page 2
+  27:Core/Src/main.c **** // Гироскоп
+  28:Core/Src/main.c **** volatile uint8_t imu_ready = 0;
+  29:Core/Src/main.c **** volatile float gz_offset = 0.0f;
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccQqokdd.s 			page 2
 
 
-  30:Core/Src/main.c **** volatile uint8_t btn_prev = 1;
-  31:Core/Src/main.c **** volatile uint32_t btn_time = 0;
-  32:Core/Src/main.c **** volatile float yaw_target = 0.0f;
-  33:Core/Src/main.c **** volatile float yaw_i = 0.0f;
-  34:Core/Src/main.c **** 
-  35:Core/Src/main.c **** // Для motor.c
-  36:Core/Src/main.c **** volatile float gz = 0.0f;
-  37:Core/Src/main.c **** volatile float corr = 0.0f;
-  38:Core/Src/main.c **** volatile int16_t left = 0;
-  39:Core/Src/main.c **** volatile int16_t right = 0;
-  40:Core/Src/main.c **** //поворот
-  41:Core/Src/main.c **** volatile uint8_t turning = 0;
-  42:Core/Src/main.c **** volatile float turn_target = 0.0f;
-  43:Core/Src/main.c **** // ---------- МАРШРУТ ----------
-  44:Core/Src/main.c **** typedef struct {
-  45:Core/Src/main.c ****     uint32_t drive_mm;   // ехать прямо (мс)
-  46:Core/Src/main.c ****     float turn_angle;         // угол поворота
-  47:Core/Src/main.c **** } RouteStep_t;
-  48:Core/Src/main.c **** 
-  49:Core/Src/main.c **** // 10 раз: прямо + поворот (пример)
-  50:Core/Src/main.c **** // RouteStep_t route[] = {
-  51:Core/Src/main.c **** //     {500,  0.0f},
-  52:Core/Src/main.c **** //     {0, 0.0f},
-  53:Core/Src/main.c **** //     {0,  0.0f},
-  54:Core/Src/main.c **** //     {0, 0.0f},
-  55:Core/Src/main.c **** //     {0,  0.0f},
+  30:Core/Src/main.c **** 
+  31:Core/Src/main.c **** // Управление
+  32:Core/Src/main.c **** volatile int16_t base_speed = 450;
+  33:Core/Src/main.c **** volatile uint8_t robot_started = 0;
+  34:Core/Src/main.c **** volatile uint8_t btn_prev = 1;
+  35:Core/Src/main.c **** volatile uint32_t btn_time = 0;
+  36:Core/Src/main.c **** volatile float yaw_target = 0.0f;
+  37:Core/Src/main.c **** volatile float yaw_i = 0.0f;
+  38:Core/Src/main.c **** 
+  39:Core/Src/main.c **** // Для motor.c
+  40:Core/Src/main.c **** volatile float gz = 0.0f;
+  41:Core/Src/main.c **** volatile float corr = 0.0f;
+  42:Core/Src/main.c **** volatile int16_t left = 0;
+  43:Core/Src/main.c **** volatile int16_t right = 0;
+  44:Core/Src/main.c **** //поворот
+  45:Core/Src/main.c **** volatile uint8_t turning = 0;
+  46:Core/Src/main.c **** volatile float turn_target = 0.0f;
+  47:Core/Src/main.c **** // ---------- МАРШРУТ ----------
+  48:Core/Src/main.c **** typedef struct {
+  49:Core/Src/main.c ****     uint32_t drive_mm;   // ехать прямо (мс)
+  50:Core/Src/main.c ****     float turn_angle;         // угол поворота
+  51:Core/Src/main.c **** } RouteStep_t;
+  52:Core/Src/main.c **** 
+  53:Core/Src/main.c **** // 10 раз: прямо + поворот (пример)
+  54:Core/Src/main.c **** // RouteStep_t route[] = {
+  55:Core/Src/main.c **** //     {500,  0.0f},
   56:Core/Src/main.c **** //     {0, 0.0f},
   57:Core/Src/main.c **** //     {0,  0.0f},
   58:Core/Src/main.c **** //     {0, 0.0f},
   59:Core/Src/main.c **** //     {0,  0.0f},
   60:Core/Src/main.c **** //     {0, 0.0f},
-  61:Core/Src/main.c **** // };
-  62:Core/Src/main.c **** RouteStep_t route[] = {
-  63:Core/Src/main.c ****     {500,  90.0f},
-  64:Core/Src/main.c ****     {600, 90.0f},
-  65:Core/Src/main.c ****     {25,  -120.0f},
-  66:Core/Src/main.c ****     {450, 60.0f},
-  67:Core/Src/main.c ****     {450,  60.0f},
-  68:Core/Src/main.c ****     {450, 60.0f},
-  69:Core/Src/main.c ****     {450,  60.0f},
-  70:Core/Src/main.c ****     {450, -120.0f},
-  71:Core/Src/main.c ****     {25,  90.0f},
-  72:Core/Src/main.c ****     {600, 90.0f},
-  73:Core/Src/main.c **** };
-  74:Core/Src/main.c **** // RouteStep_t route[] = {
-  75:Core/Src/main.c **** //     {0,  90.0f},
-  76:Core/Src/main.c **** //     {0, 0.0f},
-  77:Core/Src/main.c **** //     {0,  0.0f},
-  78:Core/Src/main.c **** //     {0, 0.0f},
-  79:Core/Src/main.c **** //     {0,  0.0f},
+  61:Core/Src/main.c **** //     {0,  0.0f},
+  62:Core/Src/main.c **** //     {0, 0.0f},
+  63:Core/Src/main.c **** //     {0,  0.0f},
+  64:Core/Src/main.c **** //     {0, 0.0f},
+  65:Core/Src/main.c **** // };
+  66:Core/Src/main.c **** RouteStep_t route[] = {
+  67:Core/Src/main.c ****     {500,  90.0f},
+  68:Core/Src/main.c ****     {605, 89.5f},
+  69:Core/Src/main.c ****     {30,  -120.5f},
+  70:Core/Src/main.c ****     {460, 59.5f},
+  71:Core/Src/main.c ****     {455,  59.5f},
+  72:Core/Src/main.c ****     {450, 59.5f},
+  73:Core/Src/main.c ****     {450,  60.5f},
+  74:Core/Src/main.c ****     {445, -120.0f},
+  75:Core/Src/main.c ****     {25,  89.5f},
+  76:Core/Src/main.c ****     {595, 89.5f},
+  77:Core/Src/main.c **** };
+  78:Core/Src/main.c **** // RouteStep_t route[] = {
+  79:Core/Src/main.c **** //     {0,  90.0f},
   80:Core/Src/main.c **** //     {0, 0.0f},
   81:Core/Src/main.c **** //     {0,  0.0f},
   82:Core/Src/main.c **** //     {0, 0.0f},
   83:Core/Src/main.c **** //     {0,  0.0f},
   84:Core/Src/main.c **** //     {0, 0.0f},
-  85:Core/Src/main.c **** // };
-  86:Core/Src/main.c **** #define ROUTE_LEN (sizeof(route) / sizeof(route[0]))
-ARM GAS  C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s 			page 3
+  85:Core/Src/main.c **** //     {0,  0.0f},
+  86:Core/Src/main.c **** //     {0, 0.0f},
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccQqokdd.s 			page 3
 
 
-  87:Core/Src/main.c **** 
-  88:Core/Src/main.c **** // ---------- СОСТОЯНИЯ ----------
-  89:Core/Src/main.c **** enum {
-  90:Core/Src/main.c ****     ST_WAIT = 0,
-  91:Core/Src/main.c ****     ST_CALIBRATE,
-  92:Core/Src/main.c ****     ST_DRIVE,
-  93:Core/Src/main.c ****     ST_TURN
-  94:Core/Src/main.c **** };
-  95:Core/Src/main.c **** 
-  96:Core/Src/main.c **** uint8_t route_idx = 0;
-  97:Core/Src/main.c **** uint32_t state_time = 0;
-  98:Core/Src/main.c **** void UART_Printf(const char *fmt, ...)
-  99:Core/Src/main.c **** {
-  30              		.loc 1 99 1 view -0
+  87:Core/Src/main.c **** //     {0,  0.0f},
+  88:Core/Src/main.c **** //     {0, 0.0f},
+  89:Core/Src/main.c **** // };
+  90:Core/Src/main.c **** #define ROUTE_LEN (sizeof(route) / sizeof(route[0]))
+  91:Core/Src/main.c **** 
+  92:Core/Src/main.c **** // ---------- СОСТОЯНИЯ ----------
+  93:Core/Src/main.c **** enum {
+  94:Core/Src/main.c ****     ST_WAIT = 0,
+  95:Core/Src/main.c ****     ST_CALIBRATE,
+  96:Core/Src/main.c ****     ST_DRIVE,
+  97:Core/Src/main.c ****     ST_TURN
+  98:Core/Src/main.c **** };
+  99:Core/Src/main.c **** 
+ 100:Core/Src/main.c **** uint8_t route_idx = 0;
+ 101:Core/Src/main.c **** uint32_t state_time = 0;
+ 102:Core/Src/main.c **** void UART_Printf(const char *fmt, ...)
+ 103:Core/Src/main.c **** {
+  30              		.loc 1 103 1 view -0
   31              		.cfi_startproc
   32              		@ args = 4, pretend = 16, frame = 136
   33              		@ frame_needed = 0, uses_anonymous_args = 1
-  34              		.loc 1 99 1 is_stmt 0 view .LVU1
+  34              		.loc 1 103 1 is_stmt 0 view .LVU1
   35 0000 0FB4     		push	{r0, r1, r2, r3}
   36              	.LCFI0:
   37              		.cfi_def_cfa_offset 16
@@ -155,32 +159,32 @@ ARM GAS  C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s 			page 1
   48              		.cfi_def_cfa_offset 160
   49 0006 24AB     		add	r3, sp, #144
   50 0008 53F8042B 		ldr	r2, [r3], #4
- 100:Core/Src/main.c ****     char buf[128];
-  51              		.loc 1 100 5 is_stmt 1 view .LVU2
- 101:Core/Src/main.c ****     va_list args;
-  52              		.loc 1 101 5 view .LVU3
- 102:Core/Src/main.c ****     va_start(args, fmt);
-  53              		.loc 1 102 5 view .LVU4
+ 104:Core/Src/main.c ****     char buf[128];
+  51              		.loc 1 104 5 is_stmt 1 view .LVU2
+ 105:Core/Src/main.c ****     va_list args;
+  52              		.loc 1 105 5 view .LVU3
+ 106:Core/Src/main.c ****     va_start(args, fmt);
+  53              		.loc 1 106 5 view .LVU4
   54 000c 0193     		str	r3, [sp, #4]
- 103:Core/Src/main.c ****     vsnprintf(buf, sizeof(buf), fmt, args);
-  55              		.loc 1 103 5 view .LVU5
+ 107:Core/Src/main.c ****     vsnprintf(buf, sizeof(buf), fmt, args);
+  55              		.loc 1 107 5 view .LVU5
   56 000e 8021     		movs	r1, #128
   57 0010 02A8     		add	r0, sp, #8
   58 0012 FFF7FEFF 		bl	vsnprintf
   59              	.LVL1:
- 104:Core/Src/main.c ****     va_end(args);
-  60              		.loc 1 104 5 view .LVU6
- 105:Core/Src/main.c ****     UART_SendString(buf);
-  61              		.loc 1 105 5 view .LVU7
+ 108:Core/Src/main.c ****     va_end(args);
+  60              		.loc 1 108 5 view .LVU6
+ 109:Core/Src/main.c ****     UART_SendString(buf);
+  61              		.loc 1 109 5 view .LVU7
   62 0016 02A8     		add	r0, sp, #8
   63 0018 FFF7FEFF 		bl	UART_SendString
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccQqokdd.s 			page 4
+
+
   64              	.LVL2:
- 106:Core/Src/main.c **** }
-  65              		.loc 1 106 1 is_stmt 0 view .LVU8
+ 110:Core/Src/main.c **** }
+  65              		.loc 1 110 1 is_stmt 0 view .LVU8
   66 001c 23B0     		add	sp, sp, #140
-ARM GAS  C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s 			page 4
-
-
   67              	.LCFI3:
   68              		.cfi_def_cfa_offset 20
   69              		@ sp needed
@@ -234,13 +238,13 @@ ARM GAS  C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s 			page 1
  102 0078 5B445249 		.ascii	"[DRIVE] dist=%.1f mm  remain=%.1f mm  yaw=%.2f\015\012"
  102      56455D20 
  102      64697374 
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccQqokdd.s 			page 5
+
+
  102      3D252E31 
  102      66206D6D 
  103 00a8 00       		.ascii	"\000"
  104 00a9 000000   		.align	2
-ARM GAS  C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s 			page 5
-
-
  105              	.LC5:
  106 00ac 5B545552 		.ascii	"[TURN] target=%.1f deg  yaw=%.2f deg  e1=%lu e2=%lu"
  106      4E5D2074 
@@ -264,11 +268,11 @@ ARM GAS  C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s 			page 1
  117              		.thumb_func
  119              	main:
  120              	.LFB135:
- 107:Core/Src/main.c **** 
- 108:Core/Src/main.c **** 
- 109:Core/Src/main.c **** int main(void)
- 110:Core/Src/main.c **** {
- 121              		.loc 1 110 1 is_stmt 1 view -0
+ 111:Core/Src/main.c **** 
+ 112:Core/Src/main.c **** 
+ 113:Core/Src/main.c **** int main(void)
+ 114:Core/Src/main.c **** {
+ 121              		.loc 1 114 1 is_stmt 1 view -0
  122              		.cfi_startproc
  123              		@ args = 0, pretend = 0, frame = 0
  124              		@ frame_needed = 0, uses_anonymous_args = 0
@@ -291,921 +295,955 @@ ARM GAS  C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s 			page 1
  141 0008 84B0     		sub	sp, sp, #16
  142              	.LCFI8:
  143              		.cfi_def_cfa_offset 56
- 111:Core/Src/main.c ****     GPIO_Init();
- 144              		.loc 1 111 5 view .LVU10
+ 115:Core/Src/main.c ****     GPIO_Init();
+ 144              		.loc 1 115 5 view .LVU10
  145 000a FFF7FEFF 		bl	GPIO_Init
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccQqokdd.s 			page 6
+
+
  146              	.LVL3:
- 112:Core/Src/main.c ****     RCC_Init();
- 147              		.loc 1 112 5 view .LVU11
+ 116:Core/Src/main.c ****     RCC_Init();
+ 147              		.loc 1 116 5 view .LVU11
  148 000e FFF7FEFF 		bl	RCC_Init
-ARM GAS  C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s 			page 6
-
-
  149              	.LVL4:
- 113:Core/Src/main.c ****     TIM10_Init();
- 150              		.loc 1 113 5 view .LVU12
+ 117:Core/Src/main.c ****     TIM10_Init();
+ 150              		.loc 1 117 5 view .LVU12
  151 0012 FFF7FEFF 		bl	TIM10_Init
  152              	.LVL5:
- 114:Core/Src/main.c ****     TIM1_PWM_Init();
- 153              		.loc 1 114 5 view .LVU13
+ 118:Core/Src/main.c ****     TIM1_PWM_Init();
+ 153              		.loc 1 118 5 view .LVU13
  154 0016 FFF7FEFF 		bl	TIM1_PWM_Init
  155              	.LVL6:
- 115:Core/Src/main.c ****     IRO_INInt_PB5_PB6();
- 156              		.loc 1 115 5 view .LVU14
+ 119:Core/Src/main.c ****     IRO_INInt_PB5_PB6();
+ 156              		.loc 1 119 5 view .LVU14
  157 001a FFF7FEFF 		bl	IRO_INInt_PB5_PB6
  158              	.LVL7:
- 116:Core/Src/main.c ****     I2C_Config();
- 159              		.loc 1 116 5 view .LVU15
+ 120:Core/Src/main.c ****     I2C_Config();
+ 159              		.loc 1 120 5 view .LVU15
  160 001e FFF7FEFF 		bl	I2C_Config
  161              	.LVL8:
- 117:Core/Src/main.c ****     UART2_Init(); 
- 162              		.loc 1 117 5 view .LVU16
+ 121:Core/Src/main.c ****     UART2_Init(); 
+ 162              		.loc 1 121 5 view .LVU16
  163 0022 FFF7FEFF 		bl	UART2_Init
  164              	.LVL9:
- 118:Core/Src/main.c **** 
- 119:Core/Src/main.c ****     // Инициализация MPU6050
- 120:Core/Src/main.c ****     if (MPU6050_Init() != 0) {
- 165              		.loc 1 120 5 view .LVU17
- 166              		.loc 1 120 9 is_stmt 0 view .LVU18
+ 122:Core/Src/main.c **** 
+ 123:Core/Src/main.c ****     // Инициализация MPU6050
+ 124:Core/Src/main.c ****     if (MPU6050_Init() != 0) {
+ 165              		.loc 1 124 5 view .LVU17
+ 166              		.loc 1 124 9 is_stmt 0 view .LVU18
  167 0026 FFF7FEFF 		bl	MPU6050_Init
  168              	.LVL10:
- 169              		.loc 1 120 8 discriminator 1 view .LVU19
+ 169              		.loc 1 124 8 discriminator 1 view .LVU19
  170 002a 18B1     		cbz	r0, .L4
- 121:Core/Src/main.c ****         UART_SendString("MPU6050 init failed!\r\n");
- 171              		.loc 1 121 9 is_stmt 1 view .LVU20
- 172 002c 7848     		ldr	r0, .L23
+ 125:Core/Src/main.c ****         UART_SendString("MPU6050 init failed!\r\n");
+ 171              		.loc 1 125 9 is_stmt 1 view .LVU20
+ 172 002c 7A48     		ldr	r0, .L23
  173 002e FFF7FEFF 		bl	UART_SendString
  174              	.LVL11:
  175              	.L5:
- 122:Core/Src/main.c ****         while(1);
- 176              		.loc 1 122 9 view .LVU21
- 177              		.loc 1 122 14 view .LVU22
+ 126:Core/Src/main.c ****         while(1);
+ 176              		.loc 1 126 9 view .LVU21
+ 177              		.loc 1 126 14 view .LVU22
  178 0032 FEE7     		b	.L5
  179              	.L4:
  180 0034 0546     		mov	r5, r0
- 123:Core/Src/main.c ****     }
- 124:Core/Src/main.c **** 
- 125:Core/Src/main.c ****     UART_SendString("MPU6050 initialized\r\n");
- 181              		.loc 1 125 5 view .LVU23
- 182 0036 7748     		ldr	r0, .L23+4
+ 127:Core/Src/main.c ****     }
+ 128:Core/Src/main.c **** 
+ 129:Core/Src/main.c ****     UART_SendString("MPU6050 initialized\r\n");
+ 181              		.loc 1 129 5 view .LVU23
+ 182 0036 7948     		ldr	r0, .L23+4
  183 0038 FFF7FEFF 		bl	UART_SendString
  184              	.LVL12:
- 126:Core/Src/main.c ****     UART_SendString("Press button to start calibration and movement\r\n");
- 185              		.loc 1 126 5 view .LVU24
- 186 003c 7648     		ldr	r0, .L23+8
+ 130:Core/Src/main.c ****     UART_SendString("Press button to start calibration and movement\r\n");
+ 185              		.loc 1 130 5 view .LVU24
+ 186 003c 7848     		ldr	r0, .L23+8
  187 003e FFF7FEFF 		bl	UART_SendString
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccQqokdd.s 			page 7
+
+
  188              	.LVL13:
- 127:Core/Src/main.c **** 
- 128:Core/Src/main.c ****     static uint32_t last_ctrl = 0;
- 189              		.loc 1 128 5 view .LVU25
-ARM GAS  C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s 			page 7
-
-
- 129:Core/Src/main.c ****     uint8_t state = ST_WAIT;
- 190              		.loc 1 129 5 view .LVU26
- 130:Core/Src/main.c ****     uint8_t is_calibrated = 0;
- 191              		.loc 1 130 5 view .LVU27
- 192              		.loc 1 130 13 is_stmt 0 view .LVU28
- 193 0042 2E46     		mov	r6, r5
- 194 0044 0EE0     		b	.L6
- 195              	.LVL14:
- 196              	.L17:
- 197              	.LBB2:
  131:Core/Src/main.c **** 
- 132:Core/Src/main.c ****     while (1)
- 133:Core/Src/main.c ****     {
- 134:Core/Src/main.c ****         Button_Process_Main();
+ 132:Core/Src/main.c ****  
+ 133:Core/Src/main.c ****     uint8_t state = ST_WAIT;
+ 189              		.loc 1 133 5 view .LVU25
+ 134:Core/Src/main.c ****     uint8_t is_calibrated = 0;
+ 190              		.loc 1 134 5 view .LVU26
+ 191              		.loc 1 134 13 is_stmt 0 view .LVU27
+ 192 0042 2E46     		mov	r6, r5
+ 193 0044 0EE0     		b	.L6
+ 194              	.LVL14:
+ 195              	.L17:
+ 196              	.LBB2:
  135:Core/Src/main.c **** 
- 136:Core/Src/main.c ****         if (!robot_started)
- 137:Core/Src/main.c ****         {
- 138:Core/Src/main.c ****             Motor_Set(0, 0);
- 139:Core/Src/main.c ****             driving = 0;
- 140:Core/Src/main.c ****             turning = 0;
- 141:Core/Src/main.c ****             state = ST_WAIT;
- 142:Core/Src/main.c ****             is_calibrated = 0;
- 143:Core/Src/main.c ****             continue;
- 144:Core/Src/main.c ****         }
- 145:Core/Src/main.c **** 
- 146:Core/Src/main.c ****         MPU6050_Update_Yaw();
- 147:Core/Src/main.c **** 
- 148:Core/Src/main.c ****         switch (state)
- 149:Core/Src/main.c ****         {
- 150:Core/Src/main.c ****             case ST_WAIT:
- 151:Core/Src/main.c ****                 route_idx = 0;
- 152:Core/Src/main.c ****                 state = ST_CALIBRATE;
- 153:Core/Src/main.c ****                 break;
- 154:Core/Src/main.c **** 
- 155:Core/Src/main.c ****             case ST_CALIBRATE:
- 156:Core/Src/main.c ****                 Motor_Set(0, 0);
- 157:Core/Src/main.c ****                 if (!is_calibrated)
- 158:Core/Src/main.c ****                 {
- 159:Core/Src/main.c ****                     UART_SendString("Calibrating...\r\n");
- 160:Core/Src/main.c ****                     MPU6050_Calibrate();
- 161:Core/Src/main.c ****                     MPU6050_Reset_Yaw();
- 162:Core/Src/main.c **** 
- 163:Core/Src/main.c ****                     yaw_target = 0.0f;
- 164:Core/Src/main.c ****                     yaw_i = 0.0f;
- 165:Core/Src/main.c **** 
- 166:Core/Src/main.c ****                     is_calibrated = 1;
- 167:Core/Src/main.c **** 
- 168:Core/Src/main.c ****                     // Запускаем движение по дистанции
- 169:Core/Src/main.c ****                     Drive_Start(route[route_idx].drive_mm); // пересчет в мм
- 170:Core/Src/main.c ****                     state = ST_DRIVE;
- 171:Core/Src/main.c ****                 }
- 172:Core/Src/main.c ****                 break;
- 173:Core/Src/main.c **** 
- 174:Core/Src/main.c ****            static uint32_t last_debug = 0;
- 175:Core/Src/main.c **** 
- 176:Core/Src/main.c **** case ST_DRIVE:
- 177:Core/Src/main.c ****     if ((tick_count - last_ctrl) >= 1)
-ARM GAS  C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s 			page 8
-
-
- 178:Core/Src/main.c ****     {
- 179:Core/Src/main.c ****         last_ctrl = tick_count;
- 180:Core/Src/main.c ****         Drive_Process_1ms();
- 181:Core/Src/main.c ****     }
- 182:Core/Src/main.c **** 
- 183:Core/Src/main.c ****     if ((tick_count - last_debug) >= 100)
- 184:Core/Src/main.c ****     {
- 185:Core/Src/main.c ****         last_debug = tick_count;
- 186:Core/Src/main.c **** 
- 187:Core/Src/main.c ****         float dist = Get_Distance_MM();
- 188:Core/Src/main.c ****         float remain = drive_target_mm - dist;
- 189:Core/Src/main.c **** 
- 190:Core/Src/main.c ****         UART_Printf(
- 191:Core/Src/main.c ****             "[DRIVE] dist=%.1f mm  remain=%.1f mm  yaw=%.2f\r\n",
- 192:Core/Src/main.c ****             dist,
- 193:Core/Src/main.c ****             remain,
- 194:Core/Src/main.c ****             MPU6050.yaw_angle
- 195:Core/Src/main.c ****         );
- 196:Core/Src/main.c ****     }
- 197:Core/Src/main.c **** 
- 198:Core/Src/main.c ****     if (!driving)
- 199:Core/Src/main.c ****     {
- 200:Core/Src/main.c ****         Motor_Set(0, 0);
- 201:Core/Src/main.c ****         Rotate_Start(route[route_idx].turn_angle);
- 202:Core/Src/main.c ****         state = ST_TURN;
- 203:Core/Src/main.c ****     }
- 204:Core/Src/main.c ****     break;
- 205:Core/Src/main.c **** 
- 206:Core/Src/main.c ****             static uint32_t last_turn_dbg = 0;
- 207:Core/Src/main.c **** 
- 208:Core/Src/main.c **** case ST_TURN:
- 209:Core/Src/main.c ****     Rotate_Process_1ms();
- 210:Core/Src/main.c **** 
- 211:Core/Src/main.c ****     if ((tick_count - last_turn_dbg) >= 100)
- 212:Core/Src/main.c ****     {
- 213:Core/Src/main.c ****         last_turn_dbg = tick_count;
- 214:Core/Src/main.c **** 
- 215:Core/Src/main.c ****         UART_Printf(
- 216:Core/Src/main.c ****             "[TURN] target=%.1f deg  yaw=%.2f deg  e1=%lu e2=%lu\r\n",
- 217:Core/Src/main.c ****             route[route_idx].turn_angle,
- 218:Core/Src/main.c ****             MPU6050.yaw_angle,
- 219:Core/Src/main.c ****             encoder1_count,
- 220:Core/Src/main.c ****             encoder2_count
- 221:Core/Src/main.c ****         );
- 222:Core/Src/main.c ****     }
- 223:Core/Src/main.c **** 
- 224:Core/Src/main.c ****     if (!turning)
- 225:Core/Src/main.c ****     {
- 226:Core/Src/main.c ****         UART_Printf(
- 227:Core/Src/main.c ****             "[TURN DONE] target=%.1f  result=%.2f deg\r\n\r\n",
- 228:Core/Src/main.c ****             route[route_idx].turn_angle,
- 229:Core/Src/main.c ****             MPU6050.yaw_angle
- 230:Core/Src/main.c ****         );
- 231:Core/Src/main.c **** 
- 232:Core/Src/main.c ****         route_idx++;
- 233:Core/Src/main.c ****         if (route_idx >= ROUTE_LEN)
- 234:Core/Src/main.c ****             route_idx = 0;
-ARM GAS  C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s 			page 9
-
-
- 235:Core/Src/main.c **** 
- 236:Core/Src/main.c ****         is_calibrated = 0;
- 198              		.loc 1 236 23 view .LVU29
- 199 0046 2646     		mov	r6, r4
- 237:Core/Src/main.c ****         state = ST_CALIBRATE;
- 200              		.loc 1 237 15 view .LVU30
- 201 0048 0125     		movs	r5, #1
- 202 004a 0BE0     		b	.L6
- 203              	.LVL15:
- 204              	.L8:
- 205              		.loc 1 237 15 view .LVU31
- 206              	.LBE2:
- 146:Core/Src/main.c **** 
- 207              		.loc 1 146 9 is_stmt 1 view .LVU32
- 208 004c FFF7FEFF 		bl	MPU6050_Update_Yaw
- 209              	.LVL16:
- 148:Core/Src/main.c ****         {
- 210              		.loc 1 148 9 view .LVU33
- 211 0050 032D     		cmp	r5, #3
- 212 0052 07D8     		bhi	.L6
- 213 0054 DFE805F0 		tbb	[pc, r5]
- 214              	.L10:
- 215 0058 02       		.byte	(.L13-.L10)/2
- 216 0059 1A       		.byte	(.L12-.L10)/2
- 217 005a 3A       		.byte	(.L11-.L10)/2
- 218 005b 85       		.byte	(.L9-.L10)/2
- 219              		.p2align 1
- 220              	.L13:
- 221              	.LBB4:
- 151:Core/Src/main.c ****                 state = ST_CALIBRATE;
- 222              		.loc 1 151 17 view .LVU34
- 151:Core/Src/main.c ****                 state = ST_CALIBRATE;
- 223              		.loc 1 151 27 is_stmt 0 view .LVU35
- 224 005c 6F4B     		ldr	r3, .L23+12
- 225 005e 0022     		movs	r2, #0
- 226 0060 1A70     		strb	r2, [r3]
- 152:Core/Src/main.c ****                 break;
- 227              		.loc 1 152 17 is_stmt 1 view .LVU36
- 228              	.LVL17:
- 153:Core/Src/main.c **** 
- 229              		.loc 1 153 17 view .LVU37
- 152:Core/Src/main.c ****                 break;
- 230              		.loc 1 152 23 is_stmt 0 view .LVU38
- 231 0062 0125     		movs	r5, #1
- 232              	.LVL18:
- 233              	.L6:
- 152:Core/Src/main.c ****                 break;
- 234              		.loc 1 152 23 view .LVU39
- 235              	.LBE4:
- 132:Core/Src/main.c ****     {
- 236              		.loc 1 132 5 is_stmt 1 view .LVU40
- 134:Core/Src/main.c **** 
- 237              		.loc 1 134 9 view .LVU41
- 238 0064 FFF7FEFF 		bl	Button_Process_Main
- 239              	.LVL19:
- 136:Core/Src/main.c ****         {
- 240              		.loc 1 136 9 view .LVU42
-ARM GAS  C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s 			page 10
-
-
- 136:Core/Src/main.c ****         {
- 241              		.loc 1 136 13 is_stmt 0 view .LVU43
- 242 0068 6D4B     		ldr	r3, .L23+16
- 243 006a 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
- 136:Core/Src/main.c ****         {
- 244              		.loc 1 136 12 view .LVU44
- 245 006c 03F0FF04 		and	r4, r3, #255
- 246 0070 002B     		cmp	r3, #0
- 247 0072 EBD1     		bne	.L8
- 138:Core/Src/main.c ****             driving = 0;
- 248              		.loc 1 138 13 is_stmt 1 view .LVU45
- 249 0074 0021     		movs	r1, #0
- 250 0076 0846     		mov	r0, r1
- 251 0078 FFF7FEFF 		bl	Motor_Set
- 252              	.LVL20:
- 139:Core/Src/main.c ****             turning = 0;
- 253              		.loc 1 139 13 view .LVU46
- 139:Core/Src/main.c ****             turning = 0;
- 254              		.loc 1 139 21 is_stmt 0 view .LVU47
- 255 007c 0023     		movs	r3, #0
- 256 007e 694A     		ldr	r2, .L23+20
- 257 0080 1370     		strb	r3, [r2]
- 140:Core/Src/main.c ****             state = ST_WAIT;
- 258              		.loc 1 140 13 is_stmt 1 view .LVU48
- 140:Core/Src/main.c ****             state = ST_WAIT;
- 259              		.loc 1 140 21 is_stmt 0 view .LVU49
- 260 0082 694A     		ldr	r2, .L23+24
- 261 0084 1370     		strb	r3, [r2]
- 141:Core/Src/main.c ****             is_calibrated = 0;
- 262              		.loc 1 141 13 is_stmt 1 view .LVU50
- 263              	.LVL21:
- 142:Core/Src/main.c ****             continue;
- 264              		.loc 1 142 13 view .LVU51
- 143:Core/Src/main.c ****         }
- 265              		.loc 1 143 13 view .LVU52
- 142:Core/Src/main.c ****             continue;
- 266              		.loc 1 142 27 is_stmt 0 view .LVU53
- 267 0086 2646     		mov	r6, r4
- 141:Core/Src/main.c ****             is_calibrated = 0;
- 268              		.loc 1 141 19 view .LVU54
- 269 0088 2546     		mov	r5, r4
- 143:Core/Src/main.c ****         }
- 270              		.loc 1 143 13 view .LVU55
- 271 008a EBE7     		b	.L6
- 272              	.LVL22:
- 273              	.L12:
- 274              	.LBB5:
- 156:Core/Src/main.c ****                 if (!is_calibrated)
- 275              		.loc 1 156 17 is_stmt 1 view .LVU56
- 276 008c 0021     		movs	r1, #0
- 277 008e 0846     		mov	r0, r1
- 278 0090 FFF7FEFF 		bl	Motor_Set
- 279              	.LVL23:
- 157:Core/Src/main.c ****                 {
- 280              		.loc 1 157 17 view .LVU57
- 157:Core/Src/main.c ****                 {
- 281              		.loc 1 157 20 is_stmt 0 view .LVU58
-ARM GAS  C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s 			page 11
-
-
- 282 0094 002E     		cmp	r6, #0
- 283 0096 E5D1     		bne	.L6
- 159:Core/Src/main.c ****                     MPU6050_Calibrate();
- 284              		.loc 1 159 21 is_stmt 1 view .LVU59
- 285 0098 6448     		ldr	r0, .L23+28
- 286 009a FFF7FEFF 		bl	UART_SendString
- 287              	.LVL24:
- 160:Core/Src/main.c ****                     MPU6050_Reset_Yaw();
- 288              		.loc 1 160 21 view .LVU60
- 289 009e FFF7FEFF 		bl	MPU6050_Calibrate
- 290              	.LVL25:
- 161:Core/Src/main.c **** 
- 291              		.loc 1 161 21 view .LVU61
- 292 00a2 FFF7FEFF 		bl	MPU6050_Reset_Yaw
- 293              	.LVL26:
- 163:Core/Src/main.c ****                     yaw_i = 0.0f;
- 294              		.loc 1 163 21 view .LVU62
- 163:Core/Src/main.c ****                     yaw_i = 0.0f;
- 295              		.loc 1 163 32 is_stmt 0 view .LVU63
- 296 00a6 0023     		movs	r3, #0
- 297 00a8 614A     		ldr	r2, .L23+32
- 298 00aa 1360     		str	r3, [r2]	@ float
- 164:Core/Src/main.c **** 
- 299              		.loc 1 164 21 is_stmt 1 view .LVU64
- 164:Core/Src/main.c **** 
- 300              		.loc 1 164 27 is_stmt 0 view .LVU65
- 301 00ac 614A     		ldr	r2, .L23+36
- 302 00ae 1360     		str	r3, [r2]	@ float
+ 136:Core/Src/main.c ****     while (1)
+ 137:Core/Src/main.c ****     {
+ 138:Core/Src/main.c ****         Button_Process_Main();
+ 139:Core/Src/main.c **** 
+ 140:Core/Src/main.c ****         if (!robot_started)
+ 141:Core/Src/main.c ****         {
+ 142:Core/Src/main.c ****             Motor_Set(0, 0);
+ 143:Core/Src/main.c ****             driving = 0;
+ 144:Core/Src/main.c ****             turning = 0;
+ 145:Core/Src/main.c ****             state = ST_WAIT;
+ 146:Core/Src/main.c ****             is_calibrated = 0;
+ 147:Core/Src/main.c ****             continue;
+ 148:Core/Src/main.c ****         }
+ 149:Core/Src/main.c **** 
+ 150:Core/Src/main.c ****         MPU6050_Update_Yaw();
+ 151:Core/Src/main.c **** 
+ 152:Core/Src/main.c ****         switch (state)
+ 153:Core/Src/main.c ****         {
+ 154:Core/Src/main.c ****             case ST_WAIT:
+ 155:Core/Src/main.c ****                 route_idx = 0;
+ 156:Core/Src/main.c ****                 state = ST_CALIBRATE;
+ 157:Core/Src/main.c ****                 break;
+ 158:Core/Src/main.c **** 
+ 159:Core/Src/main.c ****             case ST_CALIBRATE:
+ 160:Core/Src/main.c ****                 Motor_Set(0, 0);
+ 161:Core/Src/main.c ****                 if (!is_calibrated)
+ 162:Core/Src/main.c ****                 {
+ 163:Core/Src/main.c ****                     UART_SendString("Calibrating...\r\n");
+ 164:Core/Src/main.c ****                     MPU6050_Calibrate();
+ 165:Core/Src/main.c ****                     MPU6050_Reset_Yaw();
  166:Core/Src/main.c **** 
- 303              		.loc 1 166 21 is_stmt 1 view .LVU66
- 304              	.LVL27:
- 169:Core/Src/main.c ****                     state = ST_DRIVE;
- 305              		.loc 1 169 21 view .LVU67
- 169:Core/Src/main.c ****                     state = ST_DRIVE;
- 306              		.loc 1 169 49 is_stmt 0 view .LVU68
- 307 00b0 5A4B     		ldr	r3, .L23+12
- 308 00b2 1A78     		ldrb	r2, [r3]	@ zero_extendqisi2
- 309 00b4 604B     		ldr	r3, .L23+40
- 310 00b6 03EBC203 		add	r3, r3, r2, lsl #3
- 311 00ba 93ED000A 		vldr.32	s0, [r3]	@ int
- 169:Core/Src/main.c ****                     state = ST_DRIVE;
- 312              		.loc 1 169 21 view .LVU69
- 313 00be B8EE400A 		vcvt.f32.u32	s0, s0
- 314 00c2 FFF7FEFF 		bl	Drive_Start
- 315              	.LVL28:
- 170:Core/Src/main.c ****                 }
- 316              		.loc 1 170 21 is_stmt 1 view .LVU70
- 166:Core/Src/main.c **** 
- 317              		.loc 1 166 35 is_stmt 0 view .LVU71
- 318 00c6 2E46     		mov	r6, r5
- 170:Core/Src/main.c ****                 }
- 319              		.loc 1 170 27 view .LVU72
- 320 00c8 0225     		movs	r5, #2
- 321 00ca CBE7     		b	.L6
- 322              	.LVL29:
- 323              	.L11:
- 174:Core/Src/main.c **** 
-ARM GAS  C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s 			page 12
+ 167:Core/Src/main.c ****                     yaw_target = 0.0f;
+ 168:Core/Src/main.c ****                     yaw_i = 0.0f;
+ 169:Core/Src/main.c **** 
+ 170:Core/Src/main.c ****                     is_calibrated = 1;
+ 171:Core/Src/main.c **** 
+ 172:Core/Src/main.c ****                     // Запускаем движение по дистанции
+ 173:Core/Src/main.c ****                     Drive_Start(route[route_idx].drive_mm); // пересчет в мм
+ 174:Core/Src/main.c ****                     state = ST_DRIVE;
+ 175:Core/Src/main.c ****                 }
+ 176:Core/Src/main.c ****                 break;
+ 177:Core/Src/main.c **** 
+ 178:Core/Src/main.c ****          
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccQqokdd.s 			page 8
 
 
- 324              		.loc 1 174 12 is_stmt 1 view .LVU73
- 177:Core/Src/main.c ****     {
- 325              		.loc 1 177 5 view .LVU74
- 177:Core/Src/main.c ****     {
- 326              		.loc 1 177 34 is_stmt 0 view .LVU75
- 327 00cc 5B4B     		ldr	r3, .L23+44
- 328 00ce 1A68     		ldr	r2, [r3]
- 329 00d0 5B4B     		ldr	r3, .L23+48
- 330 00d2 1B68     		ldr	r3, [r3]
- 177:Core/Src/main.c ****     {
- 331              		.loc 1 177 8 view .LVU76
- 332 00d4 9A42     		cmp	r2, r3
- 333 00d6 19D1     		bne	.L20
- 334              	.L14:
- 183:Core/Src/main.c ****     {
- 335              		.loc 1 183 5 is_stmt 1 view .LVU77
- 183:Core/Src/main.c ****     {
- 336              		.loc 1 183 21 is_stmt 0 view .LVU78
- 337 00d8 584B     		ldr	r3, .L23+44
- 338 00da 1B68     		ldr	r3, [r3]
- 339 00dc 594A     		ldr	r2, .L23+52
- 340 00de 1268     		ldr	r2, [r2]
- 341 00e0 9B1A     		subs	r3, r3, r2
- 183:Core/Src/main.c ****     {
- 342              		.loc 1 183 8 view .LVU79
- 343 00e2 632B     		cmp	r3, #99
- 344 00e4 19D8     		bhi	.L21
- 345              	.L15:
- 198:Core/Src/main.c ****     {
- 346              		.loc 1 198 5 is_stmt 1 view .LVU80
- 198:Core/Src/main.c ****     {
- 347              		.loc 1 198 9 is_stmt 0 view .LVU81
- 348 00e6 4F4B     		ldr	r3, .L23+20
- 349 00e8 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
- 198:Core/Src/main.c ****     {
- 350              		.loc 1 198 8 view .LVU82
- 351 00ea 002B     		cmp	r3, #0
- 352 00ec BAD1     		bne	.L6
- 200:Core/Src/main.c ****         Rotate_Start(route[route_idx].turn_angle);
- 353              		.loc 1 200 9 is_stmt 1 view .LVU83
- 354 00ee 0021     		movs	r1, #0
- 355 00f0 0846     		mov	r0, r1
- 356 00f2 FFF7FEFF 		bl	Motor_Set
- 357              	.LVL30:
- 201:Core/Src/main.c ****         state = ST_TURN;
- 358              		.loc 1 201 9 view .LVU84
- 359 00f6 494B     		ldr	r3, .L23+12
- 360 00f8 1A78     		ldrb	r2, [r3]	@ zero_extendqisi2
- 361 00fa 4F4B     		ldr	r3, .L23+40
- 362 00fc 03EBC203 		add	r3, r3, r2, lsl #3
- 363 0100 93ED010A 		vldr.32	s0, [r3, #4]
- 364 0104 FFF7FEFF 		bl	Rotate_Start
- 365              	.LVL31:
- 202:Core/Src/main.c ****     }
- 366              		.loc 1 202 9 view .LVU85
- 202:Core/Src/main.c ****     }
- 367              		.loc 1 202 15 is_stmt 0 view .LVU86
-ARM GAS  C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s 			page 13
-
-
- 368 0108 0325     		movs	r5, #3
- 369 010a ABE7     		b	.L6
- 370              	.LVL32:
- 371              	.L20:
- 179:Core/Src/main.c ****         Drive_Process_1ms();
- 372              		.loc 1 179 9 is_stmt 1 view .LVU87
- 179:Core/Src/main.c ****         Drive_Process_1ms();
- 373              		.loc 1 179 19 is_stmt 0 view .LVU88
- 374 010c 4B4B     		ldr	r3, .L23+44
- 375 010e 1A68     		ldr	r2, [r3]
- 376 0110 4B4B     		ldr	r3, .L23+48
- 377 0112 1A60     		str	r2, [r3]
- 180:Core/Src/main.c ****     }
- 378              		.loc 1 180 9 is_stmt 1 view .LVU89
- 379 0114 FFF7FEFF 		bl	Drive_Process_1ms
- 380              	.LVL33:
- 381 0118 DEE7     		b	.L14
- 382              	.L21:
- 383              	.LBB3:
- 185:Core/Src/main.c **** 
- 384              		.loc 1 185 9 view .LVU90
- 185:Core/Src/main.c **** 
- 385              		.loc 1 185 20 is_stmt 0 view .LVU91
- 386 011a 484B     		ldr	r3, .L23+44
- 387 011c 1A68     		ldr	r2, [r3]
- 388 011e 494B     		ldr	r3, .L23+52
- 389 0120 1A60     		str	r2, [r3]
- 187:Core/Src/main.c ****         float remain = drive_target_mm - dist;
- 390              		.loc 1 187 9 is_stmt 1 view .LVU92
- 187:Core/Src/main.c ****         float remain = drive_target_mm - dist;
- 391              		.loc 1 187 22 is_stmt 0 view .LVU93
- 392 0122 FFF7FEFF 		bl	Get_Distance_MM
- 393              	.LVL34:
- 188:Core/Src/main.c **** 
- 394              		.loc 1 188 9 is_stmt 1 view .LVU94
- 188:Core/Src/main.c **** 
- 395              		.loc 1 188 40 is_stmt 0 view .LVU95
- 396 0126 484B     		ldr	r3, .L23+56
- 397 0128 93ED008A 		vldr.32	s16, [r3]
- 188:Core/Src/main.c **** 
- 398              		.loc 1 188 15 view .LVU96
- 399 012c 38EE408A 		vsub.f32	s16, s16, s0
- 400              	.LVL35:
- 190:Core/Src/main.c ****             "[DRIVE] dist=%.1f mm  remain=%.1f mm  yaw=%.2f\r\n",
- 401              		.loc 1 190 9 is_stmt 1 view .LVU97
- 194:Core/Src/main.c ****         );
- 402              		.loc 1 194 20 is_stmt 0 view .LVU98
- 403 0130 464B     		ldr	r3, .L23+60
- 404 0132 1C68     		ldr	r4, [r3]	@ float
- 190:Core/Src/main.c ****             "[DRIVE] dist=%.1f mm  remain=%.1f mm  yaw=%.2f\r\n",
- 405              		.loc 1 190 9 view .LVU99
- 406 0134 10EE100A 		vmov	r0, s0
- 407 0138 FFF7FEFF 		bl	__aeabi_f2d
- 408              	.LVL36:
- 190:Core/Src/main.c ****             "[DRIVE] dist=%.1f mm  remain=%.1f mm  yaw=%.2f\r\n",
- 409              		.loc 1 190 9 view .LVU100
- 410 013c 8046     		mov	r8, r0
-ARM GAS  C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s 			page 14
-
-
- 411 013e 8946     		mov	r9, r1
- 412 0140 2046     		mov	r0, r4	@ float
- 413 0142 FFF7FEFF 		bl	__aeabi_f2d
- 414              	.LVL37:
- 415 0146 CDE90201 		strd	r0, [sp, #8]
- 416 014a 18EE100A 		vmov	r0, s16
- 417 014e FFF7FEFF 		bl	__aeabi_f2d
- 418              	.LVL38:
- 419 0152 CDE90001 		strd	r0, [sp]
- 420 0156 4246     		mov	r2, r8
- 421 0158 4B46     		mov	r3, r9
- 422 015a 3D48     		ldr	r0, .L23+64
- 423 015c FFF7FEFF 		bl	UART_Printf
- 424              	.LVL39:
- 425 0160 C1E7     		b	.L15
- 426              	.LVL40:
- 427              	.L9:
- 190:Core/Src/main.c ****             "[DRIVE] dist=%.1f mm  remain=%.1f mm  yaw=%.2f\r\n",
- 428              		.loc 1 190 9 view .LVU101
- 429              	.LBE3:
+ 179:Core/Src/main.c **** 
+ 180:Core/Src/main.c **** case ST_DRIVE:
+ 181:Core/Src/main.c **** {
+ 182:Core/Src/main.c ****     static uint32_t last_debug = 0;
+ 183:Core/Src/main.c ****     static uint32_t last_ctrl  = 0;
+ 184:Core/Src/main.c **** 
+ 185:Core/Src/main.c ****     // --- Управление движением каждые 1 мс ---
+ 186:Core/Src/main.c ****     if ((tick_count - last_ctrl) >= 1)
+ 187:Core/Src/main.c ****     {
+ 188:Core/Src/main.c ****         last_ctrl = tick_count;
+ 189:Core/Src/main.c ****         Drive_Process_1ms();
+ 190:Core/Src/main.c ****     }
+ 191:Core/Src/main.c **** 
+ 192:Core/Src/main.c ****     // --- Отладка UART каждые 100 мс ---
+ 193:Core/Src/main.c ****     if ((tick_count - last_debug) >= 100)
+ 194:Core/Src/main.c ****     {
+ 195:Core/Src/main.c ****         last_debug = tick_count;
+ 196:Core/Src/main.c ****         float dist = Get_Distance_MM();
+ 197:Core/Src/main.c ****         float remain = drive_target_mm - dist;
+ 198:Core/Src/main.c **** 
+ 199:Core/Src/main.c ****         UART_Printf(
+ 200:Core/Src/main.c ****             "[DRIVE] dist=%.1f mm  remain=%.1f mm  yaw=%.2f\r\n",
+ 201:Core/Src/main.c ****             dist,
+ 202:Core/Src/main.c ****             remain,
+ 203:Core/Src/main.c ****             MPU6050.yaw_angle
+ 204:Core/Src/main.c ****         );
+ 205:Core/Src/main.c ****     }
  206:Core/Src/main.c **** 
- 430              		.loc 1 206 13 is_stmt 1 view .LVU102
- 209:Core/Src/main.c **** 
- 431              		.loc 1 209 5 view .LVU103
- 432 0162 FFF7FEFF 		bl	Rotate_Process_1ms
+ 207:Core/Src/main.c ****     // --- Достигли цели движения ---
+ 208:Core/Src/main.c ****     if (!driving)
+ 209:Core/Src/main.c ****     {
+ 210:Core/Src/main.c ****         Motor_Set(0, 0);
+ 211:Core/Src/main.c **** 
+ 212:Core/Src/main.c ****         // --- Коррекция поворота на текущее отклонение ---
+ 213:Core/Src/main.c ****         float adjusted_turn = route[route_idx].turn_angle - MPU6050.yaw_angle;
+ 214:Core/Src/main.c ****         Rotate_Start(adjusted_turn);
+ 215:Core/Src/main.c **** 
+ 216:Core/Src/main.c ****         state = ST_TURN;
+ 217:Core/Src/main.c ****     }
+ 218:Core/Src/main.c **** }
+ 219:Core/Src/main.c **** break;
+ 220:Core/Src/main.c **** 
+ 221:Core/Src/main.c **** case ST_TURN:
+ 222:Core/Src/main.c **** {
+ 223:Core/Src/main.c ****     static uint32_t last_turn_dbg = 0;
+ 224:Core/Src/main.c **** 
+ 225:Core/Src/main.c ****     // --- Управление поворотом каждые 1 мс ---
+ 226:Core/Src/main.c ****     Rotate_Process_1ms();
+ 227:Core/Src/main.c **** 
+ 228:Core/Src/main.c ****     // --- Отладка UART каждые 100 мс ---
+ 229:Core/Src/main.c ****     if ((tick_count - last_turn_dbg) >= 100)
+ 230:Core/Src/main.c ****     {
+ 231:Core/Src/main.c ****         last_turn_dbg = tick_count;
+ 232:Core/Src/main.c ****         UART_Printf(
+ 233:Core/Src/main.c ****             "[TURN] target=%.1f deg  yaw=%.2f deg  e1=%lu e2=%lu\r\n",
+ 234:Core/Src/main.c ****             route[route_idx].turn_angle,
+ 235:Core/Src/main.c ****             MPU6050.yaw_angle,
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccQqokdd.s 			page 9
+
+
+ 236:Core/Src/main.c ****             encoder1_count,
+ 237:Core/Src/main.c ****             encoder2_count
+ 238:Core/Src/main.c ****         );
+ 239:Core/Src/main.c ****     }
+ 240:Core/Src/main.c **** 
+ 241:Core/Src/main.c ****     // --- Достигли угла ---
+ 242:Core/Src/main.c ****     if (!turning)
+ 243:Core/Src/main.c ****     {
+ 244:Core/Src/main.c ****         UART_Printf(
+ 245:Core/Src/main.c ****             "[TURN DONE] target=%.1f  result=%.2f deg\r\n\r\n",
+ 246:Core/Src/main.c ****             route[route_idx].turn_angle,
+ 247:Core/Src/main.c ****             MPU6050.yaw_angle
+ 248:Core/Src/main.c ****         );
+ 249:Core/Src/main.c **** 
+ 250:Core/Src/main.c ****         route_idx++;
+ 251:Core/Src/main.c ****         if (route_idx >= ROUTE_LEN)
+ 252:Core/Src/main.c ****             route_idx = 0;
+ 253:Core/Src/main.c **** 
+ 254:Core/Src/main.c ****         // Следующий шаг маршрута — сначала калибровка пе�
+ 255:Core/Src/main.c ****         is_calibrated = 0;
+ 197              		.loc 1 255 23 view .LVU28
+ 198 0046 2646     		mov	r6, r4
+ 256:Core/Src/main.c ****         state = ST_CALIBRATE;
+ 199              		.loc 1 256 15 view .LVU29
+ 200 0048 0125     		movs	r5, #1
+ 201 004a 0BE0     		b	.L6
+ 202              	.LVL15:
+ 203              	.L8:
+ 204              		.loc 1 256 15 view .LVU30
+ 205              	.LBE2:
+ 150:Core/Src/main.c **** 
+ 206              		.loc 1 150 9 is_stmt 1 view .LVU31
+ 207 004c FFF7FEFF 		bl	MPU6050_Update_Yaw
+ 208              	.LVL16:
+ 152:Core/Src/main.c ****         {
+ 209              		.loc 1 152 9 view .LVU32
+ 210 0050 032D     		cmp	r5, #3
+ 211 0052 07D8     		bhi	.L6
+ 212 0054 DFE805F0 		tbb	[pc, r5]
+ 213              	.L10:
+ 214 0058 02       		.byte	(.L13-.L10)/2
+ 215 0059 1A       		.byte	(.L12-.L10)/2
+ 216 005a 3A       		.byte	(.L11-.L10)/2
+ 217 005b 8A       		.byte	(.L9-.L10)/2
+ 218              		.p2align 1
+ 219              	.L13:
+ 155:Core/Src/main.c ****                 state = ST_CALIBRATE;
+ 220              		.loc 1 155 17 view .LVU33
+ 155:Core/Src/main.c ****                 state = ST_CALIBRATE;
+ 221              		.loc 1 155 27 is_stmt 0 view .LVU34
+ 222 005c 714B     		ldr	r3, .L23+12
+ 223 005e 0022     		movs	r2, #0
+ 224 0060 1A70     		strb	r2, [r3]
+ 156:Core/Src/main.c ****                 break;
+ 225              		.loc 1 156 17 is_stmt 1 view .LVU35
+ 226              	.LVL17:
+ 157:Core/Src/main.c **** 
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccQqokdd.s 			page 10
+
+
+ 227              		.loc 1 157 17 view .LVU36
+ 156:Core/Src/main.c ****                 break;
+ 228              		.loc 1 156 23 is_stmt 0 view .LVU37
+ 229 0062 0125     		movs	r5, #1
+ 230              	.LVL18:
+ 231              	.L6:
+ 136:Core/Src/main.c ****     {
+ 232              		.loc 1 136 5 is_stmt 1 view .LVU38
+ 138:Core/Src/main.c **** 
+ 233              		.loc 1 138 9 view .LVU39
+ 234 0064 FFF7FEFF 		bl	Button_Process_Main
+ 235              	.LVL19:
+ 140:Core/Src/main.c ****         {
+ 236              		.loc 1 140 9 view .LVU40
+ 140:Core/Src/main.c ****         {
+ 237              		.loc 1 140 13 is_stmt 0 view .LVU41
+ 238 0068 6F4B     		ldr	r3, .L23+16
+ 239 006a 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 140:Core/Src/main.c ****         {
+ 240              		.loc 1 140 12 view .LVU42
+ 241 006c 03F0FF04 		and	r4, r3, #255
+ 242 0070 002B     		cmp	r3, #0
+ 243 0072 EBD1     		bne	.L8
+ 142:Core/Src/main.c ****             driving = 0;
+ 244              		.loc 1 142 13 is_stmt 1 view .LVU43
+ 245 0074 0021     		movs	r1, #0
+ 246 0076 0846     		mov	r0, r1
+ 247 0078 FFF7FEFF 		bl	Motor_Set
+ 248              	.LVL20:
+ 143:Core/Src/main.c ****             turning = 0;
+ 249              		.loc 1 143 13 view .LVU44
+ 143:Core/Src/main.c ****             turning = 0;
+ 250              		.loc 1 143 21 is_stmt 0 view .LVU45
+ 251 007c 0023     		movs	r3, #0
+ 252 007e 6B4A     		ldr	r2, .L23+20
+ 253 0080 1370     		strb	r3, [r2]
+ 144:Core/Src/main.c ****             state = ST_WAIT;
+ 254              		.loc 1 144 13 is_stmt 1 view .LVU46
+ 144:Core/Src/main.c ****             state = ST_WAIT;
+ 255              		.loc 1 144 21 is_stmt 0 view .LVU47
+ 256 0082 6B4A     		ldr	r2, .L23+24
+ 257 0084 1370     		strb	r3, [r2]
+ 145:Core/Src/main.c ****             is_calibrated = 0;
+ 258              		.loc 1 145 13 is_stmt 1 view .LVU48
+ 259              	.LVL21:
+ 146:Core/Src/main.c ****             continue;
+ 260              		.loc 1 146 13 view .LVU49
+ 147:Core/Src/main.c ****         }
+ 261              		.loc 1 147 13 view .LVU50
+ 146:Core/Src/main.c ****             continue;
+ 262              		.loc 1 146 27 is_stmt 0 view .LVU51
+ 263 0086 2646     		mov	r6, r4
+ 145:Core/Src/main.c ****             is_calibrated = 0;
+ 264              		.loc 1 145 19 view .LVU52
+ 265 0088 2546     		mov	r5, r4
+ 147:Core/Src/main.c ****         }
+ 266              		.loc 1 147 13 view .LVU53
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccQqokdd.s 			page 11
+
+
+ 267 008a EBE7     		b	.L6
+ 268              	.LVL22:
+ 269              	.L12:
+ 160:Core/Src/main.c ****                 if (!is_calibrated)
+ 270              		.loc 1 160 17 is_stmt 1 view .LVU54
+ 271 008c 0021     		movs	r1, #0
+ 272 008e 0846     		mov	r0, r1
+ 273 0090 FFF7FEFF 		bl	Motor_Set
+ 274              	.LVL23:
+ 161:Core/Src/main.c ****                 {
+ 275              		.loc 1 161 17 view .LVU55
+ 161:Core/Src/main.c ****                 {
+ 276              		.loc 1 161 20 is_stmt 0 view .LVU56
+ 277 0094 002E     		cmp	r6, #0
+ 278 0096 E5D1     		bne	.L6
+ 163:Core/Src/main.c ****                     MPU6050_Calibrate();
+ 279              		.loc 1 163 21 is_stmt 1 view .LVU57
+ 280 0098 6648     		ldr	r0, .L23+28
+ 281 009a FFF7FEFF 		bl	UART_SendString
+ 282              	.LVL24:
+ 164:Core/Src/main.c ****                     MPU6050_Reset_Yaw();
+ 283              		.loc 1 164 21 view .LVU58
+ 284 009e FFF7FEFF 		bl	MPU6050_Calibrate
+ 285              	.LVL25:
+ 165:Core/Src/main.c **** 
+ 286              		.loc 1 165 21 view .LVU59
+ 287 00a2 FFF7FEFF 		bl	MPU6050_Reset_Yaw
+ 288              	.LVL26:
+ 167:Core/Src/main.c ****                     yaw_i = 0.0f;
+ 289              		.loc 1 167 21 view .LVU60
+ 167:Core/Src/main.c ****                     yaw_i = 0.0f;
+ 290              		.loc 1 167 32 is_stmt 0 view .LVU61
+ 291 00a6 0023     		movs	r3, #0
+ 292 00a8 634A     		ldr	r2, .L23+32
+ 293 00aa 1360     		str	r3, [r2]	@ float
+ 168:Core/Src/main.c **** 
+ 294              		.loc 1 168 21 is_stmt 1 view .LVU62
+ 168:Core/Src/main.c **** 
+ 295              		.loc 1 168 27 is_stmt 0 view .LVU63
+ 296 00ac 634A     		ldr	r2, .L23+36
+ 297 00ae 1360     		str	r3, [r2]	@ float
+ 170:Core/Src/main.c **** 
+ 298              		.loc 1 170 21 is_stmt 1 view .LVU64
+ 299              	.LVL27:
+ 173:Core/Src/main.c ****                     state = ST_DRIVE;
+ 300              		.loc 1 173 21 view .LVU65
+ 173:Core/Src/main.c ****                     state = ST_DRIVE;
+ 301              		.loc 1 173 49 is_stmt 0 view .LVU66
+ 302 00b0 5C4B     		ldr	r3, .L23+12
+ 303 00b2 1A78     		ldrb	r2, [r3]	@ zero_extendqisi2
+ 304 00b4 624B     		ldr	r3, .L23+40
+ 305 00b6 03EBC203 		add	r3, r3, r2, lsl #3
+ 306 00ba 93ED000A 		vldr.32	s0, [r3]	@ int
+ 173:Core/Src/main.c ****                     state = ST_DRIVE;
+ 307              		.loc 1 173 21 view .LVU67
+ 308 00be B8EE400A 		vcvt.f32.u32	s0, s0
+ 309 00c2 FFF7FEFF 		bl	Drive_Start
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccQqokdd.s 			page 12
+
+
+ 310              	.LVL28:
+ 174:Core/Src/main.c ****                 }
+ 311              		.loc 1 174 21 is_stmt 1 view .LVU68
+ 170:Core/Src/main.c **** 
+ 312              		.loc 1 170 35 is_stmt 0 view .LVU69
+ 313 00c6 2E46     		mov	r6, r5
+ 174:Core/Src/main.c ****                 }
+ 314              		.loc 1 174 27 view .LVU70
+ 315 00c8 0225     		movs	r5, #2
+ 316 00ca CBE7     		b	.L6
+ 317              	.LVL29:
+ 318              	.L11:
+ 319              	.LBB3:
+ 182:Core/Src/main.c ****     static uint32_t last_ctrl  = 0;
+ 320              		.loc 1 182 5 is_stmt 1 view .LVU71
+ 183:Core/Src/main.c **** 
+ 321              		.loc 1 183 5 view .LVU72
+ 186:Core/Src/main.c ****     {
+ 322              		.loc 1 186 5 view .LVU73
+ 186:Core/Src/main.c ****     {
+ 323              		.loc 1 186 34 is_stmt 0 view .LVU74
+ 324 00cc 5D4B     		ldr	r3, .L23+44
+ 325 00ce 1A68     		ldr	r2, [r3]
+ 326 00d0 5D4B     		ldr	r3, .L23+48
+ 327 00d2 1B68     		ldr	r3, [r3]
+ 186:Core/Src/main.c ****     {
+ 328              		.loc 1 186 8 view .LVU75
+ 329 00d4 9A42     		cmp	r2, r3
+ 330 00d6 1ED1     		bne	.L20
+ 331              	.L14:
+ 193:Core/Src/main.c ****     {
+ 332              		.loc 1 193 5 is_stmt 1 view .LVU76
+ 193:Core/Src/main.c ****     {
+ 333              		.loc 1 193 21 is_stmt 0 view .LVU77
+ 334 00d8 5A4B     		ldr	r3, .L23+44
+ 335 00da 1B68     		ldr	r3, [r3]
+ 336 00dc 5B4A     		ldr	r2, .L23+52
+ 337 00de 1268     		ldr	r2, [r2]
+ 338 00e0 9B1A     		subs	r3, r3, r2
+ 193:Core/Src/main.c ****     {
+ 339              		.loc 1 193 8 view .LVU78
+ 340 00e2 632B     		cmp	r3, #99
+ 341 00e4 1ED8     		bhi	.L21
+ 342              	.L15:
+ 208:Core/Src/main.c ****     {
+ 343              		.loc 1 208 5 is_stmt 1 view .LVU79
+ 208:Core/Src/main.c ****     {
+ 344              		.loc 1 208 9 is_stmt 0 view .LVU80
+ 345 00e6 514B     		ldr	r3, .L23+20
+ 346 00e8 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 208:Core/Src/main.c ****     {
+ 347              		.loc 1 208 8 view .LVU81
+ 348 00ea 002B     		cmp	r3, #0
+ 349 00ec BAD1     		bne	.L6
+ 350              	.LBB4:
+ 210:Core/Src/main.c **** 
+ 351              		.loc 1 210 9 is_stmt 1 view .LVU82
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccQqokdd.s 			page 13
+
+
+ 352 00ee 0021     		movs	r1, #0
+ 353 00f0 0846     		mov	r0, r1
+ 354 00f2 FFF7FEFF 		bl	Motor_Set
+ 355              	.LVL30:
+ 213:Core/Src/main.c ****         Rotate_Start(adjusted_turn);
+ 356              		.loc 1 213 9 view .LVU83
+ 213:Core/Src/main.c ****         Rotate_Start(adjusted_turn);
+ 357              		.loc 1 213 47 is_stmt 0 view .LVU84
+ 358 00f6 4B4B     		ldr	r3, .L23+12
+ 359 00f8 1A78     		ldrb	r2, [r3]	@ zero_extendqisi2
+ 360 00fa 514B     		ldr	r3, .L23+40
+ 361 00fc 03EBC203 		add	r3, r3, r2, lsl #3
+ 362 0100 93ED010A 		vldr.32	s0, [r3, #4]
+ 213:Core/Src/main.c ****         Rotate_Start(adjusted_turn);
+ 363              		.loc 1 213 68 view .LVU85
+ 364 0104 524B     		ldr	r3, .L23+56
+ 365 0106 D3ED007A 		vldr.32	s15, [r3]
+ 366              	.LVL31:
+ 214:Core/Src/main.c **** 
+ 367              		.loc 1 214 9 is_stmt 1 view .LVU86
+ 368 010a 30EE670A 		vsub.f32	s0, s0, s15
+ 369              	.LVL32:
+ 214:Core/Src/main.c **** 
+ 370              		.loc 1 214 9 is_stmt 0 view .LVU87
+ 371 010e FFF7FEFF 		bl	Rotate_Start
+ 372              	.LVL33:
+ 216:Core/Src/main.c ****     }
+ 373              		.loc 1 216 9 is_stmt 1 view .LVU88
+ 216:Core/Src/main.c ****     }
+ 374              		.loc 1 216 15 is_stmt 0 view .LVU89
+ 375 0112 0325     		movs	r5, #3
+ 376 0114 A6E7     		b	.L6
+ 377              	.LVL34:
+ 378              	.L20:
+ 216:Core/Src/main.c ****     }
+ 379              		.loc 1 216 15 view .LVU90
+ 380              	.LBE4:
+ 188:Core/Src/main.c ****         Drive_Process_1ms();
+ 381              		.loc 1 188 9 is_stmt 1 view .LVU91
+ 188:Core/Src/main.c ****         Drive_Process_1ms();
+ 382              		.loc 1 188 19 is_stmt 0 view .LVU92
+ 383 0116 4B4B     		ldr	r3, .L23+44
+ 384 0118 1A68     		ldr	r2, [r3]
+ 385 011a 4B4B     		ldr	r3, .L23+48
+ 386 011c 1A60     		str	r2, [r3]
+ 189:Core/Src/main.c ****     }
+ 387              		.loc 1 189 9 is_stmt 1 view .LVU93
+ 388 011e FFF7FEFF 		bl	Drive_Process_1ms
+ 389              	.LVL35:
+ 390 0122 D9E7     		b	.L14
+ 391              	.L21:
+ 392              	.LBB5:
+ 195:Core/Src/main.c ****         float dist = Get_Distance_MM();
+ 393              		.loc 1 195 9 view .LVU94
+ 195:Core/Src/main.c ****         float dist = Get_Distance_MM();
+ 394              		.loc 1 195 20 is_stmt 0 view .LVU95
+ 395 0124 474B     		ldr	r3, .L23+44
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccQqokdd.s 			page 14
+
+
+ 396 0126 1A68     		ldr	r2, [r3]
+ 397 0128 484B     		ldr	r3, .L23+52
+ 398 012a 1A60     		str	r2, [r3]
+ 196:Core/Src/main.c ****         float remain = drive_target_mm - dist;
+ 399              		.loc 1 196 9 is_stmt 1 view .LVU96
+ 196:Core/Src/main.c ****         float remain = drive_target_mm - dist;
+ 400              		.loc 1 196 22 is_stmt 0 view .LVU97
+ 401 012c FFF7FEFF 		bl	Get_Distance_MM
+ 402              	.LVL36:
+ 197:Core/Src/main.c **** 
+ 403              		.loc 1 197 9 is_stmt 1 view .LVU98
+ 197:Core/Src/main.c **** 
+ 404              		.loc 1 197 40 is_stmt 0 view .LVU99
+ 405 0130 484B     		ldr	r3, .L23+60
+ 406 0132 93ED008A 		vldr.32	s16, [r3]
+ 197:Core/Src/main.c **** 
+ 407              		.loc 1 197 15 view .LVU100
+ 408 0136 38EE408A 		vsub.f32	s16, s16, s0
+ 409              	.LVL37:
+ 199:Core/Src/main.c ****             "[DRIVE] dist=%.1f mm  remain=%.1f mm  yaw=%.2f\r\n",
+ 410              		.loc 1 199 9 is_stmt 1 view .LVU101
+ 203:Core/Src/main.c ****         );
+ 411              		.loc 1 203 20 is_stmt 0 view .LVU102
+ 412 013a 454B     		ldr	r3, .L23+56
+ 413 013c 1C68     		ldr	r4, [r3]	@ float
+ 199:Core/Src/main.c ****             "[DRIVE] dist=%.1f mm  remain=%.1f mm  yaw=%.2f\r\n",
+ 414              		.loc 1 199 9 view .LVU103
+ 415 013e 10EE100A 		vmov	r0, s0
+ 416 0142 FFF7FEFF 		bl	__aeabi_f2d
+ 417              	.LVL38:
+ 199:Core/Src/main.c ****             "[DRIVE] dist=%.1f mm  remain=%.1f mm  yaw=%.2f\r\n",
+ 418              		.loc 1 199 9 view .LVU104
+ 419 0146 8046     		mov	r8, r0
+ 420 0148 8946     		mov	r9, r1
+ 421 014a 2046     		mov	r0, r4	@ float
+ 422 014c FFF7FEFF 		bl	__aeabi_f2d
+ 423              	.LVL39:
+ 424 0150 CDE90201 		strd	r0, [sp, #8]
+ 425 0154 18EE100A 		vmov	r0, s16
+ 426 0158 FFF7FEFF 		bl	__aeabi_f2d
+ 427              	.LVL40:
+ 428 015c CDE90001 		strd	r0, [sp]
+ 429 0160 4246     		mov	r2, r8
+ 430 0162 4B46     		mov	r3, r9
+ 431 0164 3C48     		ldr	r0, .L23+64
+ 432 0166 FFF7FEFF 		bl	UART_Printf
  433              	.LVL41:
- 211:Core/Src/main.c ****     {
- 434              		.loc 1 211 5 view .LVU104
- 211:Core/Src/main.c ****     {
- 435              		.loc 1 211 21 is_stmt 0 view .LVU105
- 436 0166 354B     		ldr	r3, .L23+44
- 437 0168 1B68     		ldr	r3, [r3]
- 438 016a 3A4A     		ldr	r2, .L23+68
- 439 016c 1268     		ldr	r2, [r2]
- 440 016e 9B1A     		subs	r3, r3, r2
- 211:Core/Src/main.c ****     {
- 441              		.loc 1 211 8 view .LVU106
- 442 0170 632B     		cmp	r3, #99
- 443 0172 29D8     		bhi	.L22
- 444              	.L16:
- 224:Core/Src/main.c ****     {
- 445              		.loc 1 224 5 is_stmt 1 view .LVU107
- 224:Core/Src/main.c ****     {
- 446              		.loc 1 224 9 is_stmt 0 view .LVU108
- 447 0174 2C4B     		ldr	r3, .L23+24
- 448 0176 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
- 224:Core/Src/main.c ****     {
- 449              		.loc 1 224 8 view .LVU109
- 450 0178 03F0FF04 		and	r4, r3, #255
- 451 017c 002B     		cmp	r3, #0
- 452 017e 7FF471AF 		bne	.L6
- 226:Core/Src/main.c ****             "[TURN DONE] target=%.1f  result=%.2f deg\r\n\r\n",
- 453              		.loc 1 226 9 is_stmt 1 view .LVU110
- 228:Core/Src/main.c ****             MPU6050.yaw_angle
- 454              		.loc 1 228 29 is_stmt 0 view .LVU111
- 455 0182 264D     		ldr	r5, .L23+12
- 456              	.LVL42:
-ARM GAS  C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s 			page 15
+ 434 016a BCE7     		b	.L15
+ 435              	.LVL42:
+ 436              	.L9:
+ 199:Core/Src/main.c ****             "[DRIVE] dist=%.1f mm  remain=%.1f mm  yaw=%.2f\r\n",
+ 437              		.loc 1 199 9 view .LVU105
+ 438              	.LBE5:
+ 439              	.LBE3:
+ 440              	.LBB6:
+ 223:Core/Src/main.c **** 
+ 441              		.loc 1 223 5 is_stmt 1 view .LVU106
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccQqokdd.s 			page 15
 
 
- 228:Core/Src/main.c ****             MPU6050.yaw_angle
- 457              		.loc 1 228 29 view .LVU112
- 458 0184 2A78     		ldrb	r2, [r5]	@ zero_extendqisi2
- 459 0186 2C4B     		ldr	r3, .L23+40
- 460 0188 03EBC203 		add	r3, r3, r2, lsl #3
- 229:Core/Src/main.c ****         );
- 461              		.loc 1 229 20 view .LVU113
- 462 018c 2F4A     		ldr	r2, .L23+60
- 463 018e D2F80080 		ldr	r8, [r2]	@ float
- 226:Core/Src/main.c ****             "[TURN DONE] target=%.1f  result=%.2f deg\r\n\r\n",
- 464              		.loc 1 226 9 view .LVU114
- 465 0192 5868     		ldr	r0, [r3, #4]	@ float
- 466 0194 FFF7FEFF 		bl	__aeabi_f2d
- 467              	.LVL43:
- 468 0198 0646     		mov	r6, r0
- 469              	.LVL44:
- 226:Core/Src/main.c ****             "[TURN DONE] target=%.1f  result=%.2f deg\r\n\r\n",
- 470              		.loc 1 226 9 view .LVU115
- 471 019a 0F46     		mov	r7, r1
- 472 019c 4046     		mov	r0, r8	@ float
- 473 019e FFF7FEFF 		bl	__aeabi_f2d
- 474              	.LVL45:
- 475 01a2 CDE90001 		strd	r0, [sp]
- 476 01a6 3246     		mov	r2, r6
- 477 01a8 3B46     		mov	r3, r7
- 478 01aa 2B48     		ldr	r0, .L23+72
- 479 01ac FFF7FEFF 		bl	UART_Printf
+ 226:Core/Src/main.c **** 
+ 442              		.loc 1 226 5 view .LVU107
+ 443 016c FFF7FEFF 		bl	Rotate_Process_1ms
+ 444              	.LVL43:
+ 229:Core/Src/main.c ****     {
+ 445              		.loc 1 229 5 view .LVU108
+ 229:Core/Src/main.c ****     {
+ 446              		.loc 1 229 21 is_stmt 0 view .LVU109
+ 447 0170 344B     		ldr	r3, .L23+44
+ 448 0172 1B68     		ldr	r3, [r3]
+ 449 0174 394A     		ldr	r2, .L23+68
+ 450 0176 1268     		ldr	r2, [r2]
+ 451 0178 9B1A     		subs	r3, r3, r2
+ 229:Core/Src/main.c ****     {
+ 452              		.loc 1 229 8 view .LVU110
+ 453 017a 632B     		cmp	r3, #99
+ 454 017c 29D8     		bhi	.L22
+ 455              	.L16:
+ 242:Core/Src/main.c ****     {
+ 456              		.loc 1 242 5 is_stmt 1 view .LVU111
+ 242:Core/Src/main.c ****     {
+ 457              		.loc 1 242 9 is_stmt 0 view .LVU112
+ 458 017e 2C4B     		ldr	r3, .L23+24
+ 459 0180 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 242:Core/Src/main.c ****     {
+ 460              		.loc 1 242 8 view .LVU113
+ 461 0182 03F0FF04 		and	r4, r3, #255
+ 462 0186 002B     		cmp	r3, #0
+ 463 0188 7FF46CAF 		bne	.L6
+ 244:Core/Src/main.c ****             "[TURN DONE] target=%.1f  result=%.2f deg\r\n\r\n",
+ 464              		.loc 1 244 9 is_stmt 1 view .LVU114
+ 246:Core/Src/main.c ****             MPU6050.yaw_angle
+ 465              		.loc 1 246 29 is_stmt 0 view .LVU115
+ 466 018c 254D     		ldr	r5, .L23+12
+ 467              	.LVL44:
+ 246:Core/Src/main.c ****             MPU6050.yaw_angle
+ 468              		.loc 1 246 29 view .LVU116
+ 469 018e 2A78     		ldrb	r2, [r5]	@ zero_extendqisi2
+ 470 0190 2B4B     		ldr	r3, .L23+40
+ 471 0192 03EBC203 		add	r3, r3, r2, lsl #3
+ 247:Core/Src/main.c ****         );
+ 472              		.loc 1 247 20 view .LVU117
+ 473 0196 2E4A     		ldr	r2, .L23+56
+ 474 0198 D2F80080 		ldr	r8, [r2]	@ float
+ 244:Core/Src/main.c ****             "[TURN DONE] target=%.1f  result=%.2f deg\r\n\r\n",
+ 475              		.loc 1 244 9 view .LVU118
+ 476 019c 5868     		ldr	r0, [r3, #4]	@ float
+ 477 019e FFF7FEFF 		bl	__aeabi_f2d
+ 478              	.LVL45:
+ 479 01a2 0646     		mov	r6, r0
  480              	.LVL46:
- 232:Core/Src/main.c ****         if (route_idx >= ROUTE_LEN)
- 481              		.loc 1 232 9 is_stmt 1 view .LVU116
- 232:Core/Src/main.c ****         if (route_idx >= ROUTE_LEN)
- 482              		.loc 1 232 18 is_stmt 0 view .LVU117
- 483 01b0 2B78     		ldrb	r3, [r5]	@ zero_extendqisi2
- 484 01b2 0133     		adds	r3, r3, #1
- 485 01b4 DBB2     		uxtb	r3, r3
- 486 01b6 2B70     		strb	r3, [r5]
- 233:Core/Src/main.c ****             route_idx = 0;
- 487              		.loc 1 233 9 is_stmt 1 view .LVU118
- 233:Core/Src/main.c ****             route_idx = 0;
- 488              		.loc 1 233 12 is_stmt 0 view .LVU119
- 489 01b8 092B     		cmp	r3, #9
- 490 01ba 7FF644AF 		bls	.L17
- 234:Core/Src/main.c **** 
- 491              		.loc 1 234 13 is_stmt 1 view .LVU120
- 234:Core/Src/main.c **** 
- 492              		.loc 1 234 23 is_stmt 0 view .LVU121
- 493 01be 0022     		movs	r2, #0
- 494 01c0 2A70     		strb	r2, [r5]
- 236:Core/Src/main.c ****         state = ST_CALIBRATE;
- 495              		.loc 1 236 23 view .LVU122
- 496 01c2 2646     		mov	r6, r4
- 497              		.loc 1 237 15 view .LVU123
- 498 01c4 0125     		movs	r5, #1
- 499 01c6 4DE7     		b	.L6
- 500              	.LVL47:
- 501              	.L22:
- 213:Core/Src/main.c **** 
-ARM GAS  C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s 			page 16
+ 244:Core/Src/main.c ****             "[TURN DONE] target=%.1f  result=%.2f deg\r\n\r\n",
+ 481              		.loc 1 244 9 view .LVU119
+ 482 01a4 0F46     		mov	r7, r1
+ 483 01a6 4046     		mov	r0, r8	@ float
+ 484 01a8 FFF7FEFF 		bl	__aeabi_f2d
+ 485              	.LVL47:
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccQqokdd.s 			page 16
 
 
- 502              		.loc 1 213 9 is_stmt 1 view .LVU124
- 213:Core/Src/main.c **** 
- 503              		.loc 1 213 23 is_stmt 0 view .LVU125
- 504 01c8 1C4B     		ldr	r3, .L23+44
- 505 01ca 1A68     		ldr	r2, [r3]
- 506 01cc 214B     		ldr	r3, .L23+68
- 507 01ce 1A60     		str	r2, [r3]
- 215:Core/Src/main.c ****             "[TURN] target=%.1f deg  yaw=%.2f deg  e1=%lu e2=%lu\r\n",
- 508              		.loc 1 215 9 is_stmt 1 view .LVU126
- 217:Core/Src/main.c ****             MPU6050.yaw_angle,
- 509              		.loc 1 217 29 is_stmt 0 view .LVU127
- 510 01d0 124B     		ldr	r3, .L23+12
- 511 01d2 1A78     		ldrb	r2, [r3]	@ zero_extendqisi2
- 512 01d4 184B     		ldr	r3, .L23+40
- 513 01d6 03EBC203 		add	r3, r3, r2, lsl #3
- 218:Core/Src/main.c ****             encoder1_count,
- 514              		.loc 1 218 20 view .LVU128
- 515 01da 1C4A     		ldr	r2, .L23+60
- 516 01dc 1468     		ldr	r4, [r2]	@ float
- 215:Core/Src/main.c ****             "[TURN] target=%.1f deg  yaw=%.2f deg  e1=%lu e2=%lu\r\n",
- 517              		.loc 1 215 9 view .LVU129
- 518 01de 1F4A     		ldr	r2, .L23+76
- 519 01e0 1768     		ldr	r7, [r2]
- 520 01e2 1F4A     		ldr	r2, .L23+80
- 521 01e4 D2F800A0 		ldr	r10, [r2]
- 522 01e8 5868     		ldr	r0, [r3, #4]	@ float
- 523 01ea FFF7FEFF 		bl	__aeabi_f2d
- 524              	.LVL48:
- 525 01ee 8046     		mov	r8, r0
- 526 01f0 8946     		mov	r9, r1
- 527 01f2 CDF80CA0 		str	r10, [sp, #12]
- 528 01f6 0297     		str	r7, [sp, #8]
- 529 01f8 2046     		mov	r0, r4	@ float
- 530 01fa FFF7FEFF 		bl	__aeabi_f2d
- 531              	.LVL49:
- 532 01fe CDE90001 		strd	r0, [sp]
- 533 0202 4246     		mov	r2, r8
- 534 0204 4B46     		mov	r3, r9
- 535 0206 1748     		ldr	r0, .L23+84
- 536 0208 FFF7FEFF 		bl	UART_Printf
- 537              	.LVL50:
- 538 020c B2E7     		b	.L16
- 539              	.L24:
- 540 020e 00BF     		.align	2
- 541              	.L23:
- 542 0210 00000000 		.word	.LC0
- 543 0214 18000000 		.word	.LC1
- 544 0218 30000000 		.word	.LC2
- 545 021c 00000000 		.word	route_idx
- 546 0220 00000000 		.word	robot_started
- 547 0224 00000000 		.word	driving
- 548 0228 00000000 		.word	turning
- 549 022c 64000000 		.word	.LC3
- 550 0230 00000000 		.word	yaw_target
- 551 0234 00000000 		.word	yaw_i
- 552 0238 00000000 		.word	route
- 553 023c 00000000 		.word	tick_count
-ARM GAS  C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s 			page 17
+ 486 01ac CDE90001 		strd	r0, [sp]
+ 487 01b0 3246     		mov	r2, r6
+ 488 01b2 3B46     		mov	r3, r7
+ 489 01b4 2A48     		ldr	r0, .L23+72
+ 490 01b6 FFF7FEFF 		bl	UART_Printf
+ 491              	.LVL48:
+ 250:Core/Src/main.c ****         if (route_idx >= ROUTE_LEN)
+ 492              		.loc 1 250 9 is_stmt 1 view .LVU120
+ 250:Core/Src/main.c ****         if (route_idx >= ROUTE_LEN)
+ 493              		.loc 1 250 18 is_stmt 0 view .LVU121
+ 494 01ba 2B78     		ldrb	r3, [r5]	@ zero_extendqisi2
+ 495 01bc 0133     		adds	r3, r3, #1
+ 496 01be DBB2     		uxtb	r3, r3
+ 497 01c0 2B70     		strb	r3, [r5]
+ 251:Core/Src/main.c ****             route_idx = 0;
+ 498              		.loc 1 251 9 is_stmt 1 view .LVU122
+ 251:Core/Src/main.c ****             route_idx = 0;
+ 499              		.loc 1 251 12 is_stmt 0 view .LVU123
+ 500 01c2 092B     		cmp	r3, #9
+ 501 01c4 7FF63FAF 		bls	.L17
+ 252:Core/Src/main.c **** 
+ 502              		.loc 1 252 13 is_stmt 1 view .LVU124
+ 252:Core/Src/main.c **** 
+ 503              		.loc 1 252 23 is_stmt 0 view .LVU125
+ 504 01c8 0022     		movs	r2, #0
+ 505 01ca 2A70     		strb	r2, [r5]
+ 255:Core/Src/main.c ****         state = ST_CALIBRATE;
+ 506              		.loc 1 255 23 view .LVU126
+ 507 01cc 2646     		mov	r6, r4
+ 508              		.loc 1 256 15 view .LVU127
+ 509 01ce 0125     		movs	r5, #1
+ 510 01d0 48E7     		b	.L6
+ 511              	.LVL49:
+ 512              	.L22:
+ 231:Core/Src/main.c ****         UART_Printf(
+ 513              		.loc 1 231 9 is_stmt 1 view .LVU128
+ 231:Core/Src/main.c ****         UART_Printf(
+ 514              		.loc 1 231 23 is_stmt 0 view .LVU129
+ 515 01d2 1C4B     		ldr	r3, .L23+44
+ 516 01d4 1A68     		ldr	r2, [r3]
+ 517 01d6 214B     		ldr	r3, .L23+68
+ 518 01d8 1A60     		str	r2, [r3]
+ 232:Core/Src/main.c ****             "[TURN] target=%.1f deg  yaw=%.2f deg  e1=%lu e2=%lu\r\n",
+ 519              		.loc 1 232 9 is_stmt 1 view .LVU130
+ 234:Core/Src/main.c ****             MPU6050.yaw_angle,
+ 520              		.loc 1 234 29 is_stmt 0 view .LVU131
+ 521 01da 124B     		ldr	r3, .L23+12
+ 522 01dc 1A78     		ldrb	r2, [r3]	@ zero_extendqisi2
+ 523 01de 184B     		ldr	r3, .L23+40
+ 524 01e0 03EBC203 		add	r3, r3, r2, lsl #3
+ 235:Core/Src/main.c ****             encoder1_count,
+ 525              		.loc 1 235 20 view .LVU132
+ 526 01e4 1A4A     		ldr	r2, .L23+56
+ 527 01e6 1468     		ldr	r4, [r2]	@ float
+ 232:Core/Src/main.c ****             "[TURN] target=%.1f deg  yaw=%.2f deg  e1=%lu e2=%lu\r\n",
+ 528              		.loc 1 232 9 view .LVU133
+ 529 01e8 1E4A     		ldr	r2, .L23+76
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccQqokdd.s 			page 17
 
 
- 554 0240 00000000 		.word	last_ctrl.2
- 555 0244 00000000 		.word	last_debug.1
- 556 0248 00000000 		.word	drive_target_mm
- 557 024c 00000000 		.word	MPU6050
- 558 0250 78000000 		.word	.LC4
- 559 0254 00000000 		.word	last_turn_dbg.0
- 560 0258 E4000000 		.word	.LC6
- 561 025c 00000000 		.word	encoder1_count
- 562 0260 00000000 		.word	encoder2_count
- 563 0264 AC000000 		.word	.LC5
- 564              	.LBE5:
- 565              		.cfi_endproc
- 566              	.LFE135:
- 568              		.section	.bss.last_turn_dbg.0,"aw",%nobits
- 569              		.align	2
- 572              	last_turn_dbg.0:
- 573 0000 00000000 		.space	4
- 574              		.section	.bss.last_debug.1,"aw",%nobits
- 575              		.align	2
- 578              	last_debug.1:
- 579 0000 00000000 		.space	4
- 580              		.section	.bss.last_ctrl.2,"aw",%nobits
- 581              		.align	2
- 584              	last_ctrl.2:
- 585 0000 00000000 		.space	4
- 586              		.global	state_time
- 587              		.section	.bss.state_time,"aw",%nobits
- 588              		.align	2
- 591              	state_time:
- 592 0000 00000000 		.space	4
- 593              		.global	route_idx
- 594              		.section	.bss.route_idx,"aw",%nobits
- 597              	route_idx:
- 598 0000 00       		.space	1
- 599              		.global	route
- 600              		.section	.data.route,"aw"
- 601              		.align	2
- 604              	route:
- 605 0000 F4010000 		.word	500
- 606 0004 0000B442 		.word	1119092736
- 607 0008 58020000 		.word	600
- 608 000c 0000B442 		.word	1119092736
- 609 0010 19000000 		.word	25
- 610 0014 0000F0C2 		.word	-1024458752
- 611 0018 C2010000 		.word	450
- 612 001c 00007042 		.word	1114636288
- 613 0020 C2010000 		.word	450
- 614 0024 00007042 		.word	1114636288
- 615 0028 C2010000 		.word	450
- 616 002c 00007042 		.word	1114636288
- 617 0030 C2010000 		.word	450
- 618 0034 00007042 		.word	1114636288
- 619 0038 C2010000 		.word	450
- 620 003c 0000F0C2 		.word	-1024458752
- 621 0040 19000000 		.word	25
- 622 0044 0000B442 		.word	1119092736
- 623 0048 58020000 		.word	600
-ARM GAS  C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s 			page 18
+ 530 01ea 1768     		ldr	r7, [r2]
+ 531 01ec 1E4A     		ldr	r2, .L23+80
+ 532 01ee D2F800A0 		ldr	r10, [r2]
+ 533 01f2 5868     		ldr	r0, [r3, #4]	@ float
+ 534 01f4 FFF7FEFF 		bl	__aeabi_f2d
+ 535              	.LVL50:
+ 536 01f8 8046     		mov	r8, r0
+ 537 01fa 8946     		mov	r9, r1
+ 538 01fc CDF80CA0 		str	r10, [sp, #12]
+ 539 0200 0297     		str	r7, [sp, #8]
+ 540 0202 2046     		mov	r0, r4	@ float
+ 541 0204 FFF7FEFF 		bl	__aeabi_f2d
+ 542              	.LVL51:
+ 543 0208 CDE90001 		strd	r0, [sp]
+ 544 020c 4246     		mov	r2, r8
+ 545 020e 4B46     		mov	r3, r9
+ 546 0210 1648     		ldr	r0, .L23+84
+ 547 0212 FFF7FEFF 		bl	UART_Printf
+ 548              	.LVL52:
+ 549 0216 B2E7     		b	.L16
+ 550              	.L24:
+ 551              		.align	2
+ 552              	.L23:
+ 553 0218 00000000 		.word	.LC0
+ 554 021c 18000000 		.word	.LC1
+ 555 0220 30000000 		.word	.LC2
+ 556 0224 00000000 		.word	route_idx
+ 557 0228 00000000 		.word	robot_started
+ 558 022c 00000000 		.word	driving
+ 559 0230 00000000 		.word	turning
+ 560 0234 64000000 		.word	.LC3
+ 561 0238 00000000 		.word	yaw_target
+ 562 023c 00000000 		.word	yaw_i
+ 563 0240 00000000 		.word	route
+ 564 0244 00000000 		.word	tick_count
+ 565 0248 00000000 		.word	last_ctrl.2
+ 566 024c 00000000 		.word	last_debug.1
+ 567 0250 00000000 		.word	MPU6050
+ 568 0254 00000000 		.word	drive_target_mm
+ 569 0258 78000000 		.word	.LC4
+ 570 025c 00000000 		.word	last_turn_dbg.0
+ 571 0260 E4000000 		.word	.LC6
+ 572 0264 00000000 		.word	encoder1_count
+ 573 0268 00000000 		.word	encoder2_count
+ 574 026c AC000000 		.word	.LC5
+ 575              	.LBE6:
+ 576              		.cfi_endproc
+ 577              	.LFE135:
+ 579              		.section	.bss.last_turn_dbg.0,"aw",%nobits
+ 580              		.align	2
+ 583              	last_turn_dbg.0:
+ 584 0000 00000000 		.space	4
+ 585              		.section	.bss.last_debug.1,"aw",%nobits
+ 586              		.align	2
+ 589              	last_debug.1:
+ 590 0000 00000000 		.space	4
+ 591              		.section	.bss.last_ctrl.2,"aw",%nobits
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccQqokdd.s 			page 18
 
 
- 624 004c 0000B442 		.word	1119092736
- 625              		.global	turn_target
- 626              		.section	.bss.turn_target,"aw",%nobits
- 627              		.align	2
- 630              	turn_target:
- 631 0000 00000000 		.space	4
- 632              		.global	turning
- 633              		.section	.bss.turning,"aw",%nobits
- 636              	turning:
- 637 0000 00       		.space	1
- 638              		.global	right
- 639              		.section	.bss.right,"aw",%nobits
- 640              		.align	1
- 643              	right:
- 644 0000 0000     		.space	2
- 645              		.global	left
- 646              		.section	.bss.left,"aw",%nobits
- 647              		.align	1
- 650              	left:
- 651 0000 0000     		.space	2
- 652              		.global	corr
- 653              		.section	.bss.corr,"aw",%nobits
- 654              		.align	2
- 657              	corr:
- 658 0000 00000000 		.space	4
- 659              		.global	gz
- 660              		.section	.bss.gz,"aw",%nobits
- 661              		.align	2
- 664              	gz:
- 665 0000 00000000 		.space	4
- 666              		.global	yaw_i
- 667              		.section	.bss.yaw_i,"aw",%nobits
- 668              		.align	2
- 671              	yaw_i:
- 672 0000 00000000 		.space	4
- 673              		.global	yaw_target
- 674              		.section	.bss.yaw_target,"aw",%nobits
- 675              		.align	2
- 678              	yaw_target:
- 679 0000 00000000 		.space	4
- 680              		.global	btn_time
- 681              		.section	.bss.btn_time,"aw",%nobits
- 682              		.align	2
- 685              	btn_time:
- 686 0000 00000000 		.space	4
- 687              		.global	btn_prev
- 688              		.section	.data.btn_prev,"aw"
- 691              	btn_prev:
- 692 0000 01       		.byte	1
- 693              		.global	robot_started
- 694              		.section	.bss.robot_started,"aw",%nobits
- 697              	robot_started:
- 698 0000 00       		.space	1
- 699              		.global	base_speed
- 700              		.section	.data.base_speed,"aw"
- 701              		.align	1
- 704              	base_speed:
-ARM GAS  C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s 			page 19
+ 592              		.align	2
+ 595              	last_ctrl.2:
+ 596 0000 00000000 		.space	4
+ 597              		.global	state_time
+ 598              		.section	.bss.state_time,"aw",%nobits
+ 599              		.align	2
+ 602              	state_time:
+ 603 0000 00000000 		.space	4
+ 604              		.global	route_idx
+ 605              		.section	.bss.route_idx,"aw",%nobits
+ 608              	route_idx:
+ 609 0000 00       		.space	1
+ 610              		.global	route
+ 611              		.section	.data.route,"aw"
+ 612              		.align	2
+ 615              	route:
+ 616 0000 F4010000 		.word	500
+ 617 0004 0000B442 		.word	1119092736
+ 618 0008 5D020000 		.word	605
+ 619 000c 0000B342 		.word	1119027200
+ 620 0010 1E000000 		.word	30
+ 621 0014 0000F1C2 		.word	-1024393216
+ 622 0018 CC010000 		.word	460
+ 623 001c 00006E42 		.word	1114505216
+ 624 0020 C7010000 		.word	455
+ 625 0024 00006E42 		.word	1114505216
+ 626 0028 C2010000 		.word	450
+ 627 002c 00006E42 		.word	1114505216
+ 628 0030 C2010000 		.word	450
+ 629 0034 00007242 		.word	1114767360
+ 630 0038 BD010000 		.word	445
+ 631 003c 0000F0C2 		.word	-1024458752
+ 632 0040 19000000 		.word	25
+ 633 0044 0000B342 		.word	1119027200
+ 634 0048 53020000 		.word	595
+ 635 004c 0000B342 		.word	1119027200
+ 636              		.global	turn_target
+ 637              		.section	.bss.turn_target,"aw",%nobits
+ 638              		.align	2
+ 641              	turn_target:
+ 642 0000 00000000 		.space	4
+ 643              		.global	turning
+ 644              		.section	.bss.turning,"aw",%nobits
+ 647              	turning:
+ 648 0000 00       		.space	1
+ 649              		.global	right
+ 650              		.section	.bss.right,"aw",%nobits
+ 651              		.align	1
+ 654              	right:
+ 655 0000 0000     		.space	2
+ 656              		.global	left
+ 657              		.section	.bss.left,"aw",%nobits
+ 658              		.align	1
+ 661              	left:
+ 662 0000 0000     		.space	2
+ 663              		.global	corr
+ 664              		.section	.bss.corr,"aw",%nobits
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccQqokdd.s 			page 19
 
 
- 705 0000 C201     		.short	450
- 706              		.global	gz_offset
- 707              		.section	.bss.gz_offset,"aw",%nobits
- 708              		.align	2
- 711              	gz_offset:
- 712 0000 00000000 		.space	4
- 713              		.global	imu_ready
- 714              		.section	.bss.imu_ready,"aw",%nobits
- 717              	imu_ready:
- 718 0000 00       		.space	1
- 719              		.global	drive_target_mm
- 720              		.section	.bss.drive_target_mm,"aw",%nobits
- 721              		.align	2
- 724              	drive_target_mm:
- 725 0000 00000000 		.space	4
- 726              		.global	driving
- 727              		.section	.bss.driving,"aw",%nobits
- 730              	driving:
- 731 0000 00       		.space	1
- 732              		.global	encoder2_delay
- 733              		.section	.bss.encoder2_delay,"aw",%nobits
- 736              	encoder2_delay:
- 737 0000 00       		.space	1
- 738              		.global	encoder1_delay
- 739              		.section	.bss.encoder1_delay,"aw",%nobits
- 742              	encoder1_delay:
- 743 0000 00       		.space	1
- 744              		.global	encoder2_count
- 745              		.section	.bss.encoder2_count,"aw",%nobits
- 746              		.align	2
- 749              	encoder2_count:
- 750 0000 00000000 		.space	4
- 751              		.global	encoder1_count
- 752              		.section	.bss.encoder1_count,"aw",%nobits
- 753              		.align	2
- 756              	encoder1_count:
- 757 0000 00000000 		.space	4
- 758              		.global	tick_count
- 759              		.section	.bss.tick_count,"aw",%nobits
- 760              		.align	2
- 763              	tick_count:
- 764 0000 00000000 		.space	4
- 765              		.text
- 766              	.Letext0:
- 767              		.file 2 "C:/Bools/xpack-arm-none-eabi-gcc-13.2.1-1.1/arm-none-eabi/include/machine/_default_types.
- 768              		.file 3 "C:/Bools/xpack-arm-none-eabi-gcc-13.2.1-1.1/arm-none-eabi/include/sys/_stdint.h"
- 769              		.file 4 "Core/Inc/handlers.h"
- 770              		.file 5 "C:/Bools/xpack-arm-none-eabi-gcc-13.2.1-1.1/lib/gcc/arm-none-eabi/13.2.1/include/stddef.h
- 771              		.file 6 "C:/Bools/xpack-arm-none-eabi-gcc-13.2.1-1.1/lib/gcc/arm-none-eabi/13.2.1/include/stdarg.h
- 772              		.file 7 "C:/Bools/xpack-arm-none-eabi-gcc-13.2.1-1.1/arm-none-eabi/include/stdio.h"
- 773              		.file 8 "Core/Inc/MCU6050.h"
- 774              		.file 9 "Core/Inc/motor.h"
- 775              		.file 10 "Core/Inc/init.h"
- 776              		.file 11 "Core/Inc/I2C.h"
- 777              		.file 12 "Core/Inc/task.h"
- 778              		.file 13 "<built-in>"
-ARM GAS  C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s 			page 20
+ 665              		.align	2
+ 668              	corr:
+ 669 0000 00000000 		.space	4
+ 670              		.global	gz
+ 671              		.section	.bss.gz,"aw",%nobits
+ 672              		.align	2
+ 675              	gz:
+ 676 0000 00000000 		.space	4
+ 677              		.global	yaw_i
+ 678              		.section	.bss.yaw_i,"aw",%nobits
+ 679              		.align	2
+ 682              	yaw_i:
+ 683 0000 00000000 		.space	4
+ 684              		.global	yaw_target
+ 685              		.section	.bss.yaw_target,"aw",%nobits
+ 686              		.align	2
+ 689              	yaw_target:
+ 690 0000 00000000 		.space	4
+ 691              		.global	btn_time
+ 692              		.section	.bss.btn_time,"aw",%nobits
+ 693              		.align	2
+ 696              	btn_time:
+ 697 0000 00000000 		.space	4
+ 698              		.global	btn_prev
+ 699              		.section	.data.btn_prev,"aw"
+ 702              	btn_prev:
+ 703 0000 01       		.byte	1
+ 704              		.global	robot_started
+ 705              		.section	.bss.robot_started,"aw",%nobits
+ 708              	robot_started:
+ 709 0000 00       		.space	1
+ 710              		.global	base_speed
+ 711              		.section	.data.base_speed,"aw"
+ 712              		.align	1
+ 715              	base_speed:
+ 716 0000 C201     		.short	450
+ 717              		.global	gz_offset
+ 718              		.section	.bss.gz_offset,"aw",%nobits
+ 719              		.align	2
+ 722              	gz_offset:
+ 723 0000 00000000 		.space	4
+ 724              		.global	imu_ready
+ 725              		.section	.bss.imu_ready,"aw",%nobits
+ 728              	imu_ready:
+ 729 0000 00       		.space	1
+ 730              		.global	drive_target_mm
+ 731              		.section	.bss.drive_target_mm,"aw",%nobits
+ 732              		.align	2
+ 735              	drive_target_mm:
+ 736 0000 00000000 		.space	4
+ 737              		.global	driving
+ 738              		.section	.bss.driving,"aw",%nobits
+ 741              	driving:
+ 742 0000 00       		.space	1
+ 743              		.global	encoder2_delay
+ 744              		.section	.bss.encoder2_delay,"aw",%nobits
+ 747              	encoder2_delay:
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccQqokdd.s 			page 20
+
+
+ 748 0000 00       		.space	1
+ 749              		.global	encoder1_delay
+ 750              		.section	.bss.encoder1_delay,"aw",%nobits
+ 753              	encoder1_delay:
+ 754 0000 00       		.space	1
+ 755              		.global	encoder2_count
+ 756              		.section	.bss.encoder2_count,"aw",%nobits
+ 757              		.align	2
+ 760              	encoder2_count:
+ 761 0000 00000000 		.space	4
+ 762              		.global	encoder1_count
+ 763              		.section	.bss.encoder1_count,"aw",%nobits
+ 764              		.align	2
+ 767              	encoder1_count:
+ 768 0000 00000000 		.space	4
+ 769              		.global	tick_count
+ 770              		.section	.bss.tick_count,"aw",%nobits
+ 771              		.align	2
+ 774              	tick_count:
+ 775 0000 00000000 		.space	4
+ 776              		.text
+ 777              	.Letext0:
+ 778              		.file 2 "C:/Bools/xpack-arm-none-eabi-gcc-13.2.1-1.1/arm-none-eabi/include/machine/_default_types.
+ 779              		.file 3 "C:/Bools/xpack-arm-none-eabi-gcc-13.2.1-1.1/arm-none-eabi/include/sys/_stdint.h"
+ 780              		.file 4 "Core/Inc/handlers.h"
+ 781              		.file 5 "C:/Bools/xpack-arm-none-eabi-gcc-13.2.1-1.1/lib/gcc/arm-none-eabi/13.2.1/include/stddef.h
+ 782              		.file 6 "C:/Bools/xpack-arm-none-eabi-gcc-13.2.1-1.1/lib/gcc/arm-none-eabi/13.2.1/include/stdarg.h
+ 783              		.file 7 "C:/Bools/xpack-arm-none-eabi-gcc-13.2.1-1.1/arm-none-eabi/include/stdio.h"
+ 784              		.file 8 "Core/Inc/MCU6050.h"
+ 785              		.file 9 "Core/Inc/motor.h"
+ 786              		.file 10 "Core/Inc/init.h"
+ 787              		.file 11 "Core/Inc/I2C.h"
+ 788              		.file 12 "Core/Inc/task.h"
+ 789              		.file 13 "<built-in>"
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccQqokdd.s 			page 21
 
 
 DEFINED SYMBOLS
                             *ABS*:00000000 main.c
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:21     .text.UART_Printf:00000000 $t
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:27     .text.UART_Printf:00000000 UART_Printf
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:86     .rodata.main.str1.4:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:113    .text.main:00000000 $t
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:119    .text.main:00000000 main
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:215    .text.main:00000058 $d
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:219    .text.main:0000005c $t
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:542    .text.main:00000210 $d
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:597    .bss.route_idx:00000000 route_idx
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:697    .bss.robot_started:00000000 robot_started
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:730    .bss.driving:00000000 driving
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:636    .bss.turning:00000000 turning
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:678    .bss.yaw_target:00000000 yaw_target
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:671    .bss.yaw_i:00000000 yaw_i
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:604    .data.route:00000000 route
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:763    .bss.tick_count:00000000 tick_count
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:584    .bss.last_ctrl.2:00000000 last_ctrl.2
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:578    .bss.last_debug.1:00000000 last_debug.1
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:724    .bss.drive_target_mm:00000000 drive_target_mm
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:572    .bss.last_turn_dbg.0:00000000 last_turn_dbg.0
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:756    .bss.encoder1_count:00000000 encoder1_count
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:749    .bss.encoder2_count:00000000 encoder2_count
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:569    .bss.last_turn_dbg.0:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:575    .bss.last_debug.1:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:581    .bss.last_ctrl.2:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:591    .bss.state_time:00000000 state_time
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:588    .bss.state_time:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:598    .bss.route_idx:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:601    .data.route:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:630    .bss.turn_target:00000000 turn_target
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:627    .bss.turn_target:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:637    .bss.turning:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:643    .bss.right:00000000 right
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:640    .bss.right:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:650    .bss.left:00000000 left
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:647    .bss.left:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:657    .bss.corr:00000000 corr
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:654    .bss.corr:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:664    .bss.gz:00000000 gz
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:661    .bss.gz:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:668    .bss.yaw_i:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:675    .bss.yaw_target:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:685    .bss.btn_time:00000000 btn_time
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:682    .bss.btn_time:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:691    .data.btn_prev:00000000 btn_prev
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:698    .bss.robot_started:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:704    .data.base_speed:00000000 base_speed
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:701    .data.base_speed:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:711    .bss.gz_offset:00000000 gz_offset
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:708    .bss.gz_offset:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:717    .bss.imu_ready:00000000 imu_ready
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:718    .bss.imu_ready:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:721    .bss.drive_target_mm:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:731    .bss.driving:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:736    .bss.encoder2_delay:00000000 encoder2_delay
-ARM GAS  C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s 			page 21
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:21     .text.UART_Printf:00000000 $t
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:27     .text.UART_Printf:00000000 UART_Printf
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:86     .rodata.main.str1.4:00000000 $d
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:113    .text.main:00000000 $t
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:119    .text.main:00000000 main
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:214    .text.main:00000058 $d
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:218    .text.main:0000005c $t
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:553    .text.main:00000218 $d
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:608    .bss.route_idx:00000000 route_idx
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:708    .bss.robot_started:00000000 robot_started
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:741    .bss.driving:00000000 driving
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:647    .bss.turning:00000000 turning
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:689    .bss.yaw_target:00000000 yaw_target
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:682    .bss.yaw_i:00000000 yaw_i
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:615    .data.route:00000000 route
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:774    .bss.tick_count:00000000 tick_count
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:595    .bss.last_ctrl.2:00000000 last_ctrl.2
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:589    .bss.last_debug.1:00000000 last_debug.1
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:735    .bss.drive_target_mm:00000000 drive_target_mm
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:583    .bss.last_turn_dbg.0:00000000 last_turn_dbg.0
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:767    .bss.encoder1_count:00000000 encoder1_count
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:760    .bss.encoder2_count:00000000 encoder2_count
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:580    .bss.last_turn_dbg.0:00000000 $d
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:586    .bss.last_debug.1:00000000 $d
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:592    .bss.last_ctrl.2:00000000 $d
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:602    .bss.state_time:00000000 state_time
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:599    .bss.state_time:00000000 $d
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:609    .bss.route_idx:00000000 $d
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:612    .data.route:00000000 $d
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:641    .bss.turn_target:00000000 turn_target
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:638    .bss.turn_target:00000000 $d
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:648    .bss.turning:00000000 $d
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:654    .bss.right:00000000 right
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:651    .bss.right:00000000 $d
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:661    .bss.left:00000000 left
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:658    .bss.left:00000000 $d
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:668    .bss.corr:00000000 corr
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:665    .bss.corr:00000000 $d
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:675    .bss.gz:00000000 gz
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:672    .bss.gz:00000000 $d
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:679    .bss.yaw_i:00000000 $d
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:686    .bss.yaw_target:00000000 $d
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:696    .bss.btn_time:00000000 btn_time
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:693    .bss.btn_time:00000000 $d
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:702    .data.btn_prev:00000000 btn_prev
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:709    .bss.robot_started:00000000 $d
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:715    .data.base_speed:00000000 base_speed
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:712    .data.base_speed:00000000 $d
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:722    .bss.gz_offset:00000000 gz_offset
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:719    .bss.gz_offset:00000000 $d
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:728    .bss.imu_ready:00000000 imu_ready
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:729    .bss.imu_ready:00000000 $d
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:732    .bss.drive_target_mm:00000000 $d
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:742    .bss.driving:00000000 $d
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:747    .bss.encoder2_delay:00000000 encoder2_delay
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccQqokdd.s 			page 22
 
 
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:737    .bss.encoder2_delay:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:742    .bss.encoder1_delay:00000000 encoder1_delay
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:743    .bss.encoder1_delay:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:746    .bss.encoder2_count:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:753    .bss.encoder1_count:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccHZH9c7.s:760    .bss.tick_count:00000000 $d
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:748    .bss.encoder2_delay:00000000 $d
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:753    .bss.encoder1_delay:00000000 encoder1_delay
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:754    .bss.encoder1_delay:00000000 $d
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:757    .bss.encoder2_count:00000000 $d
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:764    .bss.encoder1_count:00000000 $d
+C:\Users\Life\AppData\Local\Temp\ccQqokdd.s:771    .bss.tick_count:00000000 $d
 
 UNDEFINED SYMBOLS
 vsnprintf

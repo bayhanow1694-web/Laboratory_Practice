@@ -6,3 +6,4 @@ extern volatile uint8_t counter1;
 
 void UART_SendChar(char c);
 void UART_SendString(char* str);
+

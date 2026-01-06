@@ -63,7 +63,7 @@ void MPU6050_Calibrate(void)
     uint16_t samples = 0;
     
     // Собираем 1000 семплов (~1 секунда)
-    while ((uint32_t)(tick_count - start) < 2000) {
+    while ((uint32_t)(tick_count - start) < 3000) {
         float gz = MPU6050_Read_Yaw_Rate_No_Offset();  // Чтение без вычитания offset
         sum += gz;
         samples++;
@@ -96,6 +96,8 @@ float MPU6050_Read_Yaw_Rate_No_Offset(void)
 // ------------------------------------------------------------------
 // ЧТЕНИЕ угловой скорости (основная функция)
 // ------------------------------------------------------------------
+
+
 float MPU6050_Read_Yaw_Rate(void)
 {
     // Читаем сырое значение
@@ -125,7 +127,7 @@ float MPU6050_Read_Yaw_Rate(void)
     return gz_filtered;
 }
 
-// ------------------------------------------------------------------
+// // ------------------------------------------------------------------
 // ОБНОВЛЕНИЕ УГЛА (интегрирование)
 // ------------------------------------------------------------------
 void MPU6050_Update_Yaw(void)
@@ -195,26 +197,26 @@ void MPU6050_Print_Debug(void)
 // ------------------------------------------------------------------
 // АВТОКОМПЕНСАЦИЯ ДРЕЙФА (опционально)
 // ------------------------------------------------------------------
-void MPU6050_Auto_Compensate_Drift(void)
-{
-    static uint16_t still_counter = 0;
+// void MPU6050_Auto_Compensate_Drift(void)
+// {
+//     static uint16_t still_counter = 0;
     
-    // Если робот не двигается (по энкодерам)
-    if (encoder1_count == 0 && encoder2_count == 0) {
-        still_counter++;
+//     // Если робот не двигается (по энкодерам)
+//     if (encoder1_count == 0 && encoder2_count == 0) {
+//         still_counter++;
         
-        // Если стоим более 2 секунд
-        if (still_counter > 2000) {
-            // Медленно корректируем offset
-            gz_offset += MPU6050.yaw_rate * 0.0001f;  // Очень медленно
+//         // Если стоим более 2 секунд
+//         if (still_counter > 2000) {
+//             // Медленно корректируем offset
+//             gz_offset += MPU6050.yaw_rate * 0.0001f;  // Очень медленно
             
-            // Сбрасываем угол, если дрейф большой
-            if (fabs(MPU6050.yaw_angle) > 5.0f) {
-                yaw_angle = 0.0f;
-                MPU6050.yaw_angle = 0.0f;
-            }
-        }
-    } else {
-        still_counter = 0;
-    }
-}
+//             // Сбрасываем угол, если дрейф большой
+//             if (fabs(MPU6050.yaw_angle) > 5.0f) {
+//                 yaw_angle = 0.0f;
+//                 MPU6050.yaw_angle = 0.0f;
+//             }
+//         }
+//     } else {
+//         still_counter = 0;
+//     }
+// }

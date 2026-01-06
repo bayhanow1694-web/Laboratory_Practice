@@ -51,67 +51,7 @@ void Motor_Set(int16_t left, int16_t right)
 // ==========================================================
 // КУРСОВОЙ PID (Вызывать раз в 1 мс)
 // ==========================================================
-// void Course_Control_1ms(void)
-// {
-//     if (!robot_started)
-//     {
-//         yaw_i = 0.0f;
-//         Motor_Set(0, 0);
-//         return;
-//     }
 
-//     float yaw = MPU6050.yaw_angle;
-//     yaw_rate_filtered = yaw_rate_filtered * 0.90f + MPU6050.yaw_rate * 0.10f; 
-
-//     // ---------- Расчет ошибки курса ----------
-//     float yaw_error = yaw_target - yaw;
-    
-//     // Нормализация ошибки к диапазону -180...+180
-//     if (yaw_error > 180.0f) yaw_error -= 360.0f;
-//     else if (yaw_error < -180.0f) yaw_error += 360.0f;
-
-//     // ---------- Интеграл (накопление) ----------
-//     // Копим ошибку только если мы уже близко к цели (меньше 5 градусов)
-//     // Это помогает убрать микро-снос
-//    if (fabs(yaw_error) < 3.0f)
-// {
-//     yaw_i += yaw_error;
-// }
-// else
-// {
-//     yaw_i *= 0.9f;   // стравливание
-// }
-    
-//     // Ограничиваем, чтобы не переполнился
-//     if (yaw_i > I_LIMIT) yaw_i = I_LIMIT;
-//     else if (yaw_i < -I_LIMIT) yaw_i = -I_LIMIT;
-    
-//     // Если мы пересекли ноль (вернулись на курс), сбрасываем интеграл,
-//     // чтобы не проскочить мимо.
-//     if ((yaw_error > 0 && yaw_i < 0) || (yaw_error < 0 && yaw_i > 0)) {
-//        yaw_i = 0;
-//     }
-
-//     // ---------- PID Формула ----------
-//     // P: тянет к нулю
-//     // I: дожимает мелочи
-//     // D: (yaw_rate) сопротивляется изменению скорости поворота (гасит колебания)
-//     float corr = (Kp * yaw_error) + (Ki * yaw_i) - (Kd * yaw_rate_filtered);
-
-//     // ---------- 4. Ограничение коррекции ----------
-//     // Приводим к int16_t с насыщением
-//     int16_t correction_pwm = (int16_t)corr;
-//     correction_pwm = clamp_i16(correction_pwm, -MAX_CORRECTION, MAX_CORRECTION);
-    
-//     int16_t left = base_speed + correction_pwm;
-//     int16_t right = base_speed - correction_pwm;
-
-//     if (left < 280) left = 280;
-//     if (right < 280) right = 289;
-
-//     Motor_Set(left, right);
-
-// }
 void Course_Control_1ms(void)
 {
     if (!robot_started)
@@ -166,8 +106,8 @@ void Course_Control_1ms(void)
     int16_t right = base_right - correction_pwm;
 
     // Ограничение минимальной скорости
-    if (left < 294) left = 294;
-    if (right < 280) right = 280;
+    if (left < 294) left = 304;
+    if (right < 280) right = 290;
 
     Motor_Set(left, right);
 }

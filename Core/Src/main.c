@@ -20,6 +20,10 @@ volatile uint8_t driving = 0;
 volatile float drive_target_mm = 0;
 
 
+
+
+
+
 // Гироскоп
 volatile uint8_t imu_ready = 0;
 volatile float gz_offset = 0.0f;
@@ -61,15 +65,15 @@ typedef struct {
 // };
 RouteStep_t route[] = {
     {500,  90.0f},
-    {600, 90.0f},
-    {25,  -120.0f},
-    {450, 60.0f},
-    {450,  60.0f},
-    {450, 60.0f},
-    {450,  60.0f},
-    {450, -120.0f},
-    {25,  90.0f},
-    {600, 90.0f},
+    {605, 89.5f},
+    {30,  -120.5f},
+    {460, 59.5f},
+    {455,  59.5f},
+    {450, 59.5f},
+    {450,  60.5f},
+    {445, -120.0f},
+    {25,  89.5f},
+    {595, 89.5f},
 };
 // RouteStep_t route[] = {
 //     {0,  90.0f},
@@ -125,7 +129,7 @@ int main(void)
     UART_SendString("MPU6050 initialized\r\n");
     UART_SendString("Press button to start calibration and movement\r\n");
 
-    static uint32_t last_ctrl = 0;
+ 
     uint8_t state = ST_WAIT;
     uint8_t is_calibrated = 0;
 
@@ -171,19 +175,24 @@ int main(void)
                 }
                 break;
 
-           static uint32_t last_debug = 0;
+         
 
 case ST_DRIVE:
+{
+    static uint32_t last_debug = 0;
+    static uint32_t last_ctrl  = 0;
+
+    // --- Управление движением каждые 1 мс ---
     if ((tick_count - last_ctrl) >= 1)
     {
         last_ctrl = tick_count;
         Drive_Process_1ms();
     }
 
+    // --- Отладка UART каждые 100 мс ---
     if ((tick_count - last_debug) >= 100)
     {
         last_debug = tick_count;
-
         float dist = Get_Distance_MM();
         float remain = drive_target_mm - dist;
 
@@ -195,23 +204,31 @@ case ST_DRIVE:
         );
     }
 
+    // --- Достигли цели движения ---
     if (!driving)
     {
         Motor_Set(0, 0);
-        Rotate_Start(route[route_idx].turn_angle);
+
+        // --- Коррекция поворота на текущее отклонение ---
+        float adjusted_turn = route[route_idx].turn_angle - MPU6050.yaw_angle;
+        Rotate_Start(adjusted_turn);
+
         state = ST_TURN;
     }
-    break;
-
-            static uint32_t last_turn_dbg = 0;
+}
+break;
 
 case ST_TURN:
+{
+    static uint32_t last_turn_dbg = 0;
+
+    // --- Управление поворотом каждые 1 мс ---
     Rotate_Process_1ms();
 
+    // --- Отладка UART каждые 100 мс ---
     if ((tick_count - last_turn_dbg) >= 100)
     {
         last_turn_dbg = tick_count;
-
         UART_Printf(
             "[TURN] target=%.1f deg  yaw=%.2f deg  e1=%lu e2=%lu\r\n",
             route[route_idx].turn_angle,
@@ -221,6 +238,7 @@ case ST_TURN:
         );
     }
 
+    // --- Достигли угла ---
     if (!turning)
     {
         UART_Printf(
@@ -233,10 +251,13 @@ case ST_TURN:
         if (route_idx >= ROUTE_LEN)
             route_idx = 0;
 
+        // Следующий шаг маршрута — сначала калибровка перед движением
         is_calibrated = 0;
         state = ST_CALIBRATE;
     }
-    break;
+}
+break;
+
         }
     }
 }
