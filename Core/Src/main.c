@@ -83,10 +83,10 @@ RouteStep_t route[] = {
 
 // ---------- СОСТОЯНИЯ ----------
 enum {
-    ST_WAIT = 0,
-    ST_CALIBRATE,
-    ST_DRIVE,
-    ST_TURN
+    ST_WAIT = 0,      // Ожидание (0)
+    ST_CALIBRATE,     // Калибровка (автоматически 1)
+    ST_DRIVE,         // Движение прямо (2)
+    ST_TURN           // Поворот (3)
 };
 
 uint8_t route_idx = 0;
