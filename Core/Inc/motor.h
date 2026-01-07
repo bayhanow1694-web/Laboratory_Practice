@@ -9,7 +9,12 @@
 
 #define WHEEL_DIAMETER_MM  67.5f
 #define ENCODER_TICKS_REV  40.0f
+// Ограничение интеграла
+#define I_LIMIT 40.0f
+#define I_THRESHOLD 20.0f  // градусы
 
+// Максимальная коррекция (не даем одному мотору остановиться полностью)
+#define MAX_CORRECTION 150 
 
 #define MM_PER_TICK  ((WHEEL_DIAMETER_MM * 3.1415926f) / ENCODER_TICKS_REV)
 // ================== ВНЕШНИЕ ПЕРЕМЕННЫЕ ==================
@@ -25,7 +30,7 @@ extern volatile float turn_target;
 extern volatile uint8_t driving;
 extern volatile float drive_target_mm;
 
-#define OFFSET_LIMIT 20.0f
+
 // ================== INLINE ==================
 static inline int16_t clamp_i16(int16_t v, int16_t min, int16_t max)
 {

@@ -6,24 +6,14 @@
 #include <stdio.h>
 #include "handlers.h"
 
-// ================== PID КОЭФФИЦИЕНТЫ (Подстройка) ==================
+// PID КОЭФФИЦИЕНТЫ (Подстройка)
 static float Kp = 8.0f;   // На 1 градус ошибки меняем ШИМ на 8 единиц
 static float Kd = 3.5f;   // Сильное демпфирование, чтобы не раскачивался
 static float Ki = 0.2f;   // Небольшой интеграл для компенсации разницы моторов
 // Фильтр низких частот для yaw_rate (простейший)
 static float yaw_rate_filtered = 0.0f;
-// ================== ВНУТРЕННИЕ ПЕРЕМЕННЫЕ ==================
 
-// Ограничение интеграла (anti-windup)
-#define I_LIMIT 40.0f
-#define I_THRESHOLD 20.0f  // градусы
-
-// Максимальная коррекция (не даем одному мотору остановиться полностью)
-#define MAX_CORRECTION 150 
-
-// ==========================================================
 // УПРАВЛЕНИЕ МОТОРАМИ
-// ==========================================================
 void Motor_Set(int16_t left, int16_t right)
 {
     // Жесткое ограничение диапазонов PWM
@@ -48,10 +38,8 @@ void Motor_Set(int16_t left, int16_t right)
     }
 }
 
-// ==========================================================
-// КУРСОВОЙ PID (Вызывать раз в 1 мс)
-// ==========================================================
 
+// КУРСОВОЙ PID
 void Course_Control_1ms(void)
 {
     if (!robot_started)
@@ -61,16 +49,16 @@ void Course_Control_1ms(void)
         return;
     }
 
-    // ---------- 1. Читаем гироскоп ----------
+    // Читаем гироскоп 
     float yaw = MPU6050.yaw_angle;
     yaw_rate_filtered = yaw_rate_filtered * 0.90f + MPU6050.yaw_rate * 0.10f; 
 
-    // ---------- 2. Ошибка курса ----------
+    // Ошибка курса 
     float yaw_error = yaw_target - yaw;
     if (yaw_error > 180.0f) yaw_error -= 360.0f;
     else if (yaw_error < -180.0f) yaw_error += 360.0f;
 
-    // ---------- 3. Интеграл ----------
+    // Интеграл 
     if (fabs(yaw_error) < 3.0f)
         yaw_i += yaw_error;
     else
@@ -82,12 +70,12 @@ void Course_Control_1ms(void)
     if ((yaw_error > 0 && yaw_i < 0) || (yaw_error < 0 && yaw_i > 0))
         yaw_i = 0;
 
-    // ---------- 4. PID по курсу ----------
+    //PID по курсу
     float corr = (Kp * yaw_error) + (Ki * yaw_i) - (Kd * yaw_rate_filtered);
     int16_t correction_pwm = (int16_t)corr;
     correction_pwm = clamp_i16(correction_pwm, -MAX_CORRECTION, MAX_CORRECTION);
 
-    // ---------- 5. Выравнивание моторов по энкодерам ----------
+    // Выравнивание моторов по энкодерам 
     uint32_t e1, e2;
     __disable_irq();
     e1 = encoder1_count;
@@ -98,7 +86,7 @@ void Course_Control_1ms(void)
     float motor_error = (float)(e1 - e2) * 10.5f; // коэффициент 0.5 можно подбирать
     int16_t motor_comp = (int16_t)motor_error;
 
-    // ---------- 6. Формируем PWM для моторов ----------
+    // Формируем PWM для моторов
     int16_t base_left  = base_speed - motor_comp;
     int16_t base_right = base_speed + motor_comp;
 
@@ -141,14 +129,14 @@ void Rotate_Process_1ms(void)
         return;
     }
 
-    // --- PID P-регулятор ---
+    //PD регулятор
     float Kp = 4.0f;
     float kd = 0.1f;
 
     // скорость поворота с демпфированием
     int16_t speed = (int16_t)(Kp * error - kd * MPU6050.yaw_rate);
 
-    // --- базовый PWM для моторов (левый тугой, правый лёгкий) ---
+    // базовый PWM для моторов (левый тугой, правый лёгкий)
     int16_t left_base  = 304; // левый мотор
     int16_t right_base = 290; // правый мотор
 
@@ -165,18 +153,17 @@ void Rotate_Process_1ms(void)
         right_pwm = right_base - speed;
     }
 
-    // --- ограничение ---
+    // ограничение 
     left_pwm  = clamp_i16(left_pwm,  -380, 380);
     right_pwm = clamp_i16(right_pwm, -380, 380);
 
-    // --- отправка на моторы ---
+    // отправка на моторы
     Motor_Set(left_pwm, right_pwm);
 }
 
 
-// ==========================================================
+
 // КНОПКА СТАРТ / СТОП
-// ==========================================================
 void Button_Process_Main(void)
 {
     uint8_t btn = (GPIOC->IDR & GPIO_IDR_ID13) ? 1 : 0;
@@ -225,7 +212,7 @@ void Drive_Process_1ms(void)
     float dist = Get_Distance_MM();
     float remain = drive_target_mm - dist;
 
-    // --- МЯГКОЕ ТОРМОЖЕНИЕ ---
+    // МЯГКОЕ ТОРМОЖЕНИЕ
     if (remain < 150.0f)   // за 15 см начинаем тормозить
     {
         base_speed = 340;
@@ -235,7 +222,7 @@ void Drive_Process_1ms(void)
         base_speed = 280;
     }
 
-    // --- ЦЕЛЬ ДОСТИГНУТА ---
+    // ЦЕЛЬ ДОСТИГНУТА
     if (remain <= 0.0f)
     {
         Motor_Set(0, 0);

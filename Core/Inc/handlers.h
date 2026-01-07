@@ -8,7 +8,6 @@ extern volatile uint32_t encoder2_count; // PB6
 extern volatile uint32_t tick_count;
 extern volatile uint8_t encoder1_delay;    // антидребезг PB5
 extern volatile uint8_t encoder2_delay;    // антидребезг PB6
-extern  volatile uint8_t imu_ready;
 
 void TIM1_UP_TIM10_IRQHandler(void);
 void EXTI9_5_IRQHandler(void);

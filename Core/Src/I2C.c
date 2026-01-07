@@ -1,15 +1,13 @@
-
-
 #include "I2C.h"
 
-#define I2C_TIMEOUT 10000  // таймаут цикла (регулируй при необходимости)
+#define I2C_TIMEOUT 10000  // таймаут цикла
 
 void I2C_Config(void)
 {
     RCC->AHB1ENR |= RCC_AHB1ENR_GPIOBEN;
     RCC->APB1ENR |= RCC_APB1ENR_I2C1EN;
 
-    // PB8, PB9 → AF
+    // PB8, PB9 в AF
     GPIOB->MODER &= ~(GPIO_MODER_MODER8 | GPIO_MODER_MODER9);
     GPIOB->MODER |=  (GPIO_MODER_MODER8_1 | GPIO_MODER_MODER9_1);
 
@@ -92,7 +90,7 @@ int MPU_Read(uint8_t dev, uint8_t reg, uint8_t *buf, uint8_t len)
     if (I2C_Address(dev << 1) != 0) { I2C_Stop(); return -1; }
     if (I2C_Write(reg) != 0) { I2C_Stop(); return -1; }
 
-    // Repeated start for read
+    // Повторный запуск для чтения
     if (I2C_Start() != 0) return -1;
 
     if (len == 1)
@@ -122,5 +120,3 @@ int MPU_Read(uint8_t dev, uint8_t reg, uint8_t *buf, uint8_t len)
     }
     return 0;
 }
-
-

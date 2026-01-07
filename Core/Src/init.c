@@ -170,5 +170,3 @@ void IRO_INInt_PB5_PB6(void)
     NVIC_SetPriority(EXTI9_5_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 0, 0));
     NVIC_EnableIRQ(EXTI9_5_IRQn);
 }
-
-
