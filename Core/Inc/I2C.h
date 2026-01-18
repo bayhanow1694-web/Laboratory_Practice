@@ -9,7 +9,7 @@
 #define MPU6050_ADDR        0x68
 #define WHO_AM_I_REG        0x75
 #define PWR_MGMT_1_REG      0x6B      //Выводит датчик из спящего режима (по умолчанию он спит)
-#define SMPLRT_DIV_REG      0x19      //(Digital Low Pass Filter): Устанавливает фильтр на 44 Гц. Это отсекает мелкие вибрации моторов робота, чтобы они не портили данные.
+#define SMPLRT_DIV_REG      0x19      //(Делитель частоты дискретизации
 #define CONFIG_REG          0x1A      // DLPF фильтр
 #define GYRO_CONFIG_REG     0x1B
 #define GYRO_ZOUT_H_REG     0x47      // Только Z ось!
