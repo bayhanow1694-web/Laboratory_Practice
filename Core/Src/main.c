@@ -23,7 +23,7 @@ volatile float drive_target_mm = 0;
 volatile float gz_offset = 0.0f;
 
 // Управление
-volatile int16_t base_speed = 350;
+volatile int16_t base_speed = 380;
 volatile uint8_t robot_started = 0;
 volatile uint8_t btn_prev = 1;
 volatile uint32_t btn_time = 0;
@@ -70,14 +70,14 @@ typedef struct {
    RouteStep_t route[] = {
       {500,  90.0f},
       {600, 90.0f},
-      {25,  -120.0f},
+      {30,  -120.0f},
       {450, 60.0f},
       {450,  60.0f},
       {450, 61.0f},
-      {450,  60.0f},
-      {450, -120.0f},
-      {25,  90.0f},
-     {600, 90.0f},
+      {440,  60.0f},
+      {440, -120.0f},
+      {25,  89.5f},
+     {590, 90.0f},
   };
 
 #define ROUTE_LEN (sizeof(route) / sizeof(route[0]))

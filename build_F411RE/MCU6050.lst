@@ -1,4 +1,4 @@
-ARM GAS  C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s 			page 1
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccvnFju3.s 			page 1
 
 
    1              		.cpu cortex-m4
@@ -58,7 +58,7 @@ ARM GAS  C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s 			page 1
   39              		.cfi_def_cfa_offset 16
   18:Core/Src/MCU6050.c ****     uint8_t check;
   40              		.loc 1 18 5 view .LVU1
-ARM GAS  C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s 			page 2
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccvnFju3.s 			page 2
 
 
   19:Core/Src/MCU6050.c ****     
@@ -118,7 +118,7 @@ ARM GAS  C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s 			page 1
   35:Core/Src/MCU6050.c ****     // 1. Максимальная частота дискретизации
   36:Core/Src/MCU6050.c ****     MPU_Write(MPU6050_ADDR, SMPLRT_DIV_REG, 0x00);  // 1 kHz
   79              		.loc 1 36 5 is_stmt 1 view .LVU14
-ARM GAS  C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s 			page 3
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccvnFju3.s 			page 3
 
 
   80 0036 0022     		movs	r2, #0
@@ -178,7 +178,7 @@ ARM GAS  C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s 			page 1
  119              		.loc 1 51 1 view .LVU26
  120 0068 03B0     		add	sp, sp, #12
  121              	.LCFI2:
-ARM GAS  C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s 			page 4
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccvnFju3.s 			page 4
 
 
  122              		.cfi_remember_state
@@ -238,7 +238,7 @@ ARM GAS  C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s 			page 1
   78:Core/Src/MCU6050.c **** 
   79:Core/Src/MCU6050.c **** // ЧТЕНИЕ СЫРОЙ угловой скорости (без вычитания offset)
   80:Core/Src/MCU6050.c **** float MPU6050_Read_Yaw_Rate_No_Offset(void)
-ARM GAS  C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s 			page 5
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccvnFju3.s 			page 5
 
 
   81:Core/Src/MCU6050.c **** {
@@ -298,7 +298,7 @@ ARM GAS  C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s 			page 1
  198              		.cfi_endproc
  199              	.LFE135:
  201              		.section	.text.MPU6050_Calibrate,"ax",%progbits
-ARM GAS  C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s 			page 6
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccvnFju3.s 			page 6
 
 
  202              		.align	1
@@ -358,7 +358,7 @@ ARM GAS  C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s 			page 1
  246              	.LVL13:
   63:Core/Src/MCU6050.c ****         samples++;
  247              		.loc 1 63 9 is_stmt 1 view .LVU50
-ARM GAS  C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s 			page 7
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccvnFju3.s 			page 7
 
 
   63:Core/Src/MCU6050.c ****         samples++;
@@ -418,7 +418,7 @@ ARM GAS  C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s 			page 1
   72:Core/Src/MCU6050.c ****     }
  287              		.loc 1 72 25 is_stmt 0 view .LVU66
  288 003a 07EE904A 		vmov	s15, r4	@ int
-ARM GAS  C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s 			page 8
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccvnFju3.s 			page 8
 
 
  289 003e F8EEE77A 		vcvt.f32.s32	s15, s15
@@ -478,7 +478,7 @@ ARM GAS  C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s 			page 1
  334 0000 10B5     		push	{r4, lr}
  335              	.LCFI10:
  336              		.cfi_def_cfa_offset 8
-ARM GAS  C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s 			page 9
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccvnFju3.s 			page 9
 
 
  337              		.cfi_offset 4, -8
@@ -493,7 +493,7 @@ ARM GAS  C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s 			page 1
   96:Core/Src/MCU6050.c ****     // Вычитаем калибровочное смещение
   97:Core/Src/MCU6050.c ****     gz_raw -= gz_offset;
  343              		.loc 1 97 5 is_stmt 1 view .LVU76
- 344 0006 174B     		ldr	r3, .L23
+ 344 0006 184B     		ldr	r3, .L23
  345 0008 D3ED007A 		vldr.32	s15, [r3]
  346              		.loc 1 97 12 is_stmt 0 view .LVU77
  347 000c 30EE670A 		vsub.f32	s0, s0, s15
@@ -503,572 +503,596 @@ ARM GAS  C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s 			page 1
  100:Core/Src/MCU6050.c ****     MPU6050.yaw_rate_raw = gz_raw;
  349              		.loc 1 100 5 is_stmt 1 view .LVU78
  350              		.loc 1 100 26 is_stmt 0 view .LVU79
- 351 0010 1548     		ldr	r0, .L23+4
+ 351 0010 1648     		ldr	r0, .L23+4
  352 0012 80ED020A 		vstr.32	s0, [r0, #8]
  101:Core/Src/MCU6050.c ****     
  102:Core/Src/MCU6050.c ****     // Простая фильтрация (скользящее среднее)
- 103:Core/Src/MCU6050.c ****     static float buffer[3] = {0};  // 3 последних значения
- 353              		.loc 1 103 5 is_stmt 1 view .LVU80
- 104:Core/Src/MCU6050.c ****     static uint8_t idx = 0;
- 354              		.loc 1 104 5 view .LVU81
+ 103:Core/Src/MCU6050.c ****     // static float buffer[3] = {0};  // 3 последних значения
+ 104:Core/Src/MCU6050.c ****     // static uint8_t idx = 0;
  105:Core/Src/MCU6050.c ****     
- 106:Core/Src/MCU6050.c ****     buffer[idx] = gz_raw;
- 355              		.loc 1 106 5 view .LVU82
- 356              		.loc 1 106 11 is_stmt 0 view .LVU83
- 357 0016 154C     		ldr	r4, .L23+8
- 358 0018 2278     		ldrb	r2, [r4]	@ zero_extendqisi2
- 359              		.loc 1 106 17 view .LVU84
- 360 001a 1549     		ldr	r1, .L23+12
- 361 001c 01EB8203 		add	r3, r1, r2, lsl #2
- 362 0020 83ED000A 		vstr.32	s0, [r3]
- 107:Core/Src/MCU6050.c ****     idx = (idx + 1) % 3;
- 363              		.loc 1 107 5 is_stmt 1 view .LVU85
- 364              		.loc 1 107 16 is_stmt 0 view .LVU86
- 365 0024 0132     		adds	r2, r2, #1
- 366              		.loc 1 107 21 view .LVU87
- 367 0026 134B     		ldr	r3, .L23+16
- 368 0028 83FB02C3 		smull	ip, r3, r3, r2
- 369 002c 03EB4303 		add	r3, r3, r3, lsl #1
- 370 0030 D31A     		subs	r3, r2, r3
- 371              		.loc 1 107 9 view .LVU88
- 372 0032 2370     		strb	r3, [r4]
+ 106:Core/Src/MCU6050.c ****     // buffer[idx] = gz_raw;
+ 107:Core/Src/MCU6050.c ****     // idx = (idx + 1) % 3;
  108:Core/Src/MCU6050.c ****     
- 109:Core/Src/MCU6050.c ****     // Среднее из 3 значений
- 110:Core/Src/MCU6050.c ****     gz_filtered = (buffer[0] + buffer[1] + buffer[2]) / 3.0f;
- 373              		.loc 1 110 5 is_stmt 1 view .LVU89
- 374              		.loc 1 110 26 is_stmt 0 view .LVU90
- 375 0034 D1ED007A 		vldr.32	s15, [r1]
-ARM GAS  C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s 			page 10
+ 109:Core/Src/MCU6050.c ****     // // Среднее из 3 значений
+ 110:Core/Src/MCU6050.c ****     // gz_filtered = (buffer[0] + buffer[1] + buffer[2]) / 3.0f;
+ 111:Core/Src/MCU6050.c ****     static float buffer[10] = {0}; 
+ 353              		.loc 1 111 5 is_stmt 1 view .LVU80
+ 112:Core/Src/MCU6050.c **** static float sum = 0;          // Храним сумму здесь
+ 354              		.loc 1 112 1 view .LVU81
+ 113:Core/Src/MCU6050.c **** static uint8_t idx = 0;
+ 355              		.loc 1 113 1 view .LVU82
+ 114:Core/Src/MCU6050.c **** 
+ 115:Core/Src/MCU6050.c **** // Вычитаем старое значение, которое сейчас затрем
+ 116:Core/Src/MCU6050.c **** sum -= buffer[idx]; 
+ 356              		.loc 1 116 1 view .LVU83
+ 357              		.loc 1 116 14 is_stmt 0 view .LVU84
+ 358 0016 164C     		ldr	r4, .L23+8
+ 359 0018 2378     		ldrb	r3, [r4]	@ zero_extendqisi2
+ 360 001a 164A     		ldr	r2, .L23+12
+ 361 001c 02EB8302 		add	r2, r2, r3, lsl #2
+ 362 0020 92ED007A 		vldr.32	s14, [r2]
+ 363              		.loc 1 116 5 view .LVU85
+ 364 0024 1449     		ldr	r1, .L23+16
+ 365 0026 D1ED007A 		vldr.32	s15, [r1]
+ 366 002a 77EEC77A 		vsub.f32	s15, s15, s14
+ 367 002e C1ED007A 		vstr.32	s15, [r1]
+ 117:Core/Src/MCU6050.c **** 
+ 118:Core/Src/MCU6050.c **** // Записываем новое
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccvnFju3.s 			page 10
 
 
- 376              		.loc 1 110 38 view .LVU91
- 377 0038 91ED017A 		vldr.32	s14, [r1, #4]
- 378              		.loc 1 110 30 view .LVU92
- 379 003c 77EE877A 		vadd.f32	s15, s15, s14
- 380              		.loc 1 110 50 view .LVU93
- 381 0040 91ED027A 		vldr.32	s14, [r1, #8]
- 382              		.loc 1 110 42 view .LVU94
- 383 0044 77EE877A 		vadd.f32	s15, s15, s14
- 384              		.loc 1 110 55 view .LVU95
- 385 0048 B0EE087A 		vmov.f32	s14, #3.0e+0
- 386 004c 87EE870A 		vdiv.f32	s0, s15, s14
- 387              	.LVL23:
- 388              		.loc 1 110 17 view .LVU96
- 389 0050 094B     		ldr	r3, .L23+20
- 390 0052 83ED000A 		vstr.32	s0, [r3]
- 111:Core/Src/MCU6050.c **** 
- 112:Core/Src/MCU6050.c ****     gz_filtered = -gz_filtered;  // Добавьте эту строку!
- 391              		.loc 1 112 5 is_stmt 1 view .LVU97
- 392              		.loc 1 112 19 is_stmt 0 view .LVU98
- 393 0056 B1EE400A 		vneg.f32	s0, s0
- 394              		.loc 1 112 17 view .LVU99
- 395 005a 83ED000A 		vstr.32	s0, [r3]
- 113:Core/Src/MCU6050.c ****     
- 114:Core/Src/MCU6050.c ****     // Сохраняем отфильтрованное
- 115:Core/Src/MCU6050.c ****     MPU6050.yaw_rate = gz_filtered;
- 396              		.loc 1 115 5 is_stmt 1 view .LVU100
- 397              		.loc 1 115 22 is_stmt 0 view .LVU101
- 398 005e 80ED010A 		vstr.32	s0, [r0, #4]
- 116:Core/Src/MCU6050.c ****     
- 117:Core/Src/MCU6050.c ****     return gz_filtered;
- 399              		.loc 1 117 5 is_stmt 1 view .LVU102
- 118:Core/Src/MCU6050.c **** }
- 400              		.loc 1 118 1 is_stmt 0 view .LVU103
- 401 0062 10BD     		pop	{r4, pc}
- 402              	.L24:
- 403              		.align	2
- 404              	.L23:
- 405 0064 00000000 		.word	gz_offset
- 406 0068 00000000 		.word	MPU6050
- 407 006c 00000000 		.word	idx.2
- 408 0070 00000000 		.word	buffer.1
- 409 0074 56555555 		.word	1431655766
- 410 0078 00000000 		.word	gz_filtered
- 411              		.cfi_endproc
- 412              	.LFE136:
- 414              		.section	.text.MPU6050_Update_Yaw,"ax",%progbits
- 415              		.align	1
- 416              		.global	MPU6050_Update_Yaw
- 417              		.syntax unified
- 418              		.thumb
- 419              		.thumb_func
- 421              	MPU6050_Update_Yaw:
- 422              	.LFB137:
- 119:Core/Src/MCU6050.c **** 
+ 119:Core/Src/MCU6050.c **** buffer[idx] = gz_raw; 
+ 368              		.loc 1 119 1 is_stmt 1 view .LVU86
+ 369              		.loc 1 119 13 is_stmt 0 view .LVU87
+ 370 0032 82ED000A 		vstr.32	s0, [r2]
  120:Core/Src/MCU6050.c **** 
- 121:Core/Src/MCU6050.c **** // ОБНОВЛЕНИЕ УГЛА (интегрирование)
- 122:Core/Src/MCU6050.c **** void MPU6050_Update_Yaw(void)
-ARM GAS  C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s 			page 11
+ 121:Core/Src/MCU6050.c **** // Прибавляем новое к сумме
+ 122:Core/Src/MCU6050.c **** sum += buffer[idx]; 
+ 371              		.loc 1 122 1 is_stmt 1 view .LVU88
+ 372              		.loc 1 122 5 is_stmt 0 view .LVU89
+ 373 0036 77EE807A 		vadd.f32	s15, s15, s0
+ 374 003a C1ED007A 		vstr.32	s15, [r1]
+ 123:Core/Src/MCU6050.c **** 
+ 124:Core/Src/MCU6050.c **** idx = (idx + 1) % 10;
+ 375              		.loc 1 124 1 is_stmt 1 view .LVU90
+ 376              		.loc 1 124 12 is_stmt 0 view .LVU91
+ 377 003e 0133     		adds	r3, r3, #1
+ 378              		.loc 1 124 17 view .LVU92
+ 379 0040 0E4A     		ldr	r2, .L23+20
+ 380 0042 82FB0312 		smull	r1, r2, r2, r3
+ 381 0046 02F0FC01 		and	r1, r2, #252
+ 382 004a 01EBA202 		add	r2, r1, r2, asr #2
+ 383 004e A3EB4203 		sub	r3, r3, r2, lsl #1
+ 384              		.loc 1 124 5 view .LVU93
+ 385 0052 2370     		strb	r3, [r4]
+ 125:Core/Src/MCU6050.c **** 
+ 126:Core/Src/MCU6050.c **** float gz_filtered = sum / 10.0f; // Всегда всего одна операция делени�
+ 386              		.loc 1 126 1 is_stmt 1 view .LVU94
+ 387              		.loc 1 126 7 is_stmt 0 view .LVU95
+ 388 0054 B2EE047A 		vmov.f32	s14, #1.0e+1
+ 389 0058 87EE870A 		vdiv.f32	s0, s15, s14
+ 390              	.LVL23:
+ 127:Core/Src/MCU6050.c **** 
+ 128:Core/Src/MCU6050.c ****     gz_filtered = -gz_filtered;  // Добавьте эту строку!
+ 391              		.loc 1 128 5 is_stmt 1 view .LVU96
+ 392              		.loc 1 128 17 is_stmt 0 view .LVU97
+ 393 005c B1EE400A 		vneg.f32	s0, s0
+ 394              	.LVL24:
+ 129:Core/Src/MCU6050.c ****     
+ 130:Core/Src/MCU6050.c ****     
+ 131:Core/Src/MCU6050.c ****     // Сохраняем отфильтрованное
+ 132:Core/Src/MCU6050.c ****     MPU6050.yaw_rate = gz_filtered;
+ 395              		.loc 1 132 5 is_stmt 1 view .LVU98
+ 396              		.loc 1 132 22 is_stmt 0 view .LVU99
+ 397 0060 80ED010A 		vstr.32	s0, [r0, #4]
+ 133:Core/Src/MCU6050.c ****     
+ 134:Core/Src/MCU6050.c ****     return gz_filtered;
+ 398              		.loc 1 134 5 is_stmt 1 view .LVU100
+ 135:Core/Src/MCU6050.c **** }
+ 399              		.loc 1 135 1 is_stmt 0 view .LVU101
+ 400 0064 10BD     		pop	{r4, pc}
+ 401              	.L24:
+ 402 0066 00BF     		.align	2
+ 403              	.L23:
+ 404 0068 00000000 		.word	gz_offset
+ 405 006c 00000000 		.word	MPU6050
+ 406 0070 00000000 		.word	idx.2
+ 407 0074 00000000 		.word	buffer.1
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccvnFju3.s 			page 11
 
 
- 123:Core/Src/MCU6050.c **** {
- 423              		.loc 1 123 1 is_stmt 1 view -0
- 424              		.cfi_startproc
- 425              		@ args = 0, pretend = 0, frame = 0
- 426              		@ frame_needed = 0, uses_anonymous_args = 0
- 427 0000 10B5     		push	{r4, lr}
- 428              	.LCFI11:
- 429              		.cfi_def_cfa_offset 8
- 430              		.cfi_offset 4, -8
- 431              		.cfi_offset 14, -4
- 432 0002 2DED028B 		vpush.64	{d8}
- 433              	.LCFI12:
- 434              		.cfi_def_cfa_offset 16
- 435              		.cfi_offset 80, -16
- 436              		.cfi_offset 81, -12
- 124:Core/Src/MCU6050.c ****     uint32_t now = tick_count;
- 437              		.loc 1 124 5 view .LVU105
- 438              		.loc 1 124 14 is_stmt 0 view .LVU106
- 439 0006 234B     		ldr	r3, .L35
- 440 0008 1C68     		ldr	r4, [r3]
- 441              	.LVL24:
- 125:Core/Src/MCU6050.c ****     
- 126:Core/Src/MCU6050.c ****     // Вычисляем дельту времени (в секундах)
- 127:Core/Src/MCU6050.c ****     float dt = (float)(now - last_update) / 1000.0f;
- 442              		.loc 1 127 5 is_stmt 1 view .LVU107
- 443              		.loc 1 127 28 is_stmt 0 view .LVU108
- 444 000a 234B     		ldr	r3, .L35+4
- 445 000c 1B68     		ldr	r3, [r3]
- 446 000e E31A     		subs	r3, r4, r3
- 447              		.loc 1 127 16 view .LVU109
- 448 0010 07EE903A 		vmov	s15, r3	@ int
- 449 0014 F8EE677A 		vcvt.f32.u32	s15, s15
- 450              		.loc 1 127 11 view .LVU110
- 451 0018 9FED207A 		vldr.32	s14, .L35+8
- 452 001c 87EE878A 		vdiv.f32	s16, s15, s14
- 453              	.LVL25:
- 128:Core/Src/MCU6050.c ****     
- 129:Core/Src/MCU6050.c ****     // Защита от слишком больших dt
- 130:Core/Src/MCU6050.c ****     if (dt > 0.1f) dt = 0.001f;  // Если пропустили >100мс, считаем как 1
- 454              		.loc 1 130 5 is_stmt 1 view .LVU111
- 455              		.loc 1 130 8 is_stmt 0 view .LVU112
- 456 0020 DFED1F7A 		vldr.32	s15, .L35+12
- 457 0024 B4EEE78A 		vcmpe.f32	s16, s15
- 458 0028 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
- 459 002c 01DD     		ble	.L26
- 460              		.loc 1 130 23 discriminator 1 view .LVU113
- 461 002e 9FED1D8A 		vldr.32	s16, .L35+16
- 462              	.LVL26:
- 463              	.L26:
- 131:Core/Src/MCU6050.c ****     
- 132:Core/Src/MCU6050.c ****     // Читаем угловую скорость
- 133:Core/Src/MCU6050.c ****     float gz = MPU6050_Read_Yaw_Rate();
- 464              		.loc 1 133 5 is_stmt 1 view .LVU114
- 465              		.loc 1 133 16 is_stmt 0 view .LVU115
- 466 0032 FFF7FEFF 		bl	MPU6050_Read_Yaw_Rate
- 467              	.LVL27:
- 134:Core/Src/MCU6050.c ****     
-ARM GAS  C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s 			page 12
+ 408 0078 00000000 		.word	sum.3
+ 409 007c 67666666 		.word	1717986919
+ 410              		.cfi_endproc
+ 411              	.LFE136:
+ 413              		.section	.text.MPU6050_Update_Yaw,"ax",%progbits
+ 414              		.align	1
+ 415              		.global	MPU6050_Update_Yaw
+ 416              		.syntax unified
+ 417              		.thumb
+ 418              		.thumb_func
+ 420              	MPU6050_Update_Yaw:
+ 421              	.LFB137:
+ 136:Core/Src/MCU6050.c **** 
+ 137:Core/Src/MCU6050.c **** 
+ 138:Core/Src/MCU6050.c **** // ОБНОВЛЕНИЕ УГЛА (интегрирование)
+ 139:Core/Src/MCU6050.c **** void MPU6050_Update_Yaw(void)
+ 140:Core/Src/MCU6050.c **** {
+ 422              		.loc 1 140 1 is_stmt 1 view -0
+ 423              		.cfi_startproc
+ 424              		@ args = 0, pretend = 0, frame = 0
+ 425              		@ frame_needed = 0, uses_anonymous_args = 0
+ 426 0000 10B5     		push	{r4, lr}
+ 427              	.LCFI11:
+ 428              		.cfi_def_cfa_offset 8
+ 429              		.cfi_offset 4, -8
+ 430              		.cfi_offset 14, -4
+ 431 0002 2DED028B 		vpush.64	{d8}
+ 432              	.LCFI12:
+ 433              		.cfi_def_cfa_offset 16
+ 434              		.cfi_offset 80, -16
+ 435              		.cfi_offset 81, -12
+ 141:Core/Src/MCU6050.c ****     uint32_t now = tick_count;
+ 436              		.loc 1 141 5 view .LVU103
+ 437              		.loc 1 141 14 is_stmt 0 view .LVU104
+ 438 0006 234B     		ldr	r3, .L35
+ 439 0008 1C68     		ldr	r4, [r3]
+ 440              	.LVL25:
+ 142:Core/Src/MCU6050.c ****     
+ 143:Core/Src/MCU6050.c ****     // Вычисляем дельту времени (в секундах)
+ 144:Core/Src/MCU6050.c ****     float dt = (float)(now - last_update) / 1000.0f;
+ 441              		.loc 1 144 5 is_stmt 1 view .LVU105
+ 442              		.loc 1 144 28 is_stmt 0 view .LVU106
+ 443 000a 234B     		ldr	r3, .L35+4
+ 444 000c 1B68     		ldr	r3, [r3]
+ 445 000e E31A     		subs	r3, r4, r3
+ 446              		.loc 1 144 16 view .LVU107
+ 447 0010 07EE903A 		vmov	s15, r3	@ int
+ 448 0014 F8EE677A 		vcvt.f32.u32	s15, s15
+ 449              		.loc 1 144 11 view .LVU108
+ 450 0018 9FED207A 		vldr.32	s14, .L35+8
+ 451 001c 87EE878A 		vdiv.f32	s16, s15, s14
+ 452              	.LVL26:
+ 145:Core/Src/MCU6050.c ****     
+ 146:Core/Src/MCU6050.c ****     // Защита от слишком больших dt
+ 147:Core/Src/MCU6050.c ****     if (dt > 0.1f) dt = 0.001f;  // Если пропустили >100мс, считаем как 1
+ 453              		.loc 1 147 5 is_stmt 1 view .LVU109
+ 454              		.loc 1 147 8 is_stmt 0 view .LVU110
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccvnFju3.s 			page 12
 
 
- 135:Core/Src/MCU6050.c ****     // Интегрируем: угол = угол + скорость * время
- 136:Core/Src/MCU6050.c ****     yaw_angle += gz * dt;
- 468              		.loc 1 136 5 is_stmt 1 view .LVU116
- 469              		.loc 1 136 21 is_stmt 0 view .LVU117
- 470 0036 28EE008A 		vmul.f32	s16, s16, s0
- 471              	.LVL28:
- 472              		.loc 1 136 15 view .LVU118
- 473 003a 1B4B     		ldr	r3, .L35+20
- 474 003c D3ED007A 		vldr.32	s15, [r3]
- 475 0040 38EE278A 		vadd.f32	s16, s16, s15
- 476 0044 83ED008A 		vstr.32	s16, [r3]
- 137:Core/Src/MCU6050.c ****     
- 138:Core/Src/MCU6050.c ****     // Нормализация угла в диапазон [-180, 180]
- 139:Core/Src/MCU6050.c ****     if (yaw_angle > 180.0f) yaw_angle -= 360.0f;
- 477              		.loc 1 139 5 is_stmt 1 view .LVU119
- 478              		.loc 1 139 8 is_stmt 0 view .LVU120
- 479 0048 DFED187A 		vldr.32	s15, .L35+24
- 480 004c B4EEE78A 		vcmpe.f32	s16, s15
- 481 0050 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
- 482 0054 05DD     		ble	.L27
- 483              		.loc 1 139 29 is_stmt 1 discriminator 1 view .LVU121
- 484              		.loc 1 139 39 is_stmt 0 discriminator 1 view .LVU122
- 485 0056 DFED167A 		vldr.32	s15, .L35+28
- 486 005a 38EE678A 		vsub.f32	s16, s16, s15
- 487 005e 83ED008A 		vstr.32	s16, [r3]
- 488              	.L27:
- 140:Core/Src/MCU6050.c ****     if (yaw_angle < -180.0f) yaw_angle += 360.0f;
- 489              		.loc 1 140 5 is_stmt 1 view .LVU123
- 490              		.loc 1 140 19 is_stmt 0 view .LVU124
- 491 0062 114B     		ldr	r3, .L35+20
- 492 0064 D3ED007A 		vldr.32	s15, [r3]
- 493              		.loc 1 140 8 view .LVU125
- 494 0068 9FED127A 		vldr.32	s14, .L35+32
- 495 006c F4EEC77A 		vcmpe.f32	s15, s14
- 496 0070 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
- 497 0074 05D5     		bpl	.L29
- 498              		.loc 1 140 30 is_stmt 1 discriminator 1 view .LVU126
- 499              		.loc 1 140 40 is_stmt 0 discriminator 1 view .LVU127
- 500 0076 9FED0E7A 		vldr.32	s14, .L35+28
- 501 007a 77EE877A 		vadd.f32	s15, s15, s14
- 502 007e C3ED007A 		vstr.32	s15, [r3]
- 503              	.L29:
- 141:Core/Src/MCU6050.c ****     
- 142:Core/Src/MCU6050.c ****     // Сохраняем
- 143:Core/Src/MCU6050.c ****     MPU6050.yaw_angle = yaw_angle;
- 504              		.loc 1 143 5 is_stmt 1 view .LVU128
- 505              		.loc 1 143 23 is_stmt 0 view .LVU129
- 506 0082 094B     		ldr	r3, .L35+20
- 507 0084 1A68     		ldr	r2, [r3]	@ float
- 508 0086 0C4B     		ldr	r3, .L35+36
- 509 0088 1A60     		str	r2, [r3]	@ float
- 144:Core/Src/MCU6050.c ****     last_update = now;
- 510              		.loc 1 144 5 is_stmt 1 view .LVU130
- 511              		.loc 1 144 17 is_stmt 0 view .LVU131
- 512 008a 034B     		ldr	r3, .L35+4
- 513 008c 1C60     		str	r4, [r3]
- 145:Core/Src/MCU6050.c **** }
-ARM GAS  C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s 			page 13
+ 455 0020 DFED1F7A 		vldr.32	s15, .L35+12
+ 456 0024 B4EEE78A 		vcmpe.f32	s16, s15
+ 457 0028 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 458 002c 01DD     		ble	.L26
+ 459              		.loc 1 147 23 discriminator 1 view .LVU111
+ 460 002e 9FED1D8A 		vldr.32	s16, .L35+16
+ 461              	.LVL27:
+ 462              	.L26:
+ 148:Core/Src/MCU6050.c ****     
+ 149:Core/Src/MCU6050.c ****     // Читаем угловую скорость
+ 150:Core/Src/MCU6050.c ****     float gz = MPU6050_Read_Yaw_Rate();
+ 463              		.loc 1 150 5 is_stmt 1 view .LVU112
+ 464              		.loc 1 150 16 is_stmt 0 view .LVU113
+ 465 0032 FFF7FEFF 		bl	MPU6050_Read_Yaw_Rate
+ 466              	.LVL28:
+ 151:Core/Src/MCU6050.c ****     
+ 152:Core/Src/MCU6050.c ****     // Интегрируем: угол = угол + скорость * время
+ 153:Core/Src/MCU6050.c ****     yaw_angle += gz * dt;
+ 467              		.loc 1 153 5 is_stmt 1 view .LVU114
+ 468              		.loc 1 153 21 is_stmt 0 view .LVU115
+ 469 0036 28EE008A 		vmul.f32	s16, s16, s0
+ 470              	.LVL29:
+ 471              		.loc 1 153 15 view .LVU116
+ 472 003a 1B4B     		ldr	r3, .L35+20
+ 473 003c D3ED007A 		vldr.32	s15, [r3]
+ 474 0040 38EE278A 		vadd.f32	s16, s16, s15
+ 475 0044 83ED008A 		vstr.32	s16, [r3]
+ 154:Core/Src/MCU6050.c ****     
+ 155:Core/Src/MCU6050.c ****     // Нормализация угла в диапазон [-180, 180]
+ 156:Core/Src/MCU6050.c ****     if (yaw_angle > 180.0f) yaw_angle -= 360.0f;
+ 476              		.loc 1 156 5 is_stmt 1 view .LVU117
+ 477              		.loc 1 156 8 is_stmt 0 view .LVU118
+ 478 0048 DFED187A 		vldr.32	s15, .L35+24
+ 479 004c B4EEE78A 		vcmpe.f32	s16, s15
+ 480 0050 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 481 0054 05DD     		ble	.L27
+ 482              		.loc 1 156 29 is_stmt 1 discriminator 1 view .LVU119
+ 483              		.loc 1 156 39 is_stmt 0 discriminator 1 view .LVU120
+ 484 0056 DFED167A 		vldr.32	s15, .L35+28
+ 485 005a 38EE678A 		vsub.f32	s16, s16, s15
+ 486 005e 83ED008A 		vstr.32	s16, [r3]
+ 487              	.L27:
+ 157:Core/Src/MCU6050.c ****     if (yaw_angle < -180.0f) yaw_angle += 360.0f;
+ 488              		.loc 1 157 5 is_stmt 1 view .LVU121
+ 489              		.loc 1 157 19 is_stmt 0 view .LVU122
+ 490 0062 114B     		ldr	r3, .L35+20
+ 491 0064 D3ED007A 		vldr.32	s15, [r3]
+ 492              		.loc 1 157 8 view .LVU123
+ 493 0068 9FED127A 		vldr.32	s14, .L35+32
+ 494 006c F4EEC77A 		vcmpe.f32	s15, s14
+ 495 0070 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 496 0074 05D5     		bpl	.L29
+ 497              		.loc 1 157 30 is_stmt 1 discriminator 1 view .LVU124
+ 498              		.loc 1 157 40 is_stmt 0 discriminator 1 view .LVU125
+ 499 0076 9FED0E7A 		vldr.32	s14, .L35+28
+ 500 007a 77EE877A 		vadd.f32	s15, s15, s14
+ 501 007e C3ED007A 		vstr.32	s15, [r3]
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccvnFju3.s 			page 13
 
 
- 514              		.loc 1 145 1 view .LVU132
- 515 008e BDEC028B 		vldm	sp!, {d8}
- 516              	.LCFI13:
- 517              		.cfi_restore 80
- 518              		.cfi_restore 81
- 519              		.cfi_def_cfa_offset 8
- 520 0092 10BD     		pop	{r4, pc}
- 521              	.LVL29:
- 522              	.L36:
- 523              		.loc 1 145 1 view .LVU133
- 524              		.align	2
- 525              	.L35:
- 526 0094 00000000 		.word	tick_count
- 527 0098 00000000 		.word	last_update
- 528 009c 00007A44 		.word	1148846080
- 529 00a0 CDCCCC3D 		.word	1036831949
- 530 00a4 6F12833A 		.word	981668463
- 531 00a8 00000000 		.word	yaw_angle
- 532 00ac 00003443 		.word	1127481344
- 533 00b0 0000B443 		.word	1135869952
- 534 00b4 000034C3 		.word	-1020002304
- 535 00b8 00000000 		.word	MPU6050
- 536              		.cfi_endproc
- 537              	.LFE137:
- 539              		.section	.text.MPU6050_Get_Yaw,"ax",%progbits
- 540              		.align	1
- 541              		.global	MPU6050_Get_Yaw
- 542              		.syntax unified
- 543              		.thumb
- 544              		.thumb_func
- 546              	MPU6050_Get_Yaw:
- 547              	.LFB138:
- 146:Core/Src/MCU6050.c **** 
- 147:Core/Src/MCU6050.c **** 
- 148:Core/Src/MCU6050.c **** // ПОЛУЧЕНИЕ ТЕКУЩЕГО УГЛА
- 149:Core/Src/MCU6050.c **** float MPU6050_Get_Yaw(void)
- 150:Core/Src/MCU6050.c **** {
- 548              		.loc 1 150 1 is_stmt 1 view -0
- 549              		.cfi_startproc
- 550              		@ args = 0, pretend = 0, frame = 0
- 551              		@ frame_needed = 0, uses_anonymous_args = 0
- 552              		@ link register save eliminated.
- 151:Core/Src/MCU6050.c ****     return MPU6050.yaw_angle;
- 553              		.loc 1 151 5 view .LVU135
- 152:Core/Src/MCU6050.c **** }
- 554              		.loc 1 152 1 is_stmt 0 view .LVU136
- 555 0000 014B     		ldr	r3, .L38
- 556 0002 93ED000A 		vldr.32	s0, [r3]
- 557 0006 7047     		bx	lr
- 558              	.L39:
- 559              		.align	2
- 560              	.L38:
- 561 0008 00000000 		.word	MPU6050
- 562              		.cfi_endproc
- 563              	.LFE138:
- 565              		.section	.text.MPU6050_Reset_Yaw,"ax",%progbits
- 566              		.align	1
-ARM GAS  C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s 			page 14
+ 502              	.L29:
+ 158:Core/Src/MCU6050.c ****     
+ 159:Core/Src/MCU6050.c ****     // Сохраняем
+ 160:Core/Src/MCU6050.c ****     MPU6050.yaw_angle = yaw_angle;
+ 503              		.loc 1 160 5 is_stmt 1 view .LVU126
+ 504              		.loc 1 160 23 is_stmt 0 view .LVU127
+ 505 0082 094B     		ldr	r3, .L35+20
+ 506 0084 1A68     		ldr	r2, [r3]	@ float
+ 507 0086 0C4B     		ldr	r3, .L35+36
+ 508 0088 1A60     		str	r2, [r3]	@ float
+ 161:Core/Src/MCU6050.c ****     last_update = now;
+ 509              		.loc 1 161 5 is_stmt 1 view .LVU128
+ 510              		.loc 1 161 17 is_stmt 0 view .LVU129
+ 511 008a 034B     		ldr	r3, .L35+4
+ 512 008c 1C60     		str	r4, [r3]
+ 162:Core/Src/MCU6050.c **** }
+ 513              		.loc 1 162 1 view .LVU130
+ 514 008e BDEC028B 		vldm	sp!, {d8}
+ 515              	.LCFI13:
+ 516              		.cfi_restore 80
+ 517              		.cfi_restore 81
+ 518              		.cfi_def_cfa_offset 8
+ 519 0092 10BD     		pop	{r4, pc}
+ 520              	.LVL30:
+ 521              	.L36:
+ 522              		.loc 1 162 1 view .LVU131
+ 523              		.align	2
+ 524              	.L35:
+ 525 0094 00000000 		.word	tick_count
+ 526 0098 00000000 		.word	last_update
+ 527 009c 00007A44 		.word	1148846080
+ 528 00a0 CDCCCC3D 		.word	1036831949
+ 529 00a4 6F12833A 		.word	981668463
+ 530 00a8 00000000 		.word	yaw_angle
+ 531 00ac 00003443 		.word	1127481344
+ 532 00b0 0000B443 		.word	1135869952
+ 533 00b4 000034C3 		.word	-1020002304
+ 534 00b8 00000000 		.word	MPU6050
+ 535              		.cfi_endproc
+ 536              	.LFE137:
+ 538              		.section	.text.MPU6050_Get_Yaw,"ax",%progbits
+ 539              		.align	1
+ 540              		.global	MPU6050_Get_Yaw
+ 541              		.syntax unified
+ 542              		.thumb
+ 543              		.thumb_func
+ 545              	MPU6050_Get_Yaw:
+ 546              	.LFB138:
+ 163:Core/Src/MCU6050.c **** 
+ 164:Core/Src/MCU6050.c **** 
+ 165:Core/Src/MCU6050.c **** // ПОЛУЧЕНИЕ ТЕКУЩЕГО УГЛА
+ 166:Core/Src/MCU6050.c **** float MPU6050_Get_Yaw(void)
+ 167:Core/Src/MCU6050.c **** {
+ 547              		.loc 1 167 1 is_stmt 1 view -0
+ 548              		.cfi_startproc
+ 549              		@ args = 0, pretend = 0, frame = 0
+ 550              		@ frame_needed = 0, uses_anonymous_args = 0
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccvnFju3.s 			page 14
 
 
- 567              		.global	MPU6050_Reset_Yaw
- 568              		.syntax unified
- 569              		.thumb
- 570              		.thumb_func
- 572              	MPU6050_Reset_Yaw:
- 573              	.LFB139:
- 153:Core/Src/MCU6050.c **** 
- 154:Core/Src/MCU6050.c **** // СБРОС УГЛА В НОЛЬ
- 155:Core/Src/MCU6050.c **** void MPU6050_Reset_Yaw(void)
- 156:Core/Src/MCU6050.c **** {
- 574              		.loc 1 156 1 is_stmt 1 view -0
- 575              		.cfi_startproc
- 576              		@ args = 0, pretend = 0, frame = 0
- 577              		@ frame_needed = 0, uses_anonymous_args = 0
- 578              		@ link register save eliminated.
- 157:Core/Src/MCU6050.c ****     yaw_angle = 0.0f;
- 579              		.loc 1 157 5 view .LVU138
- 580              		.loc 1 157 15 is_stmt 0 view .LVU139
- 581 0000 0023     		movs	r3, #0
- 582 0002 024A     		ldr	r2, .L41
- 583 0004 1360     		str	r3, [r2]	@ float
- 158:Core/Src/MCU6050.c ****     MPU6050.yaw_angle = 0.0f;
- 584              		.loc 1 158 5 is_stmt 1 view .LVU140
- 585              		.loc 1 158 23 is_stmt 0 view .LVU141
- 586 0006 024A     		ldr	r2, .L41+4
- 587 0008 1360     		str	r3, [r2]	@ float
- 159:Core/Src/MCU6050.c **** }
- 588              		.loc 1 159 1 view .LVU142
- 589 000a 7047     		bx	lr
- 590              	.L42:
- 591              		.align	2
- 592              	.L41:
- 593 000c 00000000 		.word	yaw_angle
- 594 0010 00000000 		.word	MPU6050
- 595              		.cfi_endproc
- 596              	.LFE139:
- 598              		.global	__aeabi_f2d
- 599              		.section	.rodata.MPU6050_Print_Debug.str1.4,"aMS",%progbits,1
- 600              		.align	2
- 601              	.LC0:
- 602 0000 5961773A 		.ascii	"Yaw: %6.1f\302\260 | Rate: %6.2f\302\260/s | Offset"
- 602      2025362E 
- 602      3166C2B0 
- 602      207C2052 
- 602      6174653A 
- 603 0027 3A202536 		.ascii	": %6.3f\015\012\000"
- 603      2E33660D 
- 603      0A00
- 604              		.section	.text.MPU6050_Print_Debug,"ax",%progbits
- 605              		.align	1
- 606              		.global	MPU6050_Print_Debug
- 607              		.syntax unified
- 608              		.thumb
- 609              		.thumb_func
- 611              	MPU6050_Print_Debug:
- 612              	.LFB140:
- 160:Core/Src/MCU6050.c **** 
-ARM GAS  C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s 			page 15
+ 551              		@ link register save eliminated.
+ 168:Core/Src/MCU6050.c ****     return MPU6050.yaw_angle;
+ 552              		.loc 1 168 5 view .LVU133
+ 169:Core/Src/MCU6050.c **** }
+ 553              		.loc 1 169 1 is_stmt 0 view .LVU134
+ 554 0000 014B     		ldr	r3, .L38
+ 555 0002 93ED000A 		vldr.32	s0, [r3]
+ 556 0006 7047     		bx	lr
+ 557              	.L39:
+ 558              		.align	2
+ 559              	.L38:
+ 560 0008 00000000 		.word	MPU6050
+ 561              		.cfi_endproc
+ 562              	.LFE138:
+ 564              		.section	.text.MPU6050_Reset_Yaw,"ax",%progbits
+ 565              		.align	1
+ 566              		.global	MPU6050_Reset_Yaw
+ 567              		.syntax unified
+ 568              		.thumb
+ 569              		.thumb_func
+ 571              	MPU6050_Reset_Yaw:
+ 572              	.LFB139:
+ 170:Core/Src/MCU6050.c **** 
+ 171:Core/Src/MCU6050.c **** // СБРОС УГЛА В НОЛЬ
+ 172:Core/Src/MCU6050.c **** void MPU6050_Reset_Yaw(void)
+ 173:Core/Src/MCU6050.c **** {
+ 573              		.loc 1 173 1 is_stmt 1 view -0
+ 574              		.cfi_startproc
+ 575              		@ args = 0, pretend = 0, frame = 0
+ 576              		@ frame_needed = 0, uses_anonymous_args = 0
+ 577              		@ link register save eliminated.
+ 174:Core/Src/MCU6050.c ****     yaw_angle = 0.0f;
+ 578              		.loc 1 174 5 view .LVU136
+ 579              		.loc 1 174 15 is_stmt 0 view .LVU137
+ 580 0000 0023     		movs	r3, #0
+ 581 0002 024A     		ldr	r2, .L41
+ 582 0004 1360     		str	r3, [r2]	@ float
+ 175:Core/Src/MCU6050.c ****     MPU6050.yaw_angle = 0.0f;
+ 583              		.loc 1 175 5 is_stmt 1 view .LVU138
+ 584              		.loc 1 175 23 is_stmt 0 view .LVU139
+ 585 0006 024A     		ldr	r2, .L41+4
+ 586 0008 1360     		str	r3, [r2]	@ float
+ 176:Core/Src/MCU6050.c **** }
+ 587              		.loc 1 176 1 view .LVU140
+ 588 000a 7047     		bx	lr
+ 589              	.L42:
+ 590              		.align	2
+ 591              	.L41:
+ 592 000c 00000000 		.word	yaw_angle
+ 593 0010 00000000 		.word	MPU6050
+ 594              		.cfi_endproc
+ 595              	.LFE139:
+ 597              		.global	__aeabi_f2d
+ 598              		.section	.rodata.MPU6050_Print_Debug.str1.4,"aMS",%progbits,1
+ 599              		.align	2
+ 600              	.LC0:
+ 601 0000 5961773A 		.ascii	"Yaw: %6.1f\302\260 | Rate: %6.2f\302\260/s | Offset"
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccvnFju3.s 			page 15
 
 
- 161:Core/Src/MCU6050.c **** 
- 162:Core/Src/MCU6050.c **** // ОТЛАДОЧНЫЙ ВЫВОД
- 163:Core/Src/MCU6050.c **** void MPU6050_Print_Debug(void)
- 164:Core/Src/MCU6050.c **** {
- 613              		.loc 1 164 1 is_stmt 1 view -0
- 614              		.cfi_startproc
- 615              		@ args = 0, pretend = 0, frame = 80
- 616              		@ frame_needed = 0, uses_anonymous_args = 0
- 165:Core/Src/MCU6050.c ****     static uint32_t last_print = 0;
- 617              		.loc 1 165 5 view .LVU144
- 166:Core/Src/MCU6050.c ****     
- 167:Core/Src/MCU6050.c ****     // Выводим раз в 500 мс
- 168:Core/Src/MCU6050.c ****     if ((uint32_t)(tick_count - last_print) > 1000) {
- 618              		.loc 1 168 5 view .LVU145
- 619              		.loc 1 168 31 is_stmt 0 view .LVU146
- 620 0000 1A4B     		ldr	r3, .L52
- 621 0002 1B68     		ldr	r3, [r3]
- 622 0004 1A4A     		ldr	r2, .L52+4
- 623 0006 1268     		ldr	r2, [r2]
- 624 0008 9B1A     		subs	r3, r3, r2
- 625              		.loc 1 168 8 view .LVU147
- 626 000a B3F57A7F 		cmp	r3, #1000
- 627 000e 00D8     		bhi	.L51
- 628 0010 7047     		bx	lr
- 629              	.L51:
- 164:Core/Src/MCU6050.c ****     static uint32_t last_print = 0;
- 630              		.loc 1 164 1 view .LVU148
- 631 0012 F0B5     		push	{r4, r5, r6, r7, lr}
- 632              	.LCFI14:
- 633              		.cfi_def_cfa_offset 20
- 634              		.cfi_offset 4, -20
- 635              		.cfi_offset 5, -16
- 636              		.cfi_offset 6, -12
- 637              		.cfi_offset 7, -8
- 638              		.cfi_offset 14, -4
- 639 0014 99B0     		sub	sp, sp, #100
- 640              	.LCFI15:
- 641              		.cfi_def_cfa_offset 120
- 642              	.LBB3:
- 169:Core/Src/MCU6050.c ****         last_print = tick_count;
- 643              		.loc 1 169 9 is_stmt 1 view .LVU149
- 644              		.loc 1 169 20 is_stmt 0 view .LVU150
- 645 0016 154B     		ldr	r3, .L52
- 646 0018 1A68     		ldr	r2, [r3]
- 647 001a 154B     		ldr	r3, .L52+4
- 648 001c 1A60     		str	r2, [r3]
- 170:Core/Src/MCU6050.c ****         
- 171:Core/Src/MCU6050.c ****         char buf[80];
- 649              		.loc 1 171 9 is_stmt 1 view .LVU151
- 172:Core/Src/MCU6050.c ****         sprintf(buf, "Yaw: %6.1f° | Rate: %6.2f°/s | Offset: %6.3f\r\n",
- 650              		.loc 1 172 9 view .LVU152
- 173:Core/Src/MCU6050.c ****                 MPU6050.yaw_angle, MPU6050.yaw_rate, gz_offset);
- 651              		.loc 1 173 24 is_stmt 0 view .LVU153
- 652 001e 154B     		ldr	r3, .L52+8
- 653              		.loc 1 173 43 view .LVU154
- 654 0020 5E68     		ldr	r6, [r3, #4]	@ float
- 172:Core/Src/MCU6050.c ****         sprintf(buf, "Yaw: %6.1f° | Rate: %6.2f°/s | Offset: %6.3f\r\n",
-ARM GAS  C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s 			page 16
+ 601      2025362E 
+ 601      3166C2B0 
+ 601      207C2052 
+ 601      6174653A 
+ 602 0027 3A202536 		.ascii	": %6.3f\015\012\000"
+ 602      2E33660D 
+ 602      0A00
+ 603              		.section	.text.MPU6050_Print_Debug,"ax",%progbits
+ 604              		.align	1
+ 605              		.global	MPU6050_Print_Debug
+ 606              		.syntax unified
+ 607              		.thumb
+ 608              		.thumb_func
+ 610              	MPU6050_Print_Debug:
+ 611              	.LFB140:
+ 177:Core/Src/MCU6050.c **** 
+ 178:Core/Src/MCU6050.c **** 
+ 179:Core/Src/MCU6050.c **** // ОТЛАДОЧНЫЙ ВЫВОД
+ 180:Core/Src/MCU6050.c **** void MPU6050_Print_Debug(void)
+ 181:Core/Src/MCU6050.c **** {
+ 612              		.loc 1 181 1 is_stmt 1 view -0
+ 613              		.cfi_startproc
+ 614              		@ args = 0, pretend = 0, frame = 80
+ 615              		@ frame_needed = 0, uses_anonymous_args = 0
+ 182:Core/Src/MCU6050.c ****     static uint32_t last_print = 0;
+ 616              		.loc 1 182 5 view .LVU142
+ 183:Core/Src/MCU6050.c ****     
+ 184:Core/Src/MCU6050.c ****     // Выводим раз в 500 мс
+ 185:Core/Src/MCU6050.c ****     if ((uint32_t)(tick_count - last_print) > 1000) {
+ 617              		.loc 1 185 5 view .LVU143
+ 618              		.loc 1 185 31 is_stmt 0 view .LVU144
+ 619 0000 1A4B     		ldr	r3, .L52
+ 620 0002 1B68     		ldr	r3, [r3]
+ 621 0004 1A4A     		ldr	r2, .L52+4
+ 622 0006 1268     		ldr	r2, [r2]
+ 623 0008 9B1A     		subs	r3, r3, r2
+ 624              		.loc 1 185 8 view .LVU145
+ 625 000a B3F57A7F 		cmp	r3, #1000
+ 626 000e 00D8     		bhi	.L51
+ 627 0010 7047     		bx	lr
+ 628              	.L51:
+ 181:Core/Src/MCU6050.c ****     static uint32_t last_print = 0;
+ 629              		.loc 1 181 1 view .LVU146
+ 630 0012 F0B5     		push	{r4, r5, r6, r7, lr}
+ 631              	.LCFI14:
+ 632              		.cfi_def_cfa_offset 20
+ 633              		.cfi_offset 4, -20
+ 634              		.cfi_offset 5, -16
+ 635              		.cfi_offset 6, -12
+ 636              		.cfi_offset 7, -8
+ 637              		.cfi_offset 14, -4
+ 638 0014 99B0     		sub	sp, sp, #100
+ 639              	.LCFI15:
+ 640              		.cfi_def_cfa_offset 120
+ 641              	.LBB3:
+ 186:Core/Src/MCU6050.c ****         last_print = tick_count;
+ 642              		.loc 1 186 9 is_stmt 1 view .LVU147
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccvnFju3.s 			page 16
 
 
- 655              		.loc 1 172 9 view .LVU155
- 656 0022 154A     		ldr	r2, .L52+12
- 657 0024 1768     		ldr	r7, [r2]	@ float
- 658 0026 1868     		ldr	r0, [r3]	@ float
- 659 0028 FFF7FEFF 		bl	__aeabi_f2d
- 660              	.LVL30:
- 661 002c 0446     		mov	r4, r0
- 662 002e 0D46     		mov	r5, r1
- 663 0030 3846     		mov	r0, r7	@ float
- 664 0032 FFF7FEFF 		bl	__aeabi_f2d
- 665              	.LVL31:
- 666 0036 CDE90201 		strd	r0, [sp, #8]
- 667 003a 3046     		mov	r0, r6	@ float
- 668 003c FFF7FEFF 		bl	__aeabi_f2d
- 669              	.LVL32:
- 670 0040 CDE90001 		strd	r0, [sp]
- 671 0044 2246     		mov	r2, r4
- 672 0046 2B46     		mov	r3, r5
- 673 0048 0C49     		ldr	r1, .L52+16
- 674 004a 04A8     		add	r0, sp, #16
- 675 004c FFF7FEFF 		bl	sprintf
- 676              	.LVL33:
- 174:Core/Src/MCU6050.c ****         
- 175:Core/Src/MCU6050.c ****         // Предполагаем, что есть UART_SendString
- 176:Core/Src/MCU6050.c ****         for(int i = 0; buf[i]; i++) {
- 677              		.loc 1 176 9 is_stmt 1 view .LVU156
- 678              	.LBB4:
- 679              		.loc 1 176 13 view .LVU157
- 680              		.loc 1 176 17 is_stmt 0 view .LVU158
- 681 0050 0024     		movs	r4, #0
- 682              		.loc 1 176 9 view .LVU159
- 683 0052 02E0     		b	.L45
- 684              	.LVL34:
- 685              	.L46:
- 177:Core/Src/MCU6050.c ****             UART_SendChar(buf[i]);  // Или ваша функция отправки
- 686              		.loc 1 177 13 is_stmt 1 view .LVU160
- 687 0054 FFF7FEFF 		bl	UART_SendChar
- 688              	.LVL35:
- 176:Core/Src/MCU6050.c ****             UART_SendChar(buf[i]);  // Или ваша функция отправки
- 689              		.loc 1 176 33 discriminator 3 view .LVU161
- 690 0058 0134     		adds	r4, r4, #1
- 691              	.LVL36:
- 692              	.L45:
- 176:Core/Src/MCU6050.c ****             UART_SendChar(buf[i]);  // Или ваша функция отправки
- 693              		.loc 1 176 24 discriminator 1 view .LVU162
- 176:Core/Src/MCU6050.c ****             UART_SendChar(buf[i]);  // Или ваша функция отправки
- 694              		.loc 1 176 27 is_stmt 0 discriminator 1 view .LVU163
- 695 005a 04F16003 		add	r3, r4, #96
- 696 005e 6B44     		add	r3, sp, r3
- 697 0060 13F8500C 		ldrb	r0, [r3, #-80]	@ zero_extendqisi2
- 176:Core/Src/MCU6050.c ****             UART_SendChar(buf[i]);  // Или ваша функция отправки
- 698              		.loc 1 176 24 discriminator 1 view .LVU164
- 699 0064 0028     		cmp	r0, #0
- 700 0066 F5D1     		bne	.L46
- 701              	.LBE4:
- 702              	.LBE3:
- 178:Core/Src/MCU6050.c ****         }
-ARM GAS  C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s 			page 17
+ 643              		.loc 1 186 20 is_stmt 0 view .LVU148
+ 644 0016 154B     		ldr	r3, .L52
+ 645 0018 1A68     		ldr	r2, [r3]
+ 646 001a 154B     		ldr	r3, .L52+4
+ 647 001c 1A60     		str	r2, [r3]
+ 187:Core/Src/MCU6050.c ****         
+ 188:Core/Src/MCU6050.c ****         char buf[80];
+ 648              		.loc 1 188 9 is_stmt 1 view .LVU149
+ 189:Core/Src/MCU6050.c ****         sprintf(buf, "Yaw: %6.1f° | Rate: %6.2f°/s | Offset: %6.3f\r\n",
+ 649              		.loc 1 189 9 view .LVU150
+ 190:Core/Src/MCU6050.c ****                 MPU6050.yaw_angle, MPU6050.yaw_rate, gz_offset);
+ 650              		.loc 1 190 24 is_stmt 0 view .LVU151
+ 651 001e 154B     		ldr	r3, .L52+8
+ 652              		.loc 1 190 43 view .LVU152
+ 653 0020 5E68     		ldr	r6, [r3, #4]	@ float
+ 189:Core/Src/MCU6050.c ****         sprintf(buf, "Yaw: %6.1f° | Rate: %6.2f°/s | Offset: %6.3f\r\n",
+ 654              		.loc 1 189 9 view .LVU153
+ 655 0022 154A     		ldr	r2, .L52+12
+ 656 0024 1768     		ldr	r7, [r2]	@ float
+ 657 0026 1868     		ldr	r0, [r3]	@ float
+ 658 0028 FFF7FEFF 		bl	__aeabi_f2d
+ 659              	.LVL31:
+ 660 002c 0446     		mov	r4, r0
+ 661 002e 0D46     		mov	r5, r1
+ 662 0030 3846     		mov	r0, r7	@ float
+ 663 0032 FFF7FEFF 		bl	__aeabi_f2d
+ 664              	.LVL32:
+ 665 0036 CDE90201 		strd	r0, [sp, #8]
+ 666 003a 3046     		mov	r0, r6	@ float
+ 667 003c FFF7FEFF 		bl	__aeabi_f2d
+ 668              	.LVL33:
+ 669 0040 CDE90001 		strd	r0, [sp]
+ 670 0044 2246     		mov	r2, r4
+ 671 0046 2B46     		mov	r3, r5
+ 672 0048 0C49     		ldr	r1, .L52+16
+ 673 004a 04A8     		add	r0, sp, #16
+ 674 004c FFF7FEFF 		bl	sprintf
+ 675              	.LVL34:
+ 191:Core/Src/MCU6050.c ****         
+ 192:Core/Src/MCU6050.c ****         // Предполагаем, что есть UART_SendString
+ 193:Core/Src/MCU6050.c ****         for(int i = 0; buf[i]; i++) {
+ 676              		.loc 1 193 9 is_stmt 1 view .LVU154
+ 677              	.LBB4:
+ 678              		.loc 1 193 13 view .LVU155
+ 679              		.loc 1 193 17 is_stmt 0 view .LVU156
+ 680 0050 0024     		movs	r4, #0
+ 681              		.loc 1 193 9 view .LVU157
+ 682 0052 02E0     		b	.L45
+ 683              	.LVL35:
+ 684              	.L46:
+ 194:Core/Src/MCU6050.c ****             UART_SendChar(buf[i]);  // Или ваша функция отправки
+ 685              		.loc 1 194 13 is_stmt 1 view .LVU158
+ 686 0054 FFF7FEFF 		bl	UART_SendChar
+ 687              	.LVL36:
+ 193:Core/Src/MCU6050.c ****             UART_SendChar(buf[i]);  // Или ваша функция отправки
+ 688              		.loc 1 193 33 discriminator 3 view .LVU159
+ 689 0058 0134     		adds	r4, r4, #1
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccvnFju3.s 			page 17
 
 
- 179:Core/Src/MCU6050.c ****     }
- 180:Core/Src/MCU6050.c **** }
- 703              		.loc 1 180 1 view .LVU165
- 704 0068 19B0     		add	sp, sp, #100
- 705              	.LCFI16:
- 706              		.cfi_def_cfa_offset 20
- 707              		@ sp needed
- 708 006a F0BD     		pop	{r4, r5, r6, r7, pc}
- 709              	.LVL37:
- 710              	.L53:
- 711              		.loc 1 180 1 view .LVU166
- 712              		.align	2
- 713              	.L52:
- 714 006c 00000000 		.word	tick_count
- 715 0070 00000000 		.word	last_print.0
- 716 0074 00000000 		.word	MPU6050
- 717 0078 00000000 		.word	gz_offset
- 718 007c 00000000 		.word	.LC0
- 719              		.cfi_endproc
- 720              	.LFE140:
- 722              		.section	.bss.last_print.0,"aw",%nobits
- 723              		.align	2
- 726              	last_print.0:
- 727 0000 00000000 		.space	4
- 728              		.section	.bss.buffer.1,"aw",%nobits
- 729              		.align	2
- 732              	buffer.1:
- 733 0000 00000000 		.space	12
- 733      00000000 
- 733      00000000 
- 734              		.section	.bss.idx.2,"aw",%nobits
- 737              	idx.2:
- 738 0000 00       		.space	1
- 739              		.section	.bss.last_update,"aw",%nobits
- 740              		.align	2
- 743              	last_update:
- 744 0000 00000000 		.space	4
- 745              		.section	.bss.yaw_angle,"aw",%nobits
- 746              		.align	2
- 749              	yaw_angle:
- 750 0000 00000000 		.space	4
- 751              		.section	.bss.gz_filtered,"aw",%nobits
- 752              		.align	2
- 755              	gz_filtered:
- 756 0000 00000000 		.space	4
- 757              		.global	MPU6050
- 758              		.section	.bss.MPU6050,"aw",%nobits
- 759              		.align	2
- 762              	MPU6050:
- 763 0000 00000000 		.space	12
- 763      00000000 
- 763      00000000 
- 764              		.text
- 765              	.Letext0:
- 766              		.file 2 "C:/Bools/xpack-arm-none-eabi-gcc-13.2.1-1.1/arm-none-eabi/include/machine/_default_types.
- 767              		.file 3 "C:/Bools/xpack-arm-none-eabi-gcc-13.2.1-1.1/arm-none-eabi/include/sys/_stdint.h"
- 768              		.file 4 "Core/Inc/MCU6050.h"
-ARM GAS  C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s 			page 18
+ 690              	.LVL37:
+ 691              	.L45:
+ 193:Core/Src/MCU6050.c ****             UART_SendChar(buf[i]);  // Или ваша функция отправки
+ 692              		.loc 1 193 24 discriminator 1 view .LVU160
+ 193:Core/Src/MCU6050.c ****             UART_SendChar(buf[i]);  // Или ваша функция отправки
+ 693              		.loc 1 193 27 is_stmt 0 discriminator 1 view .LVU161
+ 694 005a 04F16003 		add	r3, r4, #96
+ 695 005e 6B44     		add	r3, sp, r3
+ 696 0060 13F8500C 		ldrb	r0, [r3, #-80]	@ zero_extendqisi2
+ 193:Core/Src/MCU6050.c ****             UART_SendChar(buf[i]);  // Или ваша функция отправки
+ 697              		.loc 1 193 24 discriminator 1 view .LVU162
+ 698 0064 0028     		cmp	r0, #0
+ 699 0066 F5D1     		bne	.L46
+ 700              	.LBE4:
+ 701              	.LBE3:
+ 195:Core/Src/MCU6050.c ****         }
+ 196:Core/Src/MCU6050.c ****     }
+ 197:Core/Src/MCU6050.c **** }
+ 702              		.loc 1 197 1 view .LVU163
+ 703 0068 19B0     		add	sp, sp, #100
+ 704              	.LCFI16:
+ 705              		.cfi_def_cfa_offset 20
+ 706              		@ sp needed
+ 707 006a F0BD     		pop	{r4, r5, r6, r7, pc}
+ 708              	.LVL38:
+ 709              	.L53:
+ 710              		.loc 1 197 1 view .LVU164
+ 711              		.align	2
+ 712              	.L52:
+ 713 006c 00000000 		.word	tick_count
+ 714 0070 00000000 		.word	last_print.0
+ 715 0074 00000000 		.word	MPU6050
+ 716 0078 00000000 		.word	gz_offset
+ 717 007c 00000000 		.word	.LC0
+ 718              		.cfi_endproc
+ 719              	.LFE140:
+ 721              		.section	.bss.last_print.0,"aw",%nobits
+ 722              		.align	2
+ 725              	last_print.0:
+ 726 0000 00000000 		.space	4
+ 727              		.section	.bss.buffer.1,"aw",%nobits
+ 728              		.align	2
+ 731              	buffer.1:
+ 732 0000 00000000 		.space	40
+ 732      00000000 
+ 732      00000000 
+ 732      00000000 
+ 732      00000000 
+ 733              		.section	.bss.idx.2,"aw",%nobits
+ 736              	idx.2:
+ 737 0000 00       		.space	1
+ 738              		.section	.bss.sum.3,"aw",%nobits
+ 739              		.align	2
+ 742              	sum.3:
+ 743 0000 00000000 		.space	4
+ 744              		.section	.bss.last_update,"aw",%nobits
+ 745              		.align	2
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccvnFju3.s 			page 18
 
 
- 769              		.file 5 "Core/Inc/handlers.h"
- 770              		.file 6 "C:/Bools/xpack-arm-none-eabi-gcc-13.2.1-1.1/arm-none-eabi/include/stdio.h"
- 771              		.file 7 "Core/Inc/I2C.h"
- 772              		.file 8 "Core/Inc/task.h"
-ARM GAS  C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s 			page 19
+ 748              	last_update:
+ 749 0000 00000000 		.space	4
+ 750              		.section	.bss.yaw_angle,"aw",%nobits
+ 751              		.align	2
+ 754              	yaw_angle:
+ 755 0000 00000000 		.space	4
+ 756              		.section	.bss.gz_filtered,"aw",%nobits
+ 757              		.align	2
+ 760              	gz_filtered:
+ 761 0000 00000000 		.space	4
+ 762              		.global	MPU6050
+ 763              		.section	.bss.MPU6050,"aw",%nobits
+ 764              		.align	2
+ 767              	MPU6050:
+ 768 0000 00000000 		.space	12
+ 768      00000000 
+ 768      00000000 
+ 769              		.text
+ 770              	.Letext0:
+ 771              		.file 2 "C:/Bools/xpack-arm-none-eabi-gcc-13.2.1-1.1/arm-none-eabi/include/machine/_default_types.
+ 772              		.file 3 "C:/Bools/xpack-arm-none-eabi-gcc-13.2.1-1.1/arm-none-eabi/include/sys/_stdint.h"
+ 773              		.file 4 "Core/Inc/MCU6050.h"
+ 774              		.file 5 "Core/Inc/handlers.h"
+ 775              		.file 6 "C:/Bools/xpack-arm-none-eabi-gcc-13.2.1-1.1/arm-none-eabi/include/stdio.h"
+ 776              		.file 7 "Core/Inc/I2C.h"
+ 777              		.file 8 "Core/Inc/task.h"
+ARM GAS  C:\Users\Life\AppData\Local\Temp\ccvnFju3.s 			page 19
 
 
 DEFINED SYMBOLS
                             *ABS*:00000000 MCU6050.c
-C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s:21     .text.MPU6050_Init:00000000 $t
-C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s:27     .text.MPU6050_Init:00000000 MPU6050_Init
-C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s:135    .text.MPU6050_Init:00000074 $d
-C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s:755    .bss.gz_filtered:00000000 gz_filtered
-C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s:749    .bss.yaw_angle:00000000 yaw_angle
-C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s:743    .bss.last_update:00000000 last_update
-C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s:143    .text.MPU6050_Read_Yaw_Rate_No_Offset:00000000 $t
-C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s:149    .text.MPU6050_Read_Yaw_Rate_No_Offset:00000000 MPU6050_Read_Yaw_Rate_No_Offset
-C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s:197    .text.MPU6050_Read_Yaw_Rate_No_Offset:00000034 $d
-C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s:202    .text.MPU6050_Calibrate:00000000 $t
-C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s:208    .text.MPU6050_Calibrate:00000000 MPU6050_Calibrate
-C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s:314    .text.MPU6050_Calibrate:00000058 $d
-C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s:322    .text.MPU6050_Read_Yaw_Rate:00000000 $t
-C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s:328    .text.MPU6050_Read_Yaw_Rate:00000000 MPU6050_Read_Yaw_Rate
-C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s:405    .text.MPU6050_Read_Yaw_Rate:00000064 $d
-C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s:762    .bss.MPU6050:00000000 MPU6050
-C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s:737    .bss.idx.2:00000000 idx.2
-C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s:732    .bss.buffer.1:00000000 buffer.1
-C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s:415    .text.MPU6050_Update_Yaw:00000000 $t
-C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s:421    .text.MPU6050_Update_Yaw:00000000 MPU6050_Update_Yaw
-C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s:526    .text.MPU6050_Update_Yaw:00000094 $d
-C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s:540    .text.MPU6050_Get_Yaw:00000000 $t
-C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s:546    .text.MPU6050_Get_Yaw:00000000 MPU6050_Get_Yaw
-C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s:561    .text.MPU6050_Get_Yaw:00000008 $d
-C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s:566    .text.MPU6050_Reset_Yaw:00000000 $t
-C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s:572    .text.MPU6050_Reset_Yaw:00000000 MPU6050_Reset_Yaw
-C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s:593    .text.MPU6050_Reset_Yaw:0000000c $d
-C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s:600    .rodata.MPU6050_Print_Debug.str1.4:00000000 $d
-C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s:605    .text.MPU6050_Print_Debug:00000000 $t
-C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s:611    .text.MPU6050_Print_Debug:00000000 MPU6050_Print_Debug
-C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s:714    .text.MPU6050_Print_Debug:0000006c $d
-C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s:726    .bss.last_print.0:00000000 last_print.0
-C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s:723    .bss.last_print.0:00000000 $d
-C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s:729    .bss.buffer.1:00000000 $d
-C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s:738    .bss.idx.2:00000000 $d
-C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s:740    .bss.last_update:00000000 $d
-C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s:746    .bss.yaw_angle:00000000 $d
-C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s:752    .bss.gz_filtered:00000000 $d
-C:\Users\Life\AppData\Local\Temp\cc4DIcjd.s:759    .bss.MPU6050:00000000 $d
+C:\Users\Life\AppData\Local\Temp\ccvnFju3.s:21     .text.MPU6050_Init:00000000 $t
+C:\Users\Life\AppData\Local\Temp\ccvnFju3.s:27     .text.MPU6050_Init:00000000 MPU6050_Init
+C:\Users\Life\AppData\Local\Temp\ccvnFju3.s:135    .text.MPU6050_Init:00000074 $d
+C:\Users\Life\AppData\Local\Temp\ccvnFju3.s:760    .bss.gz_filtered:00000000 gz_filtered
+C:\Users\Life\AppData\Local\Temp\ccvnFju3.s:754    .bss.yaw_angle:00000000 yaw_angle
+C:\Users\Life\AppData\Local\Temp\ccvnFju3.s:748    .bss.last_update:00000000 last_update
+C:\Users\Life\AppData\Local\Temp\ccvnFju3.s:143    .text.MPU6050_Read_Yaw_Rate_No_Offset:00000000 $t
+C:\Users\Life\AppData\Local\Temp\ccvnFju3.s:149    .text.MPU6050_Read_Yaw_Rate_No_Offset:00000000 MPU6050_Read_Yaw_Rate_No_Offset
+C:\Users\Life\AppData\Local\Temp\ccvnFju3.s:197    .text.MPU6050_Read_Yaw_Rate_No_Offset:00000034 $d
+C:\Users\Life\AppData\Local\Temp\ccvnFju3.s:202    .text.MPU6050_Calibrate:00000000 $t
+C:\Users\Life\AppData\Local\Temp\ccvnFju3.s:208    .text.MPU6050_Calibrate:00000000 MPU6050_Calibrate
+C:\Users\Life\AppData\Local\Temp\ccvnFju3.s:314    .text.MPU6050_Calibrate:00000058 $d
+C:\Users\Life\AppData\Local\Temp\ccvnFju3.s:322    .text.MPU6050_Read_Yaw_Rate:00000000 $t
+C:\Users\Life\AppData\Local\Temp\ccvnFju3.s:328    .text.MPU6050_Read_Yaw_Rate:00000000 MPU6050_Read_Yaw_Rate
+C:\Users\Life\AppData\Local\Temp\ccvnFju3.s:404    .text.MPU6050_Read_Yaw_Rate:00000068 $d
+C:\Users\Life\AppData\Local\Temp\ccvnFju3.s:767    .bss.MPU6050:00000000 MPU6050
+C:\Users\Life\AppData\Local\Temp\ccvnFju3.s:736    .bss.idx.2:00000000 idx.2
+C:\Users\Life\AppData\Local\Temp\ccvnFju3.s:731    .bss.buffer.1:00000000 buffer.1
+C:\Users\Life\AppData\Local\Temp\ccvnFju3.s:742    .bss.sum.3:00000000 sum.3
+C:\Users\Life\AppData\Local\Temp\ccvnFju3.s:414    .text.MPU6050_Update_Yaw:00000000 $t
+C:\Users\Life\AppData\Local\Temp\ccvnFju3.s:420    .text.MPU6050_Update_Yaw:00000000 MPU6050_Update_Yaw
+C:\Users\Life\AppData\Local\Temp\ccvnFju3.s:525    .text.MPU6050_Update_Yaw:00000094 $d
+C:\Users\Life\AppData\Local\Temp\ccvnFju3.s:539    .text.MPU6050_Get_Yaw:00000000 $t
+C:\Users\Life\AppData\Local\Temp\ccvnFju3.s:545    .text.MPU6050_Get_Yaw:00000000 MPU6050_Get_Yaw
+C:\Users\Life\AppData\Local\Temp\ccvnFju3.s:560    .text.MPU6050_Get_Yaw:00000008 $d
+C:\Users\Life\AppData\Local\Temp\ccvnFju3.s:565    .text.MPU6050_Reset_Yaw:00000000 $t
+C:\Users\Life\AppData\Local\Temp\ccvnFju3.s:571    .text.MPU6050_Reset_Yaw:00000000 MPU6050_Reset_Yaw
+C:\Users\Life\AppData\Local\Temp\ccvnFju3.s:592    .text.MPU6050_Reset_Yaw:0000000c $d
+C:\Users\Life\AppData\Local\Temp\ccvnFju3.s:599    .rodata.MPU6050_Print_Debug.str1.4:00000000 $d
+C:\Users\Life\AppData\Local\Temp\ccvnFju3.s:604    .text.MPU6050_Print_Debug:00000000 $t
+C:\Users\Life\AppData\Local\Temp\ccvnFju3.s:610    .text.MPU6050_Print_Debug:00000000 MPU6050_Print_Debug
+C:\Users\Life\AppData\Local\Temp\ccvnFju3.s:713    .text.MPU6050_Print_Debug:0000006c $d
+C:\Users\Life\AppData\Local\Temp\ccvnFju3.s:725    .bss.last_print.0:00000000 last_print.0
+C:\Users\Life\AppData\Local\Temp\ccvnFju3.s:722    .bss.last_print.0:00000000 $d
+C:\Users\Life\AppData\Local\Temp\ccvnFju3.s:728    .bss.buffer.1:00000000 $d
+C:\Users\Life\AppData\Local\Temp\ccvnFju3.s:737    .bss.idx.2:00000000 $d
+C:\Users\Life\AppData\Local\Temp\ccvnFju3.s:739    .bss.sum.3:00000000 $d
+C:\Users\Life\AppData\Local\Temp\ccvnFju3.s:745    .bss.last_update:00000000 $d
+C:\Users\Life\AppData\Local\Temp\ccvnFju3.s:751    .bss.yaw_angle:00000000 $d
+C:\Users\Life\AppData\Local\Temp\ccvnFju3.s:757    .bss.gz_filtered:00000000 $d
+C:\Users\Life\AppData\Local\Temp\ccvnFju3.s:764    .bss.MPU6050:00000000 $d
 
 UNDEFINED SYMBOLS
 MPU_Read

@@ -5,7 +5,7 @@
 #include "stm32f411xe.h"
 
 // ================== НАСТРОЙКИ ==================
-#define MAX_PWM 450
+#define MAX_PWM 500
 
 // Ограничение интеграла
 #define I_LIMIT 20.0f
@@ -14,7 +14,7 @@
 // Максимальная коррекция (не даем одному мотору остановиться полностью)
 #define MAX_CORRECTION 150 
 // Преобразование данных от энкодеров
-#define WHEEL_DIAMETER_MM  67.7f
+#define WHEEL_DIAMETER_MM  67.0f
 #define ENCODER_TICKS_REV  40.0f
 #define MM_PER_TICK  ((WHEEL_DIAMETER_MM * 3.1415926f) / ENCODER_TICKS_REV)
 // ================== ВНЕШНИЕ ПЕРЕМЕННЫЕ ==================

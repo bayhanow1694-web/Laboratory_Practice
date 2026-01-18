@@ -100,16 +100,33 @@ float MPU6050_Read_Yaw_Rate(void)
     MPU6050.yaw_rate_raw = gz_raw;
     
     // Простая фильтрация (скользящее среднее)
-    static float buffer[3] = {0};  // 3 последних значения
-    static uint8_t idx = 0;
+    // static float buffer[3] = {0};  // 3 последних значения
+    // static uint8_t idx = 0;
     
-    buffer[idx] = gz_raw;
-    idx = (idx + 1) % 3;
+    // buffer[idx] = gz_raw;
+    // idx = (idx + 1) % 3;
     
-    // Среднее из 3 значений
-    gz_filtered = (buffer[0] + buffer[1] + buffer[2]) / 3.0f;
+    // // Среднее из 3 значений
+    // gz_filtered = (buffer[0] + buffer[1] + buffer[2]) / 3.0f;
+    static float buffer[10] = {0}; 
+static float sum = 0;          // Храним сумму здесь
+static uint8_t idx = 0;
+
+// Вычитаем старое значение, которое сейчас затрем
+sum -= buffer[idx]; 
+
+// Записываем новое
+buffer[idx] = gz_raw; 
+
+// Прибавляем новое к сумме
+sum += buffer[idx]; 
+
+idx = (idx + 1) % 10;
+
+float gz_filtered = sum / 10.0f; // Всегда всего одна операция деления
 
     gz_filtered = -gz_filtered;  // Добавьте эту строку!
+    
     
     // Сохраняем отфильтрованное
     MPU6050.yaw_rate = gz_filtered;
