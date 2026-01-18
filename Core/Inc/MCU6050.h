@@ -7,6 +7,7 @@
 #include "stm32f411xe.h"
 #include <stdio.h> 
 
+
 // Структура - только необходимое
 typedef struct {
     float yaw_angle;        // Угол поворота вокруг Z (градусы)

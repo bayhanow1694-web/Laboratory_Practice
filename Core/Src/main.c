@@ -23,7 +23,7 @@ volatile float drive_target_mm = 0;
 volatile float gz_offset = 0.0f;
 
 // Управление
-volatile int16_t base_speed = 450;
+volatile int16_t base_speed = 350;
 volatile uint8_t robot_started = 0;
 volatile uint8_t btn_prev = 1;
 volatile uint32_t btn_time = 0;
@@ -43,8 +43,8 @@ typedef struct {
 } RouteStep_t;
 
 // 10 раз: прямо + поворот (пример)
-// RouteStep_t route[] = {
-//     {500,  0.0f},
+//  RouteStep_t route[] = {
+//     {25,  0.0f},
 //     {0, 0.0f},
 //     {0,  0.0f},
 //     {0, 0.0f},
@@ -54,31 +54,32 @@ typedef struct {
 //     {0, 0.0f},
 //     {0,  0.0f},
 //     {0, 0.0f},
-// };
-RouteStep_t route[] = {
-    {500,  90.0f},
-    {605, 89.5f},
-    {30,  -120.5f},
-    {460, 59.5f},
-    {455,  59.5f},
-    {450, 59.5f},
-    {450,  60.5f},
-    {445, -120.0f},
-    {25,  89.5f},
-    {595, 89.5f},
-};
-// RouteStep_t route[] = {
-//     {0,  90.0f},
-//     {0, 0.0f},
-//     {0,  0.0f},
-//     {0, 0.0f},
-//     {0,  0.0f},
-//     {0, 0.0f},
-//     {0,  0.0f},
-//     {0, 0.0f},
-//     {0,  0.0f},
-//     {0, 0.0f},
-// };
+// };  
+//  RouteStep_t route[] = {
+//       {490,  90.0f},
+//       {600, 90.0f},
+//       {25,  -120.0f},
+//       {450, 60.0f},
+//       {450,  60.0f},
+//       {450, 60.0f},
+//       {445,  60.0f},
+//       {445, -119.0f},
+//       {25,  91.0f},
+//      {590, 91.0f},
+//   };
+   RouteStep_t route[] = {
+      {500,  90.0f},
+      {600, 90.0f},
+      {25,  -120.0f},
+      {450, 60.0f},
+      {450,  60.0f},
+      {450, 61.0f},
+      {450,  60.0f},
+      {450, -120.0f},
+      {25,  90.0f},
+     {600, 90.0f},
+  };
+
 #define ROUTE_LEN (sizeof(route) / sizeof(route[0]))
 
 // ---------- СОСТОЯНИЯ ----------
@@ -90,7 +91,7 @@ enum {
 };
 
 uint8_t route_idx = 0;
-uint32_t state_time = 0;
+
 void UART_Printf(const char *fmt, ...)
 {
     char buf[128];
@@ -126,6 +127,16 @@ int main(void)
 
     while (1)
     {
+    //     MODIFY_REG(TIM1->CCR1, TIM_CCR1_CCR1_Msk, 280UL); // ПЕрвый двигатель 
+    // MODIFY_REG(TIM1->CCR2, TIM_CCR2_CCR2_Msk, 0UL); // назад
+
+    // MODIFY_REG(TIM1->CCR3, TIM_CCR3_CCR3_Msk, 280UL); // второй  двигатель -
+    // MODIFY_REG(TIM1->CCR4, TIM_CCR4_CCR4_Msk, 0UL); //назад
+    //   UART_Printf(
+    //            "e1=%lu e2=%lu\r\n",
+    //            encoder1_count,
+    //            encoder2_count
+    //             );
         Button_Process_Main();
 
         if (!robot_started)

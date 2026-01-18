@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include "stm32f411xe.h"
+#define I2C_TIMEOUT 10000  // таймаут цикла
 
 // --- Регистры MPU6050 (только нужные) ---
 #define MPU6050_ADDR        0x68
@@ -17,7 +18,6 @@
 #define DLPF_44HZ           0x01      // Фильтр 44Hz
 #define GYRO_RANGE_250DPS   0x00      // ±250°/с (самый точный)
 #define GYRO_SCALE          131.0f    // Масштаб для ±250°/с
-
 // --- Конфигурация I2C ---
 void I2C_Config(void);
 
@@ -33,4 +33,3 @@ int MPU_Write(uint8_t dev, uint8_t reg, uint8_t data);
 int MPU_Read(uint8_t dev, uint8_t reg, uint8_t *buf, uint8_t len);
 
 #endif
-

@@ -7,9 +7,9 @@
 #include "handlers.h"
 
 // PID КОЭФФИЦИЕНТЫ (Подстройка)
-static float Kp = 8.0f;   // На 1 градус ошибки меняем ШИМ на 8 единиц
-static float Kd = 3.5f;   // Сильное демпфирование, чтобы не раскачивался
-static float Ki = 0.2f;   // Небольшой интеграл для компенсации разницы моторов
+static float Kp = 4.0f;   // На 1 градус ошибки меняем ШИМ на 8 единиц
+static float Kd = 3.0f;   // Сильное демпфирование, чтобы не раскачивался
+static float Ki = 0.1f;   // Небольшой интеграл для компенсации разницы моторов
 // Фильтр низких частот для yaw_rate (простейший)
 static float yaw_rate_filtered = 0.0f;
 
@@ -39,7 +39,7 @@ void Motor_Set(int16_t left, int16_t right)
 }
 
 
-// КУРСОВОЙ PID
+// Функция удержания курса
 void Course_Control_1ms(void)
 {
     if (!robot_started)
@@ -83,8 +83,17 @@ void Course_Control_1ms(void)
     __enable_irq();
 
     // Разница моторов: положительная → левый мотор быстрее
-    float motor_error = (float)(e1 - e2) * 10.5f; // коэффициент 0.5 можно подбирать
-    int16_t motor_comp = (int16_t)motor_error;
+    // float motor_error = (float)(e1 - e2) * 0.5f; // коэффициент 0.5 можно подбирать
+    
+static int32_t e1_prev, e2_prev;
+int32_t d1 = e1 - e1_prev;
+int32_t d2 = e2 - e2_prev;
+e1_prev = e1;
+e2_prev = e2;
+
+float motor_error = (float)(d1 - d2)* 0.5f;
+int16_t motor_comp = (int16_t)motor_error;
+
 
     // Формируем PWM для моторов
     int16_t base_left  = base_speed - motor_comp;
@@ -93,14 +102,15 @@ void Course_Control_1ms(void)
     int16_t left  = base_left + correction_pwm;
     int16_t right = base_right - correction_pwm;
 
-    // Ограничение минимальной скорости
-    if (left < 294) left = 304;
-    if (right < 280) right = 290;
+    // // Ограничение минимальной скорости
+    // if (left < 304) left = 304;
+    // if (right < 290) right = 290;
 
     Motor_Set(left, right);
 }
 
 
+//Функция Инициализации процесса поворота
 void Rotate_Start(float angle_deg)
 {
    
@@ -109,6 +119,7 @@ void Rotate_Start(float angle_deg)
     turning = 1;
 }
 
+//Функция  процесса поворота
 void Rotate_Process_1ms(void)
 {
     if (!turning)
@@ -130,15 +141,15 @@ void Rotate_Process_1ms(void)
     }
 
     //PD регулятор
-    float Kp = 4.0f;
+    float Kp = 3.0f;
     float kd = 0.1f;
 
     // скорость поворота с демпфированием
     int16_t speed = (int16_t)(Kp * error - kd * MPU6050.yaw_rate);
 
     // базовый PWM для моторов (левый тугой, правый лёгкий)
-    int16_t left_base  = 304; // левый мотор
-    int16_t right_base = 290; // правый мотор
+    int16_t left_base  = 260; // левый мотор
+    int16_t right_base = 260; // правый мотор
 
     int16_t left_pwm, right_pwm;
 
@@ -154,8 +165,8 @@ void Rotate_Process_1ms(void)
     }
 
     // ограничение 
-    left_pwm  = clamp_i16(left_pwm,  -380, 380);
-    right_pwm = clamp_i16(right_pwm, -380, 380);
+    left_pwm  = clamp_i16(left_pwm,  -300, 300);
+    right_pwm = clamp_i16(right_pwm, -300, 300);
 
     // отправка на моторы
     Motor_Set(left_pwm, right_pwm);
@@ -180,6 +191,7 @@ void Button_Process_Main(void)
     btn_prev = btn;
 }
 
+// Функция сброса дистанции
 void Reset_Distance(void)
 {
     __disable_irq();
@@ -187,6 +199,8 @@ void Reset_Distance(void)
     encoder2_count = 0;
     __enable_irq();
 }
+
+// Функция получения дистанции
 float Get_Distance_MM(void)
 {
     uint32_t e1, e2;
@@ -198,12 +212,15 @@ float Get_Distance_MM(void)
 
     return ((e1 + e2) * 0.5f) * MM_PER_TICK;
 }
+
+//Функция иницализации езды прямо
 void Drive_Start(float distance_mm)
 {
     Reset_Distance();
     drive_target_mm = distance_mm;
     driving = 1;
 }
+//Функция замедления ближе достигаемого растояния
 void Drive_Process_1ms(void)
 {
     if (!driving)
@@ -213,13 +230,17 @@ void Drive_Process_1ms(void)
     float remain = drive_target_mm - dist;
 
     // МЯГКОЕ ТОРМОЖЕНИЕ
-    if (remain < 150.0f)   // за 15 см начинаем тормозить
+    if (remain < 200.0f)   // за 15 см начинаем тормозить
     {
-        base_speed = 340;
+        base_speed = 300;
     }
     if (remain < 60.0f)
     {
         base_speed = 280;
+    }
+     if (remain < 15.0f)
+    {
+        base_speed = 220;
     }
 
     // ЦЕЛЬ ДОСТИГНУТА
@@ -227,7 +248,7 @@ void Drive_Process_1ms(void)
     {
         Motor_Set(0, 0);
         driving = 0;
-        base_speed = 450;   // вернуть номинал
+        base_speed = 350;   // вернуть номинал
         return;
     }
 

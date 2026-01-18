@@ -1,6 +1,5 @@
 #include "I2C.h"
 
-#define I2C_TIMEOUT 10000  // таймаут цикла
 
 void I2C_Config(void)
 {

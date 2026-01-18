@@ -3,6 +3,7 @@
 #include "I2C.h"
 #include "task.h"
 
+
 MPU6050_t MPU6050;
 
 // Внутренние переменные
