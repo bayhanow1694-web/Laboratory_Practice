@@ -159,8 +159,8 @@ void Rotate_Process_1ms(void)
     }
 
     // ограничение 
-    left_pwm  = clamp_i16(left_pwm,  -300, 300);
-    right_pwm = clamp_i16(right_pwm, -300, 300);
+    left_pwm  = clamp_i16(left_pwm,  -290, 290);
+    right_pwm = clamp_i16(right_pwm, -290, 290);
 
     // отправка на моторы
     Motor_Set(left_pwm, right_pwm);
@@ -226,15 +226,15 @@ void Drive_Process_1ms(void)
     // МЯГКОЕ ТОРМОЖЕНИЕ
     if (remain < 200.0f)   // за 15 см начинаем тормозить
     {
-        base_speed = 300;
+        base_speed = 290;
     }
     if (remain < 60.0f)
     {
-        base_speed = 280;
+        base_speed = 270;
     }
      if (remain < 15.0f)
     {
-        base_speed = 220;
+        base_speed = 230;
     }
 
     // ЦЕЛЬ ДОСТИГНУТА

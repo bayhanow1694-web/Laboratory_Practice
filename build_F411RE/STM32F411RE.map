@@ -1618,23 +1618,23 @@ LOAD C:/Bools/xpack-arm-none-eabi-gcc-13.2.1-1.1/bin/../lib/gcc/arm-none-eabi/13
  .debug_ranges  0x00000210       0xc8 build_F411RE/motor.o
  .debug_ranges  0x000002d8       0x20 build_F411RE/startup_stm32f411xe.o
 
-.debug_line     0x00000000     0x2955
+.debug_line     0x00000000     0x294f
  .debug_line    0x00000000      0x269 build_F411RE/system_stm32f4xx.o
  .debug_line    0x00000269      0x3d7 build_F411RE/syscalls.o
  .debug_line    0x00000640      0x1ba build_F411RE/sysmem.o
- .debug_line    0x000007fa      0x3aa build_F411RE/main.o
- .debug_line    0x00000ba4      0x41f build_F411RE/init.o
- .debug_line    0x00000fc3      0x209 build_F411RE/handlers.o
- .debug_line    0x000011cc      0x185 build_F411RE/task.o
- .debug_line    0x00001351      0x57d build_F411RE/I2C.o
- .debug_line    0x000018ce      0x442 build_F411RE/MCU6050.o
- .debug_line    0x00001d10      0x769 build_F411RE/motor.o
- .debug_line    0x00002479       0x8a build_F411RE/startup_stm32f411xe.o
- .debug_line    0x00002503      0x16f C:/Bools/xpack-arm-none-eabi-gcc-13.2.1-1.1/bin/../lib/gcc/arm-none-eabi/13.2.1/thumb/v7e-m+fp/hard\libgcc.a(_arm_addsubdf3.o)
- .debug_line    0x00002672      0x184 C:/Bools/xpack-arm-none-eabi-gcc-13.2.1-1.1/bin/../lib/gcc/arm-none-eabi/13.2.1/thumb/v7e-m+fp/hard\libgcc.a(_arm_muldivdf3.o)
- .debug_line    0x000027f6       0xa6 C:/Bools/xpack-arm-none-eabi-gcc-13.2.1-1.1/bin/../lib/gcc/arm-none-eabi/13.2.1/thumb/v7e-m+fp/hard\libgcc.a(_arm_cmpdf2.o)
- .debug_line    0x0000289c       0x57 C:/Bools/xpack-arm-none-eabi-gcc-13.2.1-1.1/bin/../lib/gcc/arm-none-eabi/13.2.1/thumb/v7e-m+fp/hard\libgcc.a(_arm_unorddf2.o)
- .debug_line    0x000028f3       0x62 C:/Bools/xpack-arm-none-eabi-gcc-13.2.1-1.1/bin/../lib/gcc/arm-none-eabi/13.2.1/thumb/v7e-m+fp/hard\libgcc.a(_arm_fixdfsi.o)
+ .debug_line    0x000007fa      0x3a8 build_F411RE/main.o
+ .debug_line    0x00000ba2      0x41f build_F411RE/init.o
+ .debug_line    0x00000fc1      0x209 build_F411RE/handlers.o
+ .debug_line    0x000011ca      0x185 build_F411RE/task.o
+ .debug_line    0x0000134f      0x57d build_F411RE/I2C.o
+ .debug_line    0x000018cc      0x440 build_F411RE/MCU6050.o
+ .debug_line    0x00001d0c      0x767 build_F411RE/motor.o
+ .debug_line    0x00002473       0x8a build_F411RE/startup_stm32f411xe.o
+ .debug_line    0x000024fd      0x16f C:/Bools/xpack-arm-none-eabi-gcc-13.2.1-1.1/bin/../lib/gcc/arm-none-eabi/13.2.1/thumb/v7e-m+fp/hard\libgcc.a(_arm_addsubdf3.o)
+ .debug_line    0x0000266c      0x184 C:/Bools/xpack-arm-none-eabi-gcc-13.2.1-1.1/bin/../lib/gcc/arm-none-eabi/13.2.1/thumb/v7e-m+fp/hard\libgcc.a(_arm_muldivdf3.o)
+ .debug_line    0x000027f0       0xa6 C:/Bools/xpack-arm-none-eabi-gcc-13.2.1-1.1/bin/../lib/gcc/arm-none-eabi/13.2.1/thumb/v7e-m+fp/hard\libgcc.a(_arm_cmpdf2.o)
+ .debug_line    0x00002896       0x57 C:/Bools/xpack-arm-none-eabi-gcc-13.2.1-1.1/bin/../lib/gcc/arm-none-eabi/13.2.1/thumb/v7e-m+fp/hard\libgcc.a(_arm_unorddf2.o)
+ .debug_line    0x000028ed       0x62 C:/Bools/xpack-arm-none-eabi-gcc-13.2.1-1.1/bin/../lib/gcc/arm-none-eabi/13.2.1/thumb/v7e-m+fp/hard\libgcc.a(_arm_fixdfsi.o)
 
 .debug_str      0x00000000     0x143e
  .debug_str     0x00000000     0x143e build_F411RE/system_stm32f4xx.o
