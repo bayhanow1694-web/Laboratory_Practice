@@ -82,8 +82,6 @@ void Course_Control_1ms(void)
     e2 = encoder2_count;
     __enable_irq();
 
-    // Разница моторов: положительная → левый мотор быстрее
-    // float motor_error = (float)(e1 - e2) * 0.5f; // коэффициент 0.5 можно подбирать
     
 static int32_t e1_prev, e2_prev;
 int32_t d1 = e1 - e1_prev;
@@ -101,10 +99,6 @@ int16_t motor_comp = (int16_t)motor_error;
 
     int16_t left  = base_left + correction_pwm;
     int16_t right = base_right - correction_pwm;
-
-    // // Ограничение минимальной скорости
-    // if (left < 304) left = 304;
-    // if (right < 290) right = 290;
 
     Motor_Set(left, right);
 }

@@ -1,4 +1,4 @@
-ARM GAS  C:\Users\Life\AppData\Local\Temp\ccy8kdry.s 			page 1
+ARM GAS  C:\Users\Life\AppData\Local\Temp\cckkRMt4.s 			page 1
 
 
    1              		.cpu cortex-m4
@@ -58,7 +58,7 @@ ARM GAS  C:\Users\Life\AppData\Local\Temp\ccy8kdry.s 			page 1
   27:Core/Src/main.c **** volatile uint8_t robot_started = 0;
   28:Core/Src/main.c **** volatile uint8_t btn_prev = 1;
   29:Core/Src/main.c **** volatile uint32_t btn_time = 0;
-ARM GAS  C:\Users\Life\AppData\Local\Temp\ccy8kdry.s 			page 2
+ARM GAS  C:\Users\Life\AppData\Local\Temp\cckkRMt4.s 			page 2
 
 
   30:Core/Src/main.c **** volatile float yaw_target = 0.0f;
@@ -90,16 +90,16 @@ ARM GAS  C:\Users\Life\AppData\Local\Temp\ccy8kdry.s 			page 1
   56:Core/Src/main.c **** //     {0, 0.0f},
   57:Core/Src/main.c **** // };  
   58:Core/Src/main.c **** //  RouteStep_t route[] = {
-  59:Core/Src/main.c **** //       {490,  90.0f},
+  59:Core/Src/main.c **** //       {500,  90.0f},
   60:Core/Src/main.c **** //       {600, 90.0f},
   61:Core/Src/main.c **** //       {25,  -120.0f},
   62:Core/Src/main.c **** //       {450, 60.0f},
   63:Core/Src/main.c **** //       {450,  60.0f},
   64:Core/Src/main.c **** //       {450, 60.0f},
-  65:Core/Src/main.c **** //       {445,  60.0f},
-  66:Core/Src/main.c **** //       {445, -119.0f},
-  67:Core/Src/main.c **** //       {25,  91.0f},
-  68:Core/Src/main.c **** //      {590, 91.0f},
+  65:Core/Src/main.c **** //       {450,  60.0f},
+  66:Core/Src/main.c **** //       {450, -120.0f},
+  67:Core/Src/main.c **** //       {25,  90.0f},
+  68:Core/Src/main.c **** //      {600, 90.0f},
   69:Core/Src/main.c **** //   };
   70:Core/Src/main.c ****    RouteStep_t route[] = {
   71:Core/Src/main.c ****       {500,  90.0f},
@@ -110,7 +110,7 @@ ARM GAS  C:\Users\Life\AppData\Local\Temp\ccy8kdry.s 			page 1
   76:Core/Src/main.c ****       {450, 61.0f},
   77:Core/Src/main.c ****       {440,  60.0f},
   78:Core/Src/main.c ****       {440, -120.0f},
-  79:Core/Src/main.c ****       {25,  89.5f},
+  79:Core/Src/main.c ****       {25,  89.0f},
   80:Core/Src/main.c ****      {590, 90.0f},
   81:Core/Src/main.c ****   };
   82:Core/Src/main.c **** 
@@ -118,7 +118,7 @@ ARM GAS  C:\Users\Life\AppData\Local\Temp\ccy8kdry.s 			page 1
   84:Core/Src/main.c **** 
   85:Core/Src/main.c **** // ---------- СОСТОЯНИЯ ----------
   86:Core/Src/main.c **** enum {
-ARM GAS  C:\Users\Life\AppData\Local\Temp\ccy8kdry.s 			page 3
+ARM GAS  C:\Users\Life\AppData\Local\Temp\cckkRMt4.s 			page 3
 
 
   87:Core/Src/main.c ****     ST_WAIT = 0,      // Ожидание (0)
@@ -178,7 +178,7 @@ ARM GAS  C:\Users\Life\AppData\Local\Temp\ccy8kdry.s 			page 1
   67              	.LCFI3:
   68              		.cfi_def_cfa_offset 20
   69              		@ sp needed
-ARM GAS  C:\Users\Life\AppData\Local\Temp\ccy8kdry.s 			page 4
+ARM GAS  C:\Users\Life\AppData\Local\Temp\cckkRMt4.s 			page 4
 
 
   70 001e 5DF804EB 		ldr	lr, [sp], #4
@@ -238,7 +238,7 @@ ARM GAS  C:\Users\Life\AppData\Local\Temp\ccy8kdry.s 			page 1
  105              	.LC5:
  106 00ac 5B545552 		.ascii	"[TURN] target=%.1f deg  yaw=%.2f deg  e1=%lu e2=%lu"
  106      4E5D2074 
-ARM GAS  C:\Users\Life\AppData\Local\Temp\ccy8kdry.s 			page 5
+ARM GAS  C:\Users\Life\AppData\Local\Temp\cckkRMt4.s 			page 5
 
 
  106      61726765 
@@ -298,7 +298,7 @@ ARM GAS  C:\Users\Life\AppData\Local\Temp\ccy8kdry.s 			page 1
  149              	.LVL4:
  110:Core/Src/main.c ****     TIM10_Init();
  150              		.loc 1 110 5 view .LVU12
-ARM GAS  C:\Users\Life\AppData\Local\Temp\ccy8kdry.s 			page 6
+ARM GAS  C:\Users\Life\AppData\Local\Temp\cckkRMt4.s 			page 6
 
 
  151 0012 FFF7FEFF 		bl	TIM10_Init
@@ -358,7 +358,7 @@ ARM GAS  C:\Users\Life\AppData\Local\Temp\ccy8kdry.s 			page 1
  126:Core/Src/main.c ****     uint8_t is_calibrated = 0;
  190              		.loc 1 126 5 view .LVU26
  191              		.loc 1 126 13 is_stmt 0 view .LVU27
-ARM GAS  C:\Users\Life\AppData\Local\Temp\ccy8kdry.s 			page 7
+ARM GAS  C:\Users\Life\AppData\Local\Temp\cckkRMt4.s 			page 7
 
 
  192 0042 2E46     		mov	r6, r5
@@ -418,7 +418,7 @@ ARM GAS  C:\Users\Life\AppData\Local\Temp\ccy8kdry.s 			page 1
  176:Core/Src/main.c ****                     state = ST_DRIVE;
  177:Core/Src/main.c ****                 }
  178:Core/Src/main.c ****                 break;
-ARM GAS  C:\Users\Life\AppData\Local\Temp\ccy8kdry.s 			page 8
+ARM GAS  C:\Users\Life\AppData\Local\Temp\cckkRMt4.s 			page 8
 
 
  179:Core/Src/main.c **** 
@@ -478,7 +478,7 @@ ARM GAS  C:\Users\Life\AppData\Local\Temp\ccy8kdry.s 			page 1
  233:Core/Src/main.c ****                "[TURN] target=%.1f deg  yaw=%.2f deg  e1=%lu e2=%lu\r\n",
  234:Core/Src/main.c ****                route[route_idx].turn_angle,
  235:Core/Src/main.c ****                MPU6050.yaw_angle,
-ARM GAS  C:\Users\Life\AppData\Local\Temp\ccy8kdry.s 			page 9
+ARM GAS  C:\Users\Life\AppData\Local\Temp\cckkRMt4.s 			page 9
 
 
  236:Core/Src/main.c ****                encoder1_count,
@@ -538,7 +538,7 @@ ARM GAS  C:\Users\Life\AppData\Local\Temp\ccy8kdry.s 			page 1
  225              		.loc 1 158 17 is_stmt 1 view .LVU35
  226              	.LVL17:
  159:Core/Src/main.c **** 
-ARM GAS  C:\Users\Life\AppData\Local\Temp\ccy8kdry.s 			page 10
+ARM GAS  C:\Users\Life\AppData\Local\Temp\cckkRMt4.s 			page 10
 
 
  227              		.loc 1 159 17 view .LVU36
@@ -598,7 +598,7 @@ ARM GAS  C:\Users\Life\AppData\Local\Temp\ccy8kdry.s 			page 1
  265 0088 2546     		mov	r5, r4
  149:Core/Src/main.c ****         }
  266              		.loc 1 149 13 view .LVU53
-ARM GAS  C:\Users\Life\AppData\Local\Temp\ccy8kdry.s 			page 11
+ARM GAS  C:\Users\Life\AppData\Local\Temp\cckkRMt4.s 			page 11
 
 
  267 008a EBE7     		b	.L6
@@ -658,7 +658,7 @@ ARM GAS  C:\Users\Life\AppData\Local\Temp\ccy8kdry.s 			page 1
  307              		.loc 1 175 21 view .LVU67
  308 00be B8EE400A 		vcvt.f32.u32	s0, s0
  309 00c2 FFF7FEFF 		bl	Drive_Start
-ARM GAS  C:\Users\Life\AppData\Local\Temp\ccy8kdry.s 			page 12
+ARM GAS  C:\Users\Life\AppData\Local\Temp\cckkRMt4.s 			page 12
 
 
  310              	.LVL28:
@@ -718,7 +718,7 @@ ARM GAS  C:\Users\Life\AppData\Local\Temp\ccy8kdry.s 			page 1
  350              	.LBB4:
  210:Core/Src/main.c **** 
  351              		.loc 1 210 17 is_stmt 1 view .LVU82
-ARM GAS  C:\Users\Life\AppData\Local\Temp\ccy8kdry.s 			page 13
+ARM GAS  C:\Users\Life\AppData\Local\Temp\cckkRMt4.s 			page 13
 
 
  352 00ee 0021     		movs	r1, #0
@@ -778,7 +778,7 @@ ARM GAS  C:\Users\Life\AppData\Local\Temp\ccy8kdry.s 			page 1
  195:Core/Src/main.c ****                float dist = Get_Distance_MM();
  394              		.loc 1 195 27 is_stmt 0 view .LVU95
  395 0124 474B     		ldr	r3, .L23+44
-ARM GAS  C:\Users\Life\AppData\Local\Temp\ccy8kdry.s 			page 14
+ARM GAS  C:\Users\Life\AppData\Local\Temp\cckkRMt4.s 			page 14
 
 
  396 0126 1A68     		ldr	r2, [r3]
@@ -838,7 +838,7 @@ ARM GAS  C:\Users\Life\AppData\Local\Temp\ccy8kdry.s 			page 1
  440              	.LBB6:
  223:Core/Src/main.c **** 
  441              		.loc 1 223 17 is_stmt 1 view .LVU106
-ARM GAS  C:\Users\Life\AppData\Local\Temp\ccy8kdry.s 			page 15
+ARM GAS  C:\Users\Life\AppData\Local\Temp\cckkRMt4.s 			page 15
 
 
  226:Core/Src/main.c **** 
@@ -898,7 +898,7 @@ ARM GAS  C:\Users\Life\AppData\Local\Temp\ccy8kdry.s 			page 1
  483 01a6 4046     		mov	r0, r8	@ float
  484 01a8 FFF7FEFF 		bl	__aeabi_f2d
  485              	.LVL47:
-ARM GAS  C:\Users\Life\AppData\Local\Temp\ccy8kdry.s 			page 16
+ARM GAS  C:\Users\Life\AppData\Local\Temp\cckkRMt4.s 			page 16
 
 
  486 01ac CDE90001 		strd	r0, [sp]
@@ -958,7 +958,7 @@ ARM GAS  C:\Users\Life\AppData\Local\Temp\ccy8kdry.s 			page 1
  232:Core/Src/main.c ****                "[TURN] target=%.1f deg  yaw=%.2f deg  e1=%lu e2=%lu\r\n",
  528              		.loc 1 232 16 view .LVU133
  529 01e8 1E4A     		ldr	r2, .L23+76
-ARM GAS  C:\Users\Life\AppData\Local\Temp\ccy8kdry.s 			page 17
+ARM GAS  C:\Users\Life\AppData\Local\Temp\cckkRMt4.s 			page 17
 
 
  530 01ea 1768     		ldr	r7, [r2]
@@ -1018,7 +1018,7 @@ ARM GAS  C:\Users\Life\AppData\Local\Temp\ccy8kdry.s 			page 1
  589              	last_debug.1:
  590 0000 00000000 		.space	4
  591              		.section	.bss.last_ctrl.2,"aw",%nobits
-ARM GAS  C:\Users\Life\AppData\Local\Temp\ccy8kdry.s 			page 18
+ARM GAS  C:\Users\Life\AppData\Local\Temp\cckkRMt4.s 			page 18
 
 
  592              		.align	2
@@ -1049,7 +1049,7 @@ ARM GAS  C:\Users\Life\AppData\Local\Temp\ccy8kdry.s 			page 1
  623 0038 B8010000 		.word	440
  624 003c 0000F0C2 		.word	-1024458752
  625 0040 19000000 		.word	25
- 626 0044 0000B342 		.word	1119027200
+ 626 0044 0000B242 		.word	1118961664
  627 0048 4E020000 		.word	590
  628 004c 0000B442 		.word	1119092736
  629              		.global	turn_target
@@ -1078,7 +1078,7 @@ ARM GAS  C:\Users\Life\AppData\Local\Temp\ccy8kdry.s 			page 1
  662 0000 00000000 		.space	4
  663              		.global	yaw_target
  664              		.section	.bss.yaw_target,"aw",%nobits
-ARM GAS  C:\Users\Life\AppData\Local\Temp\ccy8kdry.s 			page 19
+ARM GAS  C:\Users\Life\AppData\Local\Temp\cckkRMt4.s 			page 19
 
 
  665              		.align	2
@@ -1138,7 +1138,7 @@ ARM GAS  C:\Users\Life\AppData\Local\Temp\ccy8kdry.s 			page 1
  743              		.section	.bss.tick_count,"aw",%nobits
  744              		.align	2
  747              	tick_count:
-ARM GAS  C:\Users\Life\AppData\Local\Temp\ccy8kdry.s 			page 20
+ARM GAS  C:\Users\Life\AppData\Local\Temp\cckkRMt4.s 			page 20
 
 
  748 0000 00000000 		.space	4
@@ -1156,67 +1156,67 @@ ARM GAS  C:\Users\Life\AppData\Local\Temp\ccy8kdry.s 			page 1
  760              		.file 11 "Core/Inc/I2C.h"
  761              		.file 12 "Core/Inc/task.h"
  762              		.file 13 "<built-in>"
-ARM GAS  C:\Users\Life\AppData\Local\Temp\ccy8kdry.s 			page 21
+ARM GAS  C:\Users\Life\AppData\Local\Temp\cckkRMt4.s 			page 21
 
 
 DEFINED SYMBOLS
                             *ABS*:00000000 main.c
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:21     .text.UART_Printf:00000000 $t
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:27     .text.UART_Printf:00000000 UART_Printf
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:86     .rodata.main.str1.4:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:113    .text.main:00000000 $t
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:119    .text.main:00000000 main
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:214    .text.main:00000058 $d
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:218    .text.main:0000005c $t
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:553    .text.main:00000218 $d
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:601    .bss.route_idx:00000000 route_idx
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:687    .bss.robot_started:00000000 robot_started
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:714    .bss.driving:00000000 driving
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:640    .bss.turning:00000000 turning
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:668    .bss.yaw_target:00000000 yaw_target
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:661    .bss.yaw_i:00000000 yaw_i
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:608    .data.route:00000000 route
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:747    .bss.tick_count:00000000 tick_count
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:595    .bss.last_ctrl.2:00000000 last_ctrl.2
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:589    .bss.last_debug.1:00000000 last_debug.1
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:708    .bss.drive_target_mm:00000000 drive_target_mm
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:583    .bss.last_turn_dbg.0:00000000 last_turn_dbg.0
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:740    .bss.encoder1_count:00000000 encoder1_count
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:733    .bss.encoder2_count:00000000 encoder2_count
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:580    .bss.last_turn_dbg.0:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:586    .bss.last_debug.1:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:592    .bss.last_ctrl.2:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:602    .bss.route_idx:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:605    .data.route:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:634    .bss.turn_target:00000000 turn_target
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:631    .bss.turn_target:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:641    .bss.turning:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:647    .bss.right:00000000 right
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:644    .bss.right:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:654    .bss.left:00000000 left
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:651    .bss.left:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:658    .bss.yaw_i:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:665    .bss.yaw_target:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:675    .bss.btn_time:00000000 btn_time
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:672    .bss.btn_time:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:681    .data.btn_prev:00000000 btn_prev
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:688    .bss.robot_started:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:694    .data.base_speed:00000000 base_speed
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:691    .data.base_speed:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:701    .bss.gz_offset:00000000 gz_offset
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:698    .bss.gz_offset:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:705    .bss.drive_target_mm:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:715    .bss.driving:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:720    .bss.encoder2_delay:00000000 encoder2_delay
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:721    .bss.encoder2_delay:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:726    .bss.encoder1_delay:00000000 encoder1_delay
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:727    .bss.encoder1_delay:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:730    .bss.encoder2_count:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:737    .bss.encoder1_count:00000000 $d
-C:\Users\Life\AppData\Local\Temp\ccy8kdry.s:744    .bss.tick_count:00000000 $d
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:21     .text.UART_Printf:00000000 $t
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:27     .text.UART_Printf:00000000 UART_Printf
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:86     .rodata.main.str1.4:00000000 $d
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:113    .text.main:00000000 $t
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:119    .text.main:00000000 main
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:214    .text.main:00000058 $d
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:218    .text.main:0000005c $t
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:553    .text.main:00000218 $d
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:601    .bss.route_idx:00000000 route_idx
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:687    .bss.robot_started:00000000 robot_started
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:714    .bss.driving:00000000 driving
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:640    .bss.turning:00000000 turning
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:668    .bss.yaw_target:00000000 yaw_target
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:661    .bss.yaw_i:00000000 yaw_i
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:608    .data.route:00000000 route
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:747    .bss.tick_count:00000000 tick_count
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:595    .bss.last_ctrl.2:00000000 last_ctrl.2
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:589    .bss.last_debug.1:00000000 last_debug.1
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:708    .bss.drive_target_mm:00000000 drive_target_mm
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:583    .bss.last_turn_dbg.0:00000000 last_turn_dbg.0
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:740    .bss.encoder1_count:00000000 encoder1_count
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:733    .bss.encoder2_count:00000000 encoder2_count
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:580    .bss.last_turn_dbg.0:00000000 $d
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:586    .bss.last_debug.1:00000000 $d
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:592    .bss.last_ctrl.2:00000000 $d
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:602    .bss.route_idx:00000000 $d
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:605    .data.route:00000000 $d
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:634    .bss.turn_target:00000000 turn_target
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:631    .bss.turn_target:00000000 $d
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:641    .bss.turning:00000000 $d
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:647    .bss.right:00000000 right
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:644    .bss.right:00000000 $d
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:654    .bss.left:00000000 left
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:651    .bss.left:00000000 $d
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:658    .bss.yaw_i:00000000 $d
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:665    .bss.yaw_target:00000000 $d
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:675    .bss.btn_time:00000000 btn_time
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:672    .bss.btn_time:00000000 $d
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:681    .data.btn_prev:00000000 btn_prev
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:688    .bss.robot_started:00000000 $d
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:694    .data.base_speed:00000000 base_speed
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:691    .data.base_speed:00000000 $d
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:701    .bss.gz_offset:00000000 gz_offset
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:698    .bss.gz_offset:00000000 $d
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:705    .bss.drive_target_mm:00000000 $d
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:715    .bss.driving:00000000 $d
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:720    .bss.encoder2_delay:00000000 encoder2_delay
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:721    .bss.encoder2_delay:00000000 $d
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:726    .bss.encoder1_delay:00000000 encoder1_delay
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:727    .bss.encoder1_delay:00000000 $d
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:730    .bss.encoder2_count:00000000 $d
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:737    .bss.encoder1_count:00000000 $d
+C:\Users\Life\AppData\Local\Temp\cckkRMt4.s:744    .bss.tick_count:00000000 $d
 
 UNDEFINED SYMBOLS
-ARM GAS  C:\Users\Life\AppData\Local\Temp\ccy8kdry.s 			page 22
+ARM GAS  C:\Users\Life\AppData\Local\Temp\cckkRMt4.s 			page 22
 
 
 vsnprintf

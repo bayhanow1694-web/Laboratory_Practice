@@ -100,14 +100,7 @@ float MPU6050_Read_Yaw_Rate(void)
     MPU6050.yaw_rate_raw = gz_raw;
     
     // Простая фильтрация (скользящее среднее)
-    // static float buffer[3] = {0};  // 3 последних значения
-    // static uint8_t idx = 0;
-    
-    // buffer[idx] = gz_raw;
-    // idx = (idx + 1) % 3;
-    
-    // // Среднее из 3 значений
-    // gz_filtered = (buffer[0] + buffer[1] + buffer[2]) / 3.0f;
+   
     static float buffer[10] = {0}; 
 static float sum = 0;          // Храним сумму здесь
 static uint8_t idx = 0;
@@ -195,30 +188,3 @@ void MPU6050_Print_Debug(void)
         }
     }
 }
-
-// ------------------------------------------------------------------
-// АВТОКОМПЕНСАЦИЯ ДРЕЙФА (опционально)
-// ------------------------------------------------------------------
-// void MPU6050_Auto_Compensate_Drift(void)
-// {
-//     static uint16_t still_counter = 0;
-    
-//     // Если робот не двигается (по энкодерам)
-//     if (encoder1_count == 0 && encoder2_count == 0) {
-//         still_counter++;
-        
-//         // Если стоим более 2 секунд
-//         if (still_counter > 2000) {
-//             // Медленно корректируем offset
-//             gz_offset += MPU6050.yaw_rate * 0.0001f;  // Очень медленно
-            
-//             // Сбрасываем угол, если дрейф большой
-//             if (fabs(MPU6050.yaw_angle) > 5.0f) {
-//                 yaw_angle = 0.0f;
-//                 MPU6050.yaw_angle = 0.0f;
-//             }
-//         }
-//     } else {
-//         still_counter = 0;
-//     }
-// }

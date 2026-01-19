@@ -43,42 +43,20 @@ typedef struct {
 } RouteStep_t;
 
 // 10 раз: прямо + поворот (пример)
-//  RouteStep_t route[] = {
-//     {25,  0.0f},
-//     {0, 0.0f},
-//     {0,  0.0f},
-//     {0, 0.0f},
-//     {0,  0.0f},
-//     {0, 0.0f},
-//     {0,  0.0f},
-//     {0, 0.0f},
-//     {0,  0.0f},
-//     {0, 0.0f},
-// };  
-//  RouteStep_t route[] = {
-//       {490,  90.0f},
-//       {600, 90.0f},
-//       {25,  -120.0f},
-//       {450, 60.0f},
-//       {450,  60.0f},
-//       {450, 60.0f},
-//       {445,  60.0f},
-//       {445, -119.0f},
-//       {25,  91.0f},
-//      {590, 91.0f},
-//   };
-   RouteStep_t route[] = {
+ 
+ RouteStep_t route[] = {
       {500,  90.0f},
       {600, 90.0f},
-      {30,  -120.0f},
+      {25,  -120.0f},
       {450, 60.0f},
       {450,  60.0f},
-      {450, 61.0f},
-      {440,  60.0f},
-      {440, -120.0f},
-      {25,  89.5f},
-     {590, 90.0f},
+      {450, 60.0f},
+      {450,  60.0f},
+      {450, -120.0f},
+      {25,  90.0f},
+     {600, 90.0f},
   };
+
 
 #define ROUTE_LEN (sizeof(route) / sizeof(route[0]))
 
@@ -127,16 +105,7 @@ int main(void)
 
     while (1)
     {
-    //     MODIFY_REG(TIM1->CCR1, TIM_CCR1_CCR1_Msk, 280UL); // ПЕрвый двигатель 
-    // MODIFY_REG(TIM1->CCR2, TIM_CCR2_CCR2_Msk, 0UL); // назад
-
-    // MODIFY_REG(TIM1->CCR3, TIM_CCR3_CCR3_Msk, 280UL); // второй  двигатель -
-    // MODIFY_REG(TIM1->CCR4, TIM_CCR4_CCR4_Msk, 0UL); //назад
-    //   UART_Printf(
-    //            "e1=%lu e2=%lu\r\n",
-    //            encoder1_count,
-    //            encoder2_count
-    //             );
+ 
         Button_Process_Main();
 
         if (!robot_started)
